@@ -1,7 +1,7 @@
 RESTful API to Oracle databases
 =======
 
-![alt text](/path/img.jpg "Title")
+![Architecture](https://raw.githubusercontent.com/valdasraps/resthub/master/doc/resthub.png "Architecture")
 
 #### Overview
 
