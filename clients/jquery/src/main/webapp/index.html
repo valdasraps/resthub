@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>DataTables example</title>
+        <style type="text/css" title="currentStyle">
+            @import "external/datatables/css/page.css";
+            @import "external/datatables/css/table.css";
+            @import "external/datatables/css/themes/smoothness/jquery-ui-1.8.4.custom.css";
+        </style>
+        <script type="text/javascript" src="external/datatables/js/jquery.js"></script>
+        <script type="text/javascript" src="external/datatables/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="external/datatables/js/dataTables.addons.js"></script>
+        <script type="text/javascript" src="external/highcharts/highcharts.js"></script>
+        <script type="text/javascript" src="js/lib.js"></script>
+        <script type="text/javascript" src="js/table.js"></script>
+        <script type="text/javascript" src="js/charts.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                // Initialize the server
+                var server = $.rhServer("http://nebula:3024");
+                //var server = $.rhServer("http://localhost:8112");
+
+
+                // ***********************************
+                // Customers query, table and chart
+                // ***********************************
+                
+                // var q1 = server.query("SELECT * FROM store.customers c WHERE c.ID > :p1");
+                var q1 = server.query("SELECT * FROM hcal.lasertiming c WHERE c.RUN > :p1");
+                $('#customer-chart').rhChart2({query: q1, params: {p1: 1000}});
+
+                // Adds a link on ID column
+                var tableOptions = {
+                    "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                        $('td:eq(0)', nRow).html('<a href=info.html?id=' + aData[0] + '>' + aData[0] + '</a>');
+                        return nRow;
+                    }
+                };
+                var table = $('#customer-table').rhTable({query: q1, params: {p1: 1000}, tableOptions: tableOptions});
+                var oTable = table.data("table");
+
+                // enable double click on the row 
+                $('#customer-table table td').live('dblclick', function() {
+                    var aPos = oTable.fnGetPosition(this);
+                    var aData = oTable.fnGetData(aPos[0]);
+                    window.open('info.html?id=' + aData[0], '_self');
+                });
+
+                // highlight the row when selected
+                $('#customer-table tbody').click(function(event) {
+                    $(oTable.fnSettings().aoData).each(function() {
+                        $(this.nTr).removeClass('row_selected');
+                    });
+                    $(event.target.parentNode).addClass('row_selected');
+                });
+                
+                // ************************************
+                // Products table and brands chart
+                // ************************************
+                
+                var q2 = server.query("SELECT * FROM store.products c");
+                $('#brands-chart').rhChart1({query: q2});
+                $('#brands-table').rhTable({query: q2});
+
+            });
+        </script>
+
+    </head>
+    <body id="dt_example">
+        <div id="container" style="width:90%;">	
+            <h1>Customers</h1>
+            <div id="customer-table"></div><br>
+            <div id="customer-chart"></div>
+
+            <div id="brands-container">	
+                <h1>Products table and brands chart</h1>
+                <div id="brands-table" style="width:48%; float:right;"></div>
+                <div id="brands-chart" style="width:48%; float:left;"></div>
+            </div>
+        </div>
+    </body>
+</html>

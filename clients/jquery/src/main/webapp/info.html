@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>Customer info</title>
+        <style type="text/css" title="currentStyle">
+            @import "external/datatables/css/page.css";
+        </style>
+        <script type="text/javascript" src="external/datatables/js/jquery.js"></script>
+        <script type="text/javascript" src="external/highcharts/highcharts.js"></script>
+        <script type="text/javascript" src="js/lib.js"></script>
+        <script type="text/javascript" src="js/charts.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                $.urlParam = function(name) {
+                    var results = new RegExp('[\\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+                    return results[1] || 0;
+                }
+                var id = $.urlParam('id');
+
+                //var server = $.rhServer("http://pccmsdqm04:8112");
+                var server = $.rhServer("http://localhost:8112");
+                var q1 = server.query("SELECT * FROM store.customers c WHERE c.ID = :p1");
+                q1.data({params: {p1: id},
+                    callBack: function(data) {
+                        $('#id').text('ID: ' + data.data[0][0]);
+                        $('#name').text('Name: ' + data.data[0][1]);
+                        $('#city').text('City: ' + data.data[0][2]);
+                        $('#country').text('Country: ' + data.data[0][3]);
+                    }
+                });
+
+                var q2 = server.query("SELECT c.SAL_COST,b.BRAND FROM store.sales c INNER JOIN store.products b ON c.SAL_PRO_ID = b.ID WHERE c.SAL_CUS_ID = :p1 ");
+
+                $('#chart').rhChart3({query: q2, params: {p1: id}});
+
+            });
+        </script>
+
+
+    </head>
+    <body id="dt_example">
+
+        <div id="container" style="width:20%;">	
+            <h1>Customer</h1>
+            <div id="info">
+                <ul>  
+                    <li id="id"></li>  
+                    <li id="name"></li>  
+                    <li id="city"></li>  
+                    <li id="country"></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="chart-container" style="width:90%; margin-right:auto; margin-left:auto;">
+            <h1>Money spent on buying products of specific brand</h1>
+            <div id="chart"></div>
+        </div>
+        
+    </body>
+</html>
