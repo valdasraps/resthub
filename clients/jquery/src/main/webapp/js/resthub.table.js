@@ -8,7 +8,8 @@
                             query: undefined,
                             params: undefined,
                             showColumns: 4,
-                            tableOptions: undefined
+                            tableOptions: undefined,
+                            idColumn: undefined
                         }, options);
 
                 var Sthis = $(this);
@@ -31,7 +32,7 @@
                     
                     var aoColumns = [];
                     for (var i = 0; i < columns; i++) {                       
-                        aoColumns.push( {"sTitle": columnsArray[i].name } );         
+                        aoColumns.push({ "sTitle": columnsArray[i].name });         
                         if ( i >= showColumns) {
                             aoColumns[i] = {"sTitle": columnsArray[i].name , bVisible: false}
                         }
@@ -53,25 +54,34 @@
                         "aoColumns":        aoColumns,
                         "fnInitComplete":   function() {
                                                 this.fnSetFilteringDelay(1000);
-                                            },
+                                            }, 
                         "fnServerData":     function (sSource, aoData, fnCallback) {
                                                 // WHERE
-                                                var search = aoData[5 + columns].value;
+                                                var search = aoData[5].value;
                                                 var columnsSQL = 'WHERE ';
                                                 var isItnumb = !isNaN(search);
 
+                                                var added = false;
                                                 for (var i = 0; i < columns; i++) {
-                                                    if (columnsArray[i].type === 'STRING' || (isItnumb && columnsArray[i].type === 'NUMBER')){ 
-                                                        if ( i !== 0) columnsSQL += 'OR ';
-                                                        columnsSQL += 'a."'+columnsArray[i].name+'" = :search ';
+                                                    if (columnsArray[i].type === 'STRING') {
+                                                        columnsSQL += (added ? 'OR ' : '') + 'a."' + columnsArray[i].name+'" like :search || \'%\' ';
+                                                        added = true;
+                                                    } else {
+                                                        if (isItnumb && columnsArray[i].type === 'NUMBER') {
+                                                            columnsSQL += (added ? 'OR ' : '') + 'a."' + columnsArray[i].name+'" = :search ';
+                                                            added = true;
+                                                        }
                                                     }
                                                 }
                                                 // ORDER BY
-                                                var columnVal = aoData[7 + columns * 4].value;
-                                                var columnName = columnsArray[columnVal].name;
-                                                var orderType = aoData[8 + columns * 4].value;
-                                                var oderBy = ' ORDER BY a.' + columnName + ' ' + orderType; 
+                                                var colNameNr = $.grep(aoData, function(e){ return e.name == "iSortCol_0"});
+                                                var colName = columnsArray[colNameNr[0].value].name;
                                                 
+                                                var orderType = $.grep(aoData, function(e){ return e.name == "sSortDir_0"});
+                                                var oderBy = ' ORDER BY a.' + colName + ' ' + orderType[0].value;
+                                                if (options.idColumn !== undefined){
+                                                    oderBy += ', a.' + options.idColumn + ' ' + orderType[0].value; 
+                                                }
                                                 options.query.sql = options.query.reset_sql;
 
                                                 if ( search !== '') {
@@ -86,13 +96,13 @@
                                                     ppage: aoData[4].value,
                                                     page: Math.floor(aoData[3].value / aoData[4].value) + 1,
                                                     callBack: function(data){
-                                                        var dc = options.query.count(params) !== undefined ? data.count : 0;
+                                                        var dc = options.query.count({params: params});                 
                                                         var obj = {
                                                             iTotalDisplayRecords: dc,
                                                             iTotalRecords: dc, 
                                                             aaData: data.data,
                                                             sEcho: aoData[0].value,
-                                                            sSearch: aoData[5 + columns].value,
+                                                            sSearch: aoData[5].value,
                                                             iDisplayStart: aoData[3].value
                                                         }
                                                         data = $.extend(data, obj);
