@@ -1,13 +1,11 @@
-resthub
+RESTful API to Oracle databases
 =======
 
-RESTful interface to Oracle databases
-
-1. Overview
+#### Overview
 
 RestHub was designed to provide a way to access data from the client application through RESTful API. In this manner developers will no longer have to implement difficult approaches for data retrieval from the database in representational layer and can separate application and representation codebase. They will be able to access data through the RestHub system by sending simple SQL queries.
 
-2. Benefits
+#### Benefits
 
 Separate data access from the representation:
 
@@ -16,7 +14,7 @@ Separate data access from the representation:
 - Standard, reusable API
 - Many ways to use the service (Browser, Python, Java, JS, ...)
 
-3. Features
+#### Features
 
 Self descriptive:
 
@@ -38,7 +36,7 @@ Flexible:
 
 - SQL for querying
 
-4. Types of resources
+#### Types of resources
 
 - Tables: Views with optional parameters and metadata, back-end control.
 - Queries: Views on Tables, front-end control.
