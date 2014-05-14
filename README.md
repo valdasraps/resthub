@@ -1,6 +1,8 @@
 RESTful API to Oracle databases
 =======
 
+[RestHub documentation](https://raw.githubusercontent.com/valdasraps/resthub/master/doc/RestHUB_docs.pdf)
+
 ![Architecture](https://raw.githubusercontent.com/valdasraps/resthub/master/doc/resthub.jpg "Architecture")
 
 #### Overview
