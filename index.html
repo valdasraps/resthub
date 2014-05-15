@@ -13,13 +13,13 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <title>Resthub by valdasraps</title>
+    <title>RestHub</title>
   </head>
 
   <body>
     <header>
       <div class="inner">
-        <h1>Resthub</h1>
+        <h1>RestHub</h1>
         <h2>RESTful interface to Oracle databases</h2>
         <a href="https://github.com/valdasraps/resthub" class="button"><small>View project on</small>GitHub</a>
       </div>
@@ -28,52 +28,132 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+          
+<h3>About</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>RestHub was designed to provide a way to access data from the client application through RESTful API. In this manner developers will no longer have to implement difficult approaches for data retrieval from the database in representational layer and can separate application and representation codebase. They will be able to access data through the RestHub system by sending simple SQL queries.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<img src="https://raw.githubusercontent.com/valdasraps/resthub/master/doc/resthub.jpg" alt="RestHub">
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>Benefits</h3>
+<p>Separate data access from the representation:</p>
+<ul>
+<li>Data access via API</li>
+<li>Application and representation on separate codebase</li>
+<li>Standard, reusable API</li>
+<li>Many ways to use the service (Browser, Python, Java, JS, ...)</li>
+</ul>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<h3>Features</h3>
+<p>Self descriptive:</p>
+<ul>
+<li>Includes metadata</li>
+<li>HATEOAS (including hypermedia links with the responses).</li>
+</ul>
+<p>Secure:</p>
+<ul>
+<li>Specialized multilevel query parsers</li>
+<li>Multithreading</li>
+<li>Timeouts</li>
+</ul>
+<p>Fast:</p>
+<ul>
+<li>Caching</li>
+<li>Asynchronous prefetching</li>
+</ul>
+<p>Flexible:</p>
+<ul>
+<li>SQL for querying</li>
+</ul>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<h3>Types of resources</h3>
+<ul>
+<li>Tables: Views with optional parameters and metadata, back-end control.</li>
+<li>Queries: Views on Tables, front-end control.</li>
+<li>Cache: Query result in different representation for fast retrieval.</li>
+</ul>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h3>API</h3>
+<table>
+	<tr>
+	  <th>URL</th>
+	  <th>Method</th>		
+	  <th>Description</th>
+	</tr>
+	<tr>
+	  <td>/tables </td>
+	  <td>GET</td>		
+	  <td>List of tables in JSON</td>
+	</tr>
+	<tr>
+	  <td>/table/{namespace}/{name} </td>
+	  <td>GET</td>		
+	  <td>Table description in JSON</td>
+	</tr>
+	<tr>
+	  <td>/queries</td>
+	  <td>GET</td>		
+	  <td>List of queries in JSON</td>
+	</tr>
+	<tr>
+	  <td>/query</td>
+	  <td>POST</td>		
+	  <td> Create query from provided entity SQL and return automatically generated {id}</td>
+	</tr>
+	<tr>
+	  <td>/query/{id} </td>
+	  <td>GET</td>		
+	  <td>Query description in JSON</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}</td>
+	  <td>DELETE</td>		
+	  <td>Remove query</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/data</td>
+	  <td>GET</td>		
+	  <td>Get query data. Media type is by Accept header. For example: “Accept” : “application/xml”</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/page/{pp}/{p}/data</td>
+	  <td>GET</td>		
+	  <td>Get query page data. Media type is by Accept header. Variables: pp - data rows per page, p - page number</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/cache</td>
+	  <td>GET</td>		
+	  <td>Get query cache information </td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/cache</td>
+	  <td>DELETE</td>		
+	  <td>Clean all query cache</td>
+	</tr>
+	<tr>
+	  <td>/table/{namespace}/{name}/cache</td>
+	  <td>GET</td>		
+	  <td>Get the list of query caches that use the table defined</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/data?{p}={v}</td>
+	  <td>GET</td>		
+	  <td>Get query data with parameters. Variables: p - parameter name, v - parameter value.</td>
+	</tr>
+</table>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-        </section>
+  </section>
 
         <aside id="sidebar">
           <a href="https://github.com/valdasraps/resthub/zipball/master" class="button">
             <small>Download</small>
             .zip file
           </a>
-          <a href="https://github.com/valdasraps/resthub/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
+          <a href="docs.html" class="button">
+	    <small>RestHub full</small>
+            Documentation  
           </a>
-
-          <p class="repo-owner"><a href="https://github.com/valdasraps/resthub"></a> is maintained by <a href="https://github.com/valdasraps">valdasraps</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>

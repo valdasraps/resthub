@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+    <link rel="stylesheet" href="code_highlighter/prettify.css" />
+
+
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>RestHub</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <a href="index.html"><h1>RestHub</h1></a>
+        <h2>RESTful interface to Oracle databases</h2>
+        <a href="https://github.com/valdasraps/resthub" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+
+<a name="rest"></a>          
+<h1>Introduction to REST and RestHUB</h1>
+
+<h2>1. REST - Representational State Transfer</h2>
+
+<h3>1.1. Overview - What is REST?</h3>
+<p>REST is an architectural style which is based on web-standards and the HTTP protocol. REST was first described by Roy Fielding in 2000.
+In a REST based architecture everything is a resource. A resource is accessed via a common interface based on the HTTP standard methods.
+In a REST based architecture you typically have a REST server which provides access to the resources and a REST client which accesses and modifies the REST resources.
+Every resource should support the HTTP common operations. Resources are identified by global IDs (which are typically URIs).
+REST allows that resources have different representations, e.g., text, XML, JSON etc. The REST client can ask for a specific representation via the HTTP protocol (content negotiation).
+</p>
+<h3>1.2. HTTP methods</h3>
+<p>The PUT, GET, POST and DELETE methods are typically used in REST based architectures. The following table gives an explanation of these operations.</p>
+<ul>
+	<li>GET defines a reading access of the resource without side-effects. The resource is never changed via a GET request, e.g., the request has no side effects (idempotent).</li>
+	<li>PUT creates a new resource. It must also be idempotent.</li>
+	<li>DELETE removes the resources. The operations are idempotent. They can get repeated without leading to different results.</li>
+	<li>POST updates an existing resource or creates a new resource.</li>
+</ul>
+</p>
+<h3>1.3. RESTFul web services</h3>
+<p>A RESTFul web services are based on HTTP methods and the concept of REST. A RESTFul web service typically defines the base URI for the services, the supported MIME-types (XML, text, JSON, user-defined, ...) and the set of operations (POST, GET, PUT, DELETE) which are supported.
+</p>
+
+
+
+<a name="resthub"></a> 
+<h2>2. RestHUB - RESTful API for Oracle DB querying</h2>
+<h3>Overview</h3>
+
+<p>RestHub was designed to provide a way to access data from the client application through RESTful API. In this manner developers will no longer have to implement difficult approaches for data retrieval from the database in representational layer and can separate application and representation codebase. They will be able to access data through the RestHub system by sending simple SQL queries.</p>
+
+<img src="https://raw.githubusercontent.com/valdasraps/resthub/master/doc/resthub.jpg" alt="RestHub">
+
+<h3>Benefits</h3>
+<p>Separate data access from the representation:</p>
+<ul>
+<li>Data access via API</li>
+<li>Application and representation on separate codebase</li>
+<li>Standard, reusable API</li>
+<li>Many ways to use the service (Browser, Python, Java, JS, ...)</li>
+</ul>
+
+<h3>Features</h3>
+<p>Self descriptive:</p>
+<ul>
+<li>Includes metadata</li>
+<li>HATEOAS (including hypermedia links with the responses).</li>
+</ul>
+<p>Secure:</p>
+<ul>
+<li>Specialized multilevel query parsers</li>
+<li>Multithreading</li>
+<li>Timeouts</li>
+</ul>
+<p>Fast:</p>
+<ul>
+<li>Caching</li>
+<li>Asynchronous prefetching</li>
+</ul>
+<p>Flexible:</p>
+<ul>
+<li>SQL for querying</li>
+</ul>
+
+
+<h3>Types of resources</h3>
+<ul>
+<li>Tables: Views with optional parameters and metadata, back-end control.</li>
+<li>Queries: Views on Tables, front-end control.</li>
+<li>Cache: Query result in different representation for fast retrieval.</li>
+</ul>
+
+<h3>RestHub raw API</h3>
+<p>This API is mainly used by RestHub plugins. Developers that want to use RestHub should use those plugins instead of this API. Plugins are described below.</p>
+<p>Variables:</p>
+<ul>
+<li>{namespace} - group of tables</li>
+<li>{name} - table name</li>
+<li>{id} - automatically generated id number (via POST method)</li>
+</ul>
+<table>
+	<tr>
+	  <th>URL</th>
+	  <th>Method</th>		
+	  <th>Description</th>
+	</tr>
+	<tr>
+	  <td>/tables </td>
+	  <td>GET</td>		
+	  <td>List of tables in JSON</td>
+	</tr>
+	<tr>
+	  <td>/table/{namespace}/{name} </td>
+	  <td>GET</td>		
+	  <td>Table description in JSON</td>
+	</tr>
+	<tr>
+	  <td>/queries</td>
+	  <td>GET</td>		
+	  <td>List of queries in JSON</td>
+	</tr>
+	<tr>
+	  <td>/query</td>
+	  <td>POST</td>		
+	  <td> Create query from provided entity SQL and return automatically generated {id}</td>
+	</tr>
+	<tr>
+	  <td>/query/{id} </td>
+	  <td>GET</td>		
+	  <td>Query description in JSON</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}</td>
+	  <td>DELETE</td>		
+	  <td>Remove query</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/data</td>
+	  <td>GET</td>		
+	  <td>Get query data. Media type is by Accept header. For example: “Accept” : “application/xml”</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/page/{pp}/{p}/data</td>
+	  <td>GET</td>		
+	  <td>Get query page data. Media type is by Accept header. Variables: pp - data rows per page, p - page number</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/cache</td>
+	  <td>GET</td>		
+	  <td>Get query cache information </td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/cache</td>
+	  <td>DELETE</td>		
+	  <td>Clean all query cache</td>
+	</tr>
+	<tr>
+	  <td>/table/{namespace}/{name}/cache</td>
+	  <td>GET</td>		
+	  <td>Get the list of query caches that use the table defined</td>
+	</tr>
+	<tr>
+	  <td>/query/{id}/data?{p}={v}</td>
+	  <td>GET</td>		
+	  <td>Get query data with parameters. Variables: p - parameter name, v - parameter value.</td>
+	</tr>
+</table>
+
+<br>
+<a name="tutorial"></a> 
+<h2>3. RestHUB Tutorial - How to use it</h2>
+<h3>3.1. Store your tables in RestHub</h3>
+
+<p>In order to start using RestHub you have to create an XML file where your database tables would be stored. This file should be created from the template and put in application classpath. When this XML file is uploaded to svn versioning system it is automatically picked up by the RestHub and all the necessary tables are created and saved. From this point you are ready to use RestHub in your applications.</p>
+
+<p>Example of simplified tables XML file is listed below. There is only one table (hcal_parts) in this example, but it’s possible to add as many tables as you need.</p>
+
+<pre class="prettyprint">
+&ltTABLES&gt
+  &ltTABLE CACHE_TIME="120" HIT_COUNT="1" TIME_OUT="30" 
+	ROWS_LIMIT="1000" CONNECTION_NAME="default"&gt
+        &ltMETADATA&gt
+            &ltENTRY KEY="description"&gtUnique list of notebook parts&lt/ENTRY&gt
+        &lt/METADATA&gt
+        &ltNAMESPACE&gthcal&lt/NAMESPACE&gt
+        &ltNAME&gthcal_parts&lt/NAME&gt
+        &ltSQL&gt SELECT DISTINCT 
+		P.PART_ID,
+		P.NAME_LABEL
+	      FROM CMS_HCL_CORE_CONSTRUCT.PARTS P 
+	&lt/SQL&gt
+        &ltCOLUMNS&gt
+            &ltCOLUMN NUM="1"&gt
+                &ltMETADATA&gt
+                    &ltENTRY KEY="description"&gtPart ID&lt/ENTRY&gt
+                &lt/METADATA&gt
+                &ltNAME&gtPART_ID&lt/NAME&gt
+                &ltTYPE&gtSTRING&lt/TYPE&gt
+            &lt/COLUMN&gt
+            &ltCOLUMN NUM="2"&gt
+                &ltMETADATA&gt
+                    &ltENTRY KEY="description"&gtPart name&lt/ENTRY&gt
+                &lt/METADATA&gt
+                &ltNAME&gtNAME_LABEL&lt/NAME&gt
+                &ltTYPE&gtSTRING&lt/TYPE&gt
+            &lt/COLUMN&gt
+        &lt/COLUMNS&gt
+    &lt/TABLE&gt
+&lt/TABLES&gt
+</pre>
+<p>Table has several options. The most important are listed below:</p>
+<ul>
+<li>CACHE_TIME - RestHub will save query data in cache for 120 seconds.</li>
+<li>ROWS_LIMIT - the maximum number of data rows returned from one query.</li>
+<li>CONNECTION_NAME - there can be multiple connections to the database(s) which are identified by name.</li>
+</ul>
+
+
+<h3>3.2. RestHub Javascript plugin</h3>
+<p>For example we want to create a simple HTML + Javascript page. There are several plugins already created that will help us. We have to put them in our page directory and (or) to include a path to those plugins. </p>
+<p>A brief description of plugins:</p>
+<ul>
+<li>rhserver.js - this file stores a path to RestHub machine.</li>
+<li>resthub.js - main plugin that will help us to use RestHub.</li>
+<li>resthub.table.js - plugin that draws a table and uses RestHub.</li>
+</ul>
+<p>All these plugins are created with jQuery library. So we have to include it as well.
+If we are using Java language for our application there are also similar plugins created.</p>
+
+
+
+<h3>3.2.1 resthub.js API</h3>
+<p>Before using resthub.js plugin we have to make sure that a variable called rhserver in rhserver.js points to RestHub machine. We would use reshub.js API through this variable.</p>
+<p>Consumer API:</p>
+<ol>
+	<li>rhserver.query(sql) - assigns sql to a query. Later on if we want to modify a specific query we could change sql and refresh it like this:</li>
+	<ul>
+		<li>rhserver.query.sql += “ ORDER BY someColumn ASC” ;</li>
+		<li>rhserver.query.refresh();</li>
+	</ul>
+	<li>rhserver.data() - executes query and returns data. This method has parameters:</li>
+	<ul>
+		<li>type - content type (json, xml, ... )</li>
+		<li>ppage  - data rows per page</li>
+		<li>page - page number</li>
+		<li>params - query SQL parameters. Parameter name in SQL should begin with : symbol, for example :parameter</li>
+	</ul>
+</ol>
+<p>Example: </p>
+<pre class="prettyprint">
+var q = rhserver.query("SELECT * FROM hcal.hcal_parts q WHERE q.PART_ID = :part_id");
+var query_data = q.data({ type: "application/xml", ppage: 20,
+page: 5, params: {part_id: 5}});
+</pre>
+
+
+
+<h3>3.2.2 resthub.table.js API</h3>
+<p>This plugin draws a datatable to a specific div element by passing a query and various parameters to it. It was made by implementing datatables (http://datatables.net) and resthub.js plugins. To use it we just have to select (through jQuery selectors) a specific div and then call rhTable method with parameters. Parameter descriptions:</p>
+<ul>
+	<li>query - assign a query</li>
+	<li>params - query parameters</li>
+	<li>showColumns - how many columns you want to show on a table. Others will be hidden</li>
+	<li>tableOptions - various table options (more info on http://datatables.net ).</li>
+</ul>
+<p>Example: </p>
+<pre class="prettyprint">
+// Variable that stores datatable option - to add a link on ID column
+var tableOptions = {
+	"fnRowCallback": function(nRow, aData, iDisplayIndex) {
+		$('td:eq(0)', nRow).html('<a href=info.html?id=' + aData[0] + '>' + aData[0] + '</a>');
+		return nRow;
+	}
+};
+// assign a query to variable q
+var q = rhserver.query("SELECT * FROM hcal.hcal_parts q WHERE q.PART_ID = :part_id");
+
+// draw a table to a hcal_parts_table div 
+$('#hcal_parts_table).rhTable({query: q, params: {part_id: 5}, 
+showColumns: 5, tableOptions: tableOptions});
+</pre>
+
+
+
+<h3>3.3. Building a simple web page that uses RestHub</h3>
+<p>Now that we know how to use resthub plugins we can start coding our applications. Here is the code for a simple page that displays a datatable from querying hcal_part table:</p>
+<pre class="prettyprint">
+&lt!DOCTYPE html&gt
+&lthtml&gt
+    &lthead&gt
+       &lttitle&gtHCAL example&lt/title&gt
+       &ltstyle type="text/css" title="currentStyle"&gt
+           @import "css/themes/smoothness/jquery-ui-1.8.4.custom.css";
+       &lt/style&gt
+       &ltscript type="text/javascript" src="js/jquery.js"&gt&lt/script&gt
+       &ltscript type="text/javascript" src="js/jquery.dataTables.js"&gt&lt/script&gt
+       &ltscript type="text/javascript" src="js/resthub.js"&gt&lt/script&gt
+       &ltscript type="text/javascript" src="js/resthub.table.js"&gt&lt/script&gt
+       &ltscript type="text/javascript"&gt
+            $(document).ready(function() {
+                // specify a query to RestHub
+                var q = rhserver.query("SELECT * FROM hcal.hcal_parts c");
+  		// draw a table using this query
+                $('#hcal_parts_table).rhTable({query: q});
+            });
+        &lt/script&gt
+    &lt/head&gt
+    &ltbody&gt
+       &ltdiv&gt	
+           &lth1&gtHCAL parts table&lt/h1&gt
+           &ltdiv id="hcal_parts_table"&gt&lt/div&gt
+       &lt/div&gt
+    &lt/body&gt
+&lt/html&gt
+</pre>
+
+
+
+<h3>3.4. RestHub Java plugin</h3>
+<p>If we want to create a Java application that uses Resthub there are several classes that will help us. We have to put them in our classpath and import them:</p>
+<pre class="prettyprint">
+import net.resthub.client.RestHubServer;
+import net.resthub.model.DataResponse;
+import net.resthub.model.QueryManager;
+</pre>
+<p>The usage of these plugins are very similar to earlier described jQuery plugins. Example: </p>
+<pre class="prettyprint">
+//  this class stores a path to RestHub machine.
+RestHubServer rh = new RestHubServer("http://localhost:8080/api");
+
+//  assign sql to a query
+QueryManager qm = rh.newQueryManager("SELECT * FROM hcal.hcal_parts q 
+WHERE q.PART_ID = :part_id");
+qm.addParameter("part_id", 5);
+
+//  executes query and returns data
+DataResponse dr = qm.getData("application/xml");
+</pre>
+
+
+
+<h2>4. How to start the service</h2>
+
+<p>Resthub application is based on the Restlet framework so Resthub is a normal Restlet Application (org.restlet.Application) which can be easily integrated into your backend application stack. The easiest way to start the application is to start it from the main method, i.e:</p>
+<pre class="prettyprint">
+private static final int PORT = someport;
+
+public static void main(String[] args) throws Exception {
+
+	ConnectionFactory cf = new MyConnectionFactory();
+	TableFactory tf = new MyTableFactory();
+
+	ServerApp app = new ServerApp(cf, tf);
+	Component comp = new Component();
+	comp.getServers().add(Protocol.HTTP, PORT);
+	comp.getDefaultHost().attach(app);
+	comp.start();
+}
+</pre>
+
+<p>This starts the RestHub service on PORT. Of course, you have to implement your net.resthub.ConnectionFactory and net.resthub.TableFactory interfaces which provide access to Oracle databases (aka connections) and tables metadata. We provide net.resthub.factory.DbTableFactory which extracts metadata from the Oracle database and net.resthub.factory.XmlClasspathFactory which extracts metadata from XML files in the classpath.</p>
+
+  </section>
+
+        <aside id="sidebar">
+          <a href="index.html" class="button">
+	    <small>go</small>
+            Back
+          </a>
+  	  <a href="#rest" class="button">
+	    <small>Introduction to</small>
+            REST
+          </a>
+  	  <a href="#resthub" class="button">
+	    <small>Introduction to</small>
+            RestHub
+          </a>
+  	  <a href="#tutorial" class="button">
+            Tutorial
+          </a>
+	  <a href="https://raw.githubusercontent.com/valdasraps/resthub/master/doc/RestHUB_docs.pdf" target="_blank" class="button">
+	    <small>Download docs</small>
+            .pdf file
+          </a>
+        </aside>
+      </div>
+    </div>
+
+      <script src="code_highlighter/prettify.js"></script>
+    <script>prettyPrint();</script>
+  </body>
+</html>
