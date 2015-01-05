@@ -3,15 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.resthub</groupId>
-        <artifactId>resthub</artifactId>
+        <artifactId>clients</artifactId>
         <version>1.0</version>
     </parent>
-    <artifactId>clients</artifactId>
-    <packaging>pom</packaging>
-    <name>clients</name>
-    <modules>
-        <module>jquery</module>
-        <module>java</module>
-        <module>python</module>
-    </modules>
+    <artifactId>python</artifactId>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
