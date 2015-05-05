@@ -32,7 +32,7 @@ public class CSVConverter implements DataConverter {
     
     private static String escapeStr(String s) {
         String s1 = s.replaceAll("\"", "\"\"").replaceAll("\n", "").replaceAll("\t", "");
-        if (SYMBOLS_TO_WRAP.matcher(s1).matches()) {
+        if (SYMBOLS_TO_WRAP.matcher(s1).find()) {
             s1 = "\"".concat(s1).concat("\"");
         }
         return s1;

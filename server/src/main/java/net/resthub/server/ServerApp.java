@@ -2,6 +2,8 @@ package net.resthub.server;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import java.io.InputStream;
+import java.util.Properties;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.resthub.ConnectionFactory;
 import net.resthub.TableFactory;
@@ -42,7 +44,13 @@ public class ServerApp extends BaseApp {
         setDescription("Application that provides RESTful API to JDBC queries");
         setAuthor("Valdas Rapsevicius, valdas.rapsevicius@cern.ch");
         
-        final SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        final StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        
+        // To skip /quartz.properties loading!
+        try (InputStream in = SchedulerFactory.class.getResourceAsStream("/org/quartz/quartz.properties")) {
+            schedulerFactory.initialize(in); 
+        }
+        
         final Scheduler scheduler = schedulerFactory.getScheduler();
 
         this.applicationModules = new AbstractModule[] { 

@@ -32,7 +32,7 @@ public class Lob extends PagedData {
         badRequestIfNot(row != null && row >= 0, "Row attribute must be set to the valid row number");
         
         Integer col = getAttr(Integer.class, "col");
-        badRequestIfNot(col != null && col > 0 && col < query.getColumns().size(), "Column attribute must be set to the valid column number");
+        badRequestIfNot(col != null && col >= 0 && col < query.getColumns().size(), "Column attribute must be set to the valid column number");
         
         MdColumn column = query.getColumns().get(col);
         badRequestIfNot(column.getType() == MdType.BLOB || column.getType() == MdType.CLOB, "Column type must be BLOB or CLOB found %s", column.getType().name());

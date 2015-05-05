@@ -17,18 +17,21 @@ import org.reflections.scanners.ResourcesScanner;
 public class XmlClasspathFactory extends XmlTableFactory {
 
     private static final Pattern XML_FILE = Pattern.compile(".*\\.xml");
-    
+
     private final Reflections reflections;
     
     public XmlClasspathFactory(String tablesClassPath) {
         super(tablesClassPath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Will be looking for tables xml at %s", tablesClassPath));
+        }
         this.reflections = new Reflections(tablesClassPath, new ResourcesScanner());
     }
     
     @Override
     public List<MdTable> getTables() {
         List<MdTable> tables = new ArrayList<>();
-
+        
         for (String xmlFile: reflections.getStore().getResources(XML_FILE)) {
             try (InputStream is = getClass().getClassLoader().getResourceAsStream(xmlFile)) {
                 List<MdTable> t = getTables(is);
