@@ -1,24 +1,31 @@
 package net.resthub.server.factory;
 
 import com.google.inject.persist.Transactional;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import net.resthub.TableFactory;
 import net.resthub.factory.TableBuilder;
+
 import org.apache.commons.beanutils.BeanUtils;
+
 import net.resthub.server.table.TableId;
 import net.resthub.server.table.ServerTable;
 import net.resthub.model.MdTable;
+
 import org.json.JSONObject;
 
 @Log4j
@@ -35,10 +42,10 @@ public class MetadataFactory implements MetadataFactoryIf {
     private QueryFactory qf;
     
     @Inject
-    private TableFactory tf;
+    private TableFactory tf; // XmlResourceTableFactory
     
     @Inject
-    private TableBuilder tb;
+    private TableBuilder tb; // TableBuilder
     
     private Date lastUpdate = null;
 
@@ -49,12 +56,11 @@ public class MetadataFactory implements MetadataFactoryIf {
     @Override
     public synchronized void refresh() throws Exception {
         boolean doRefresh = forceRefresh || tf.isRefresh(lastUpdate);
-
         if (log.isDebugEnabled()) {
             log.debug(String.format("lastUpdate = %s, forceRefresh = %s, doRefresh = %s", 
                 lastUpdate, forceRefresh, doRefresh));
         }
-
+        
         // Update is needed!
         if (doRefresh) {
 
@@ -70,36 +76,36 @@ public class MetadataFactory implements MetadataFactoryIf {
                 
                 if (!blacklist.containsKey(id)) {
                     try {
-
                         // Check the table
                         tb.collectColumns(t.getConnectionName(), t.getSql(), t.getColumns());
                         tb.collectParameters(t.getSql(), t.getParameters());
-
+                        
                         ids.add(id);
-
+                        
                         if (!hasTable(id)) {
-
+                        	
                             if (log.isDebugEnabled()) log.debug(String.format("Adding table: %s", t));
-
+                            
                             tables.put(id, st);
-
+                            
                         } else {
+                        	
                             MdTable t1 = getTable(id).getTable();
+                            
                             if (t.getUpdateTime().after(t1.getUpdateTime())) {
-
+                            	
                                 if (log.isDebugEnabled()) log.debug(String.format("Updating table %s", t));
 
                                 tables.put(id, st);
                                 qf.removeQueries(id);
                             }
                         }
-
+                    	
                         if (lastUpdate == null || t.getUpdateTime().after(lastUpdate)) {
                             lastUpdate = t.getUpdateTime();
                         }
 
                     } catch (Exception ex) {
-
                         log.warn(String.format("Error while adding table %s.%s (will not be added!): %s", t.getNamespace(), t.getName(), ex.getMessage()));
                         this.blacklist.put(id, st);
 
@@ -125,6 +131,24 @@ public class MetadataFactory implements MetadataFactoryIf {
         
     }
     
+    public synchronized void refreshAllTables() throws Exception {
+    	clearBlacklist();
+    	clearTablelist();
+    	refresh();
+    }
+    
+    public synchronized void refreshNamespace(String namespace) throws Exception {
+        clearBlacklist(namespace);
+        clearTablelist();
+        refresh();
+    }
+    
+    public synchronized void refreshTable(String namespace, String name) throws Exception {
+    	removeBlacklistTable(new TableId(namespace, name));
+    	clearTablelist();
+    	refresh();
+    }
+    
     @Override
     public Collection<ServerTable> getTables() {
         return Collections.unmodifiableCollection(tables.values());
@@ -148,6 +172,11 @@ public class MetadataFactory implements MetadataFactoryIf {
         forceRefresh = true;
     }
     
+    public void clearTablelist() {
+    	this.tables.clear();
+    	forceRefresh = true;
+    }
+    
     public void clearBlacklist(String namespace) {
         for (TableId id: blacklist.keySet()) {
             if (id.getNamespace().equals(namespace)) {
@@ -155,6 +184,25 @@ public class MetadataFactory implements MetadataFactoryIf {
             }
         }
         forceRefresh = true;
+    }
+    
+    public void clearTablelist(String namespace) {
+        for (TableId id: tables.keySet()) {
+            if (id.getNamespace().equals(namespace)) {
+                tables.remove(id);
+            }
+        }
+        forceRefresh = true;
+    }
+    
+    public Set<ServerTable> getBlacklistByNs(String namespace) {
+    	Set<ServerTable> tables = new LinkedHashSet<ServerTable>();
+        for (TableId id: blacklist.keySet()) {
+            if (id.getNamespace().equals(namespace)) {
+                tables.add(getBlacklistTable(id));
+            }
+        }
+    	return tables;
     }
     
     @Override
