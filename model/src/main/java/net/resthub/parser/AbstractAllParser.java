@@ -13,18 +13,26 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.expression.ExtractExpression;
 import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.HexValue;
 import net.sf.jsqlparser.expression.IntervalExpression;
 import net.sf.jsqlparser.expression.JdbcNamedParameter;
 import net.sf.jsqlparser.expression.JdbcParameter;
+import net.sf.jsqlparser.expression.JsonExpression;
+import net.sf.jsqlparser.expression.KeepExpression;
 import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.MySQLGroupConcat;
 import net.sf.jsqlparser.expression.NullValue;
+import net.sf.jsqlparser.expression.NumericBind;
 import net.sf.jsqlparser.expression.OracleHierarchicalExpression;
 import net.sf.jsqlparser.expression.Parenthesis;
+import net.sf.jsqlparser.expression.RowConstructor;
 import net.sf.jsqlparser.expression.SignedExpression;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
+import net.sf.jsqlparser.expression.UserVariable;
 import net.sf.jsqlparser.expression.WhenClause;
+import net.sf.jsqlparser.expression.WithinGroupExpression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseAnd;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseOr;
@@ -52,6 +60,7 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.RegExpMatchOperator;
+import net.sf.jsqlparser.expression.operators.relational.RegExpMySQLOperator;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.AllColumns;
@@ -60,7 +69,7 @@ import net.sf.jsqlparser.statement.select.FromItemVisitor;
 import net.sf.jsqlparser.statement.select.LateralSubSelect;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.OrderByVisitor;
-import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitor;
@@ -324,8 +333,8 @@ public abstract class AbstractAllParser implements SelectVisitor, FromItemVisito
                 ob.accept(this);
             }
         }
-        if (sol.getPlainSelects() != null) {
-            for (PlainSelect ps: sol.getPlainSelects()) {
+        if (sol.getSelects() != null) {
+            for (SelectBody ps: sol.getSelects()) {
                 ps.accept(this);
             }
         }
@@ -376,9 +385,9 @@ public abstract class AbstractAllParser implements SelectVisitor, FromItemVisito
         if (aexpr.getOffset() != null) {
             aexpr.getOffset().accept(this);
         }
-        if (aexpr.getPartitionByColumns() != null) {
-            for (Column c: aexpr.getPartitionByColumns()) {
-                c.accept(this);
+        if (aexpr.getPartitionExpressionList() != null) {
+            for (Expression el: aexpr.getPartitionExpressionList().getExpressions()) {
+                el.accept(this);
             }
         }
         if (aexpr.getOrderByElements() != null) {
@@ -423,6 +432,54 @@ public abstract class AbstractAllParser implements SelectVisitor, FromItemVisito
     @Override
     public void visit(RegExpMatchOperator remo) {
         visitBinaryExpression(remo);
+    }
+    
+    @Override
+    public void visit(HexValue hv) { }
+
+    @Override
+    public void visit(WithinGroupExpression wge) {
+        wge.getExprList().accept(this);
+        for (OrderByElement obe: wge.getOrderByElements()) {
+            obe.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(JsonExpression je) {
+        je.getColumn().accept(this);
+    }
+
+    @Override
+    public void visit(RegExpMySQLOperator rmsql) { 
+        rmsql.getLeftExpression().accept(this);
+        rmsql.getRightExpression().accept(this);
+    }
+
+    @Override
+    public void visit(UserVariable uv) { }
+
+    @Override
+    public void visit(NumericBind nb) { }
+
+    @Override
+    public void visit(KeepExpression ke) {
+        for (OrderByElement obe: ke.getOrderByElements()) {
+            obe.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(MySQLGroupConcat msqlgc) {
+        msqlgc.getExpressionList().accept(this);
+        for (OrderByElement obe: msqlgc.getOrderByElements()) {
+            obe.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(RowConstructor rc) {
+        rc.getExprList().accept(this);
     }
     
 }

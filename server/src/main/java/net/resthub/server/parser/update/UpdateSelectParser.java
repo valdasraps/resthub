@@ -88,5 +88,5 @@ public class UpdateSelectParser extends AbstractAllParser {
     public void visit(JdbcNamedParameter p) {
         parameters.put(p.getName(), new QueryParameter(p.getName()));
     }
-    
+
 }

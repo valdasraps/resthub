@@ -85,5 +85,5 @@ public class UpdateParamParser extends AbstractAllParser {
         p.setName(qp.getSqlName());
         parameters.put(qp.getName(), qp);
     }
-    
+
 }

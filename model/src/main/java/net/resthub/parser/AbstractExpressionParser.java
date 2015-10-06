@@ -11,16 +11,24 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.expression.ExtractExpression;
 import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.HexValue;
 import net.sf.jsqlparser.expression.IntervalExpression;
 import net.sf.jsqlparser.expression.JdbcNamedParameter;
 import net.sf.jsqlparser.expression.JdbcParameter;
+import net.sf.jsqlparser.expression.JsonExpression;
+import net.sf.jsqlparser.expression.KeepExpression;
 import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.MySQLGroupConcat;
 import net.sf.jsqlparser.expression.NullValue;
+import net.sf.jsqlparser.expression.NumericBind;
 import net.sf.jsqlparser.expression.Parenthesis;
+import net.sf.jsqlparser.expression.RowConstructor;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
+import net.sf.jsqlparser.expression.UserVariable;
 import net.sf.jsqlparser.expression.WhenClause;
+import net.sf.jsqlparser.expression.WithinGroupExpression;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseAnd;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseOr;
@@ -47,6 +55,7 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThan;
 import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.RegExpMySQLOperator;
 import net.sf.jsqlparser.schema.Column;
 
 /**
@@ -288,4 +297,42 @@ public abstract class AbstractExpressionParser implements ExpressionVisitor, Ite
         be.getRightExpression().accept(this);
     }
 
+    @Override
+    public void visit(HexValue hv) { }
+
+    @Override
+    public void visit(WithinGroupExpression wge) {
+        wge.getExprList().accept(this);
+    }
+
+    @Override
+    public void visit(JsonExpression je) {
+        je.getColumn().accept(this);
+    }
+
+    @Override
+    public void visit(RegExpMySQLOperator rmsql) { 
+        rmsql.getLeftExpression().accept(this);
+        rmsql.getRightExpression().accept(this);
+    }
+
+    @Override
+    public void visit(UserVariable uv) { }
+
+    @Override
+    public void visit(NumericBind nb) { }
+
+    @Override
+    public void visit(KeepExpression ke) { }
+
+    @Override
+    public void visit(MySQLGroupConcat msqlgc) {
+        msqlgc.getExpressionList().accept(this);
+    }
+
+    @Override
+    public void visit(RowConstructor rc) {
+        rc.getExprList().accept(this);
+    }
+    
 }

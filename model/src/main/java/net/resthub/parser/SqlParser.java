@@ -93,5 +93,5 @@ public class SqlParser extends AbstractAllParser {
     public void visit(WithItem wi) {
         throw new QueryException("With expressions are not supported", wi);
     }
-    
+
 }
