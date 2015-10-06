@@ -2,8 +2,12 @@ package net.resthub.server;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+
 import java.io.InputStream;
 import java.util.Properties;
+
+import javax.print.attribute.standard.SheetCollate;
+
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.resthub.ConnectionFactory;
 import net.resthub.TableFactory;
@@ -22,6 +26,7 @@ import net.resthub.server.factory.MetadataFactory;
 import net.resthub.server.factory.MetadataFactoryIf;
 import net.resthub.server.factory.InjectorJobFactory;
 import net.resthub.server.factory.ResourceFactory;
+
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
@@ -101,9 +106,14 @@ public class ServerApp extends BaseApp {
 
         // GET
         router.attach("/", Tables.class);
+        router.attach("/table/{tableNs}/{tableName}", Table.class);
+        
+        // GET, PUT
         router.attach("/tables", Tables.class);
         router.attach("/tables/{tableNs}", Tables.class);
-        router.attach("/table/{tableNs}/{tableName}", Table.class);
+        
+        // PUT
+        router.attach("/tables/{tableNs}/{tableName}", Tables.class);
 
         // GET, DELETE
         router.attach("/blacklist", BlacklistTables.class);

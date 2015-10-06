@@ -1,17 +1,21 @@
 package net.resthub.server.app;
 
 import java.util.Collection;
+
 import net.resthub.server.exception.ServerErrorException;
 import net.resthub.server.table.TableId;
 import net.resthub.server.table.ServerTable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 public abstract class AbstractTables extends ServerBaseResource {
     
     protected String namespace = null;
+    protected String name = null;
 
     protected abstract Collection<ServerTable> getTables();
     
@@ -19,6 +23,7 @@ public abstract class AbstractTables extends ServerBaseResource {
     public void doInit() {
         super.doInit();
         this.namespace = super.getAttr(String.class, "tableNs");
+        this.name = super.getAttr(String.class, "tableName");
     }
     
     @Get
@@ -43,6 +48,17 @@ public abstract class AbstractTables extends ServerBaseResource {
             
         } catch (JSONException ex) {
             throw new ServerErrorException(ex);
+        }
+    }
+    
+    @Put
+    public void refresh() throws Exception {
+        if (namespace != null && name != null) { 
+        	mf.refreshTable(namespace, name);
+        } else if (namespace != null) {
+        	mf.refreshNamespace(namespace);        	
+        } else {
+            mf.refreshAllTables();
         }
     }
     
