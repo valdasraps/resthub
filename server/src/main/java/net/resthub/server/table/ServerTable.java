@@ -43,8 +43,8 @@ public class ServerTable {
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public URL getReference(Reference ref, Object... parts) {
-        List list = Lists.newArrayList("table", id.getNamespace(), id.getName());
+    public URL getReference(String prefix, Reference ref, Object... parts) {
+        List list = Lists.newArrayList(prefix, id.getNamespace(), id.getName());
         list.addAll(Arrays.asList(parts));
         return cfg.getReference(ref, null, list);
     }
@@ -66,7 +66,7 @@ public class ServerTable {
             ret.put("rowsLimit", table.getRowsLimit());
             ret.put("hitCount", table.getHitCount());
             if (isCacheable()) {
-                ret.put("cache", getReference(ref, "cache"));
+                ret.put("cache", getReference("table", ref, "cache"));
             }
         }
 

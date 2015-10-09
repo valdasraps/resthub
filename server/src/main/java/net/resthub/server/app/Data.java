@@ -34,8 +34,8 @@ import com.google.common.collect.Maps;
  */
 public class Data extends PagedData {
     
-    private final static Map<MediaType, DataConverter> CONVERTERS = Maps.newLinkedHashMap();
-    private final static List<MediaType> SUPPORTED_TYPES;
+    public final static Map<MediaType, DataConverter> CONVERTERS = Maps.newLinkedHashMap();
+    public final static List<MediaType> SUPPORTED_TYPES;
     static {
         CONVERTERS.put(MediaType.APPLICATION_JSON, new JSONConverter());
         CONVERTERS.put(MediaType.APPLICATION_XML, new XMLConverter());

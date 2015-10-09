@@ -24,7 +24,9 @@ import org.json.JSONObject;
 @Log4j
 @Singleton
 public class MetadataFactory implements MetadataFactoryIf {
-
+   
+    private final static String ERROR_METADATA_KEY = "Error";
+    
     private final Map<TableId, ServerTable> tables = new ConcurrentHashMap<>();
     private final Map<TableId, ServerTable> blacklist = new ConcurrentHashMap<>();
 
@@ -69,6 +71,9 @@ public class MetadataFactory implements MetadataFactoryIf {
                 ServerTable st = rf.create(t);
                 
                 if (!blacklist.containsKey(id)) {
+                    
+                    st.getTable().getMetadata().remove(ERROR_METADATA_KEY);
+                    
                     try {
 
                         // Check the table
@@ -102,7 +107,8 @@ public class MetadataFactory implements MetadataFactoryIf {
 
                         log.warn(String.format("Error while adding table %s.%s (will not be added!): %s", t.getNamespace(), t.getName(), ex.getMessage()));
                         this.blacklist.put(id, st);
-
+                        st.getTable().getMetadata().put(ERROR_METADATA_KEY, ex.getMessage());
+                        
                     }
                 }
             }

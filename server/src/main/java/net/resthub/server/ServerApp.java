@@ -3,7 +3,6 @@ package net.resthub.server;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.io.InputStream;
-import java.util.Properties;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.resthub.ConnectionFactory;
 import net.resthub.TableFactory;
@@ -16,6 +15,7 @@ import net.resthub.server.app.Count;
 import net.resthub.server.app.Data;
 import net.resthub.server.app.Lob;
 import net.resthub.server.app.Table;
+import net.resthub.server.app.TableData;
 import net.resthub.server.app.Tables;
 import net.resthub.server.factory.CacheFactory;
 import net.resthub.server.factory.MetadataFactory;
@@ -130,6 +130,10 @@ public class ServerApp extends BaseApp {
         router.attach("/query/{queryId}/page/{perPage}/{page}/data", Data.class);
         router.attach("/query/{queryId}/{row}/{col}/lob", Lob.class);
         router.attach("/query/{queryId}/page/{perPage}/{page}/{row}/{col}/lob", Lob.class);
+                
+        // GET
+        router.attach("/table/{tableNs}/{tableName}/data", TableData.class);
+        router.attach("/table/{tableNs}/{tableName}/page/{perPage}/{page}/data", TableData.class);
         
         // GET, DELETE
         router.attach("/query/{queryId}/cache", Cache.class);

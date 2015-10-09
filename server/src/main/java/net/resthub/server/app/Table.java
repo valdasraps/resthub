@@ -1,6 +1,7 @@
 package net.resthub.server.app;
 
 import net.resthub.server.exception.ServerErrorException;
+import net.resthub.server.table.ServerTable;
 import org.json.JSONException;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Get;
@@ -9,7 +10,7 @@ import org.restlet.resource.ResourceException;
 
 public class Table extends ServerBaseResource {
 
-    private net.resthub.server.table.ServerTable tmd;
+    private ServerTable tmd;
 
     @Override
     protected void doInit() throws ResourceException {

@@ -69,8 +69,6 @@ public abstract class MdEntity implements Serializable {
     @ForeignKey(name = "none") 
     @Column(name="MAP_VALUE")
     @Cascade(CascadeType.ALL)
-    
-    
     @XmlJavaTypeAdapter(MapAdapter.class)
     @XmlElement(name = "METADATA")
     private Map<String, String> metadata = new HashMap<>();

@@ -16,6 +16,7 @@ import org.reflections.scanners.ResourcesScanner;
 @Log4j
 public class XmlClasspathFactory extends XmlTableFactory {
 
+    private static final String TABLE_SOURCE_KEY = "Source";
     private static final Pattern XML_FILE = Pattern.compile(".*\\.xml");
 
     private final Reflections reflections;
@@ -34,11 +35,17 @@ public class XmlClasspathFactory extends XmlTableFactory {
         
         for (String xmlFile: reflections.getStore().getResources(XML_FILE)) {
             try (InputStream is = getClass().getClassLoader().getResourceAsStream(xmlFile)) {
-                List<MdTable> t = getTables(is);
+                List<MdTable> ts = getTables(is);
                 int numTables = 0;
-                if (t != null) {
-                    tables.addAll(t);
-                    numTables = t.size();
+                if (ts != null) {
+                    
+                    tables.addAll(ts);
+                    numTables = ts.size();
+                    
+                    for (MdTable t: ts) {
+                        t.getMetadata().put(TABLE_SOURCE_KEY, xmlFile);
+                    }
+                    
                 }
                 log.info(String.format("%d tables loaded from XML file: %s", numTables, xmlFile));
             } catch (Exception ex) {

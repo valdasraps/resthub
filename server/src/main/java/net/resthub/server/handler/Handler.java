@@ -27,11 +27,9 @@ import net.sf.ehcache.Element;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import org.hibernate.SQLQuery;
-import org.hibernate.type.BasicType;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.DateType;
 import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.restlet.data.Form;
