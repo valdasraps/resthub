@@ -51,6 +51,7 @@ Flexible:
 | URL | Method | Description |
 |-----|--------|-------------|
 | /tables | GET | List of tables in JSON |
+| /tables/{namespace} | GET | List of namespace tables in JSON |
 | /table/{namespace}/{name} | GET | Table description in JSON |
 | /queries | GET | List of queries in JSON |
 | /query | POST | Create query from provided entity SQL and return automatically generated {id} |
@@ -58,7 +59,15 @@ Flexible:
 | /query/{id} | DELETE | Remove query |
 | /query/{id}/data | GET | Get query data. Media type is by Accept header. For example: “Accept” : “application/xml” |
 | /query/{id}/page/{pp}/{p}/data | GET | Get query page data. Media type is by Accept header. Variables: pp - data rows per page, p - page number |
+| /table/{namespace}/{table}/data | GET | Get table data. Media type is by Accept header. For example: “Accept” : “application/xml”. Creates query and redirects to it. |
+| /table/{namespace}/{table}/page/{pp}/{p}/data | GET | Get query page data. Media type is by Accept header. Variables: pp - data rows per page, p - page number. Creates query and redirects to it. |
 | /query/{id}/cache | GET | Get query cache information |
 | /query/{id}/cache | DELETE | Clean all query cache |
 | /table/{namespace}/{name}/cache | GET | Get the list of query caches that use the table defined |
 | /query/{id}/data?{p}={v} | GET | Get query data with parameters. Variables: p - parameter name, v - parameter value. |
+| /blacklist | GET | List of blacklisted tables in JSON |
+| /blacklist/{namespace} | GET | List of blacklisted namespace tables in JSON |
+| /blacklist/{namespace}/{name} | GET | Blacklisted table description in JSON |
+| /blacklist | DELETE | Remove all tables from blacklist (refresh) |
+| /blacklist/{namespace} | DELETE | Remove all namespace tables from blacklist (refresh) |
+| /blacklist/{namespace}/{name} | DELETE | Remove table from blacklist (refresh) |
