@@ -71,3 +71,4 @@ Flexible:
 | /blacklist | DELETE | Remove all tables from blacklist (refresh) |
 | /blacklist/{namespace} | DELETE | Remove all namespace tables from blacklist (refresh) |
 | /blacklist/{namespace}/{name} | DELETE | Remove table from blacklist (refresh) |
+| /info | GET | General information about the service |
