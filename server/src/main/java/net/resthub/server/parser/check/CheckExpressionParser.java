@@ -3,6 +3,8 @@ package net.resthub.server.parser.check;
 import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -23,7 +25,6 @@ import net.resthub.exception.QueryException;
 import net.resthub.parser.AbstractExpressionParser;
 import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.expression.OracleHierarchicalExpression;
-import net.sf.jsqlparser.expression.SignedExpression;
 import net.sf.jsqlparser.expression.operators.relational.RegExpMatchOperator;
 
 /**
@@ -135,11 +136,6 @@ public class CheckExpressionParser extends AbstractExpressionParser {
     }
 
     @Override
-    public void visit(SignedExpression se) {
-        se.accept(this);
-    }
-
-    @Override
     public void visit(OracleHierarchicalExpression ohe) {
         if (ohe.getStartExpression() != null) {
             ohe.getStartExpression().accept(this);
@@ -162,4 +158,8 @@ public class CheckExpressionParser extends AbstractExpressionParser {
         }
     }
 
+    public static Collection<String> getAllowedFunctions() {
+        return Collections.unmodifiableCollection(ALLOWED_FUNCTIONS);
+    }
+    
 }

@@ -122,9 +122,9 @@
             <version>1.2.17</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>0.9.4</version>
+            <groupId>net.sf.jsqlparser</groupId>
+            <artifactId>jsqlparser-vr</artifactId>
+            <version>0.9.5-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

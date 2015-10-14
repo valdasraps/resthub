@@ -23,6 +23,7 @@ import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.NumericBind;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.RowConstructor;
+import net.sf.jsqlparser.expression.SignedExpression;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
@@ -57,6 +58,7 @@ import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.RegExpMySQLOperator;
 import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.expression.OracleHint;
 
 /**
  * SelectParser
@@ -333,6 +335,14 @@ public abstract class AbstractExpressionParser implements ExpressionVisitor, Ite
     @Override
     public void visit(RowConstructor rc) {
         rc.getExprList().accept(this);
+    }
+ 
+    @Override
+    public void visit(SignedExpression se) {
+    }
+    
+    @Override
+    public void visit(OracleHint hint) {
     }
     
 }

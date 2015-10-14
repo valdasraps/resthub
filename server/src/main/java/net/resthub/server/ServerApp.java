@@ -13,6 +13,7 @@ import net.resthub.server.app.Queries;
 import net.resthub.server.app.Query;
 import net.resthub.server.app.Count;
 import net.resthub.server.app.Data;
+import net.resthub.server.app.Info;
 import net.resthub.server.app.Lob;
 import net.resthub.server.app.Table;
 import net.resthub.server.app.TableData;
@@ -105,6 +106,9 @@ public class ServerApp extends BaseApp {
         router.attach("/tables/{tableNs}", Tables.class);
         router.attach("/table/{tableNs}/{tableName}", Table.class);
 
+        // GET
+        router.attach("/info", Info.class);
+        
         // GET, DELETE
         router.attach("/blacklist", BlacklistTables.class);
         router.attach("/blacklist/{tableNs}", BlacklistTables.class);

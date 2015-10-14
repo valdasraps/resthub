@@ -79,6 +79,7 @@ import net.sf.jsqlparser.statement.select.SubJoin;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.select.ValuesList;
 import net.sf.jsqlparser.statement.select.WithItem;
+import net.sf.jsqlparser.expression.OracleHint;
 
 /**
  * SelectParser
@@ -480,6 +481,10 @@ public abstract class AbstractAllParser implements SelectVisitor, FromItemVisito
     @Override
     public void visit(RowConstructor rc) {
         rc.getExprList().accept(this);
+    }
+    
+    public void visit(OracleHint hint) {
+        
     }
     
 }

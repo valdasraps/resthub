@@ -1,5 +1,6 @@
 package net.resthub.server.app;
 
+import java.net.URL;
 import net.resthub.model.MdTable;
 import net.resthub.server.table.ServerTable;
 import org.restlet.data.MediaType;
@@ -34,9 +35,10 @@ public class TableData extends ServerBaseResource {
         MdTable t = tmd.getTable();
         String sql = String.format(SQL, t.getNamespace(), t.getName());
         String id = qf.createQuery(sql);
-        String url = getOriginalRef().toString();
-        url = url.replaceFirst("/table/" + t.getNamespace() + "/" + t.getName() + "/", "/query/" + id + "/");
-        getResponse().redirectTemporary(url);
+        String path = getReference().getPath().replaceFirst("/table/" + t.getNamespace() + "/" + t.getName() + "/", 
+                                                            "/query/" + id + "/");
+        URL ref = cfg.getReference(getHostRef(), getReference().getQuery(), path);
+        getResponse().redirectTemporary(ref.toString());
     }
     
 }

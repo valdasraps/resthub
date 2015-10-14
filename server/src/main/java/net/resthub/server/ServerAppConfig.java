@@ -43,7 +43,11 @@ public class ServerAppConfig {
         String currPath = r.getPath();
         StringBuilder sb = new StringBuilder(currPath == null ? "" : currPath);
         for (Object pe : parts) {
-            sb.append("/").append(pe);
+            if (pe instanceof String && ((String) pe).startsWith("/")) {
+                sb.append(pe);
+            } else {
+                sb.append("/").append(pe);
+            }
         }
         r.setPath(sb.toString());
         
