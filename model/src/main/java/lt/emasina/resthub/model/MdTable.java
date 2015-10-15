@@ -41,18 +41,18 @@ public class MdTable extends MdEntity {
     
     @Basic
     @Column(name = "NAMESPACE", nullable = false, length = 30)
-    @XmlElement(name = "NAMESPACE")
+    @XmlElement(name = "NAMESPACE", required = true)
     private String namespace;
     
     @Basic
     @Column(name = "NAME", nullable = false, length = 30)
-    @XmlElement(name = "NAME")
+    @XmlElement(name = "NAME", required = true)
     private String name;
     
     @Basic
     @Lob
     @Column(name = "SQL_VALUE", nullable = false)
-    @XmlElement(name = "SQL")
+    @XmlElement(name = "SQL", required = true)
     private String sql;    
     
     @Basic
@@ -77,7 +77,7 @@ public class MdTable extends MdEntity {
 
     @Basic
     @Column(name = "CONNECTION_NAME", nullable = false, length = 30)
-    @XmlAttribute(name = "CONNECTION_NAME")
+    @XmlAttribute(name = "CONNECTION_NAME", required = true)
     private String connectionName;
     
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

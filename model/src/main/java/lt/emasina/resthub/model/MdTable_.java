@@ -9,16 +9,16 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(MdTable.class)
 public abstract class MdTable_ extends lt.emasina.resthub.model.MdEntity_ {
 
-	public static volatile SingularAttribute<MdTable, String> sql;
 	public static volatile SingularAttribute<MdTable, Integer> hitCount;
-	public static volatile SingularAttribute<MdTable, String> name;
 	public static volatile ListAttribute<MdTable, MdColumn> columns;
-	public static volatile SingularAttribute<MdTable, Integer> cacheTime;
+	public static volatile SingularAttribute<MdTable, String> namespace;
+	public static volatile SingularAttribute<MdTable, String> name;
+	public static volatile SingularAttribute<MdTable, String> connectionName;
 	public static volatile SingularAttribute<MdTable, Integer> rowsLimit;
 	public static volatile ListAttribute<MdTable, MdParameter> parameters;
-	public static volatile SingularAttribute<MdTable, String> connectionName;
 	public static volatile SingularAttribute<MdTable, Integer> timeout;
-	public static volatile SingularAttribute<MdTable, String> namespace;
+	public static volatile SingularAttribute<MdTable, String> sql;
+	public static volatile SingularAttribute<MdTable, Integer> cacheTime;
 
 }
 

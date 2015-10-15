@@ -34,18 +34,18 @@ public class MdParameter extends MdEntity {
 
     @Basic
     @Column(name = "NAME", nullable = false, length = 30)
-    @XmlElement(name = "NAME")
+    @XmlElement(name = "NAME", required = true)
     private String name;
     
     @Basic
     @Column(name = "TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
-    @XmlElement(name = "TYPE")
+    @XmlElement(name = "TYPE", required = true)
     private MdType type;
     
     @Basic
     @Column(name = "ARRAY_TYPE", nullable = false)
     @XmlElement(name = "ARRAY_TYPE")
-    private Boolean array;
+    private Boolean array = Boolean.FALSE;
     
 }

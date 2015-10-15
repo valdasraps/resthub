@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import lombok.EqualsAndHashCode;
@@ -34,12 +33,12 @@ public class MdColumn extends MdEntity {
     
     @Basic
     @Column(name = "NUM", nullable = false)
-    @XmlAttribute(name = "NUM")
+    @XmlTransient
     private Integer number;
 
     @Basic
     @Column(name = "NAME", nullable = false, length = 30)
-    @XmlElement(name = "NAME")
+    @XmlElement(name = "NAME", required = true)
     private String name;
     
     @Transient
@@ -49,7 +48,7 @@ public class MdColumn extends MdEntity {
     @Basic
     @Column(name = "TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
-    @XmlElement(name = "TYPE")
+    @XmlElement(name = "TYPE", required = true)
     private MdType type;
     
 }

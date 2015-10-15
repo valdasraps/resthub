@@ -10,12 +10,12 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(MdEntity.class)
 public abstract class MdEntity_ {
 
-	public static volatile SingularAttribute<MdEntity, Long> id;
-	public static volatile SingularAttribute<MdEntity, Date> createTime;
-	public static volatile SingularAttribute<MdEntity, String> createUser;
-	public static volatile SingularAttribute<MdEntity, Date> updateTime;
 	public static volatile MapAttribute<MdEntity, String, String> metadata;
+	public static volatile SingularAttribute<MdEntity, Date> createTime;
 	public static volatile SingularAttribute<MdEntity, String> updateUser;
+	public static volatile SingularAttribute<MdEntity, Date> updateTime;
+	public static volatile SingularAttribute<MdEntity, String> createUser;
+	public static volatile SingularAttribute<MdEntity, Long> id;
 
 }
 

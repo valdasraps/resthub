@@ -7,7 +7,6 @@ import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.ConnectionFactory;
-import org.apache.log4j.ConsoleAppender;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

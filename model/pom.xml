@@ -48,13 +48,33 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <id>my-execution</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>lt.emasina.resthub.util.GenerateSchema</mainClass>
+                    <arguments>
+                        <argument>${project.basedir}/src/main/resources/lt/emasina/resthub/factory/xml/schema.xsd</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
-     <dependency>
-         <groupId>org.reflections</groupId>
-         <artifactId>reflections</artifactId>
-         <version>0.9.9-RC1</version>
-     </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC1</version>
+        </dependency>
     </dependencies>
 </project>

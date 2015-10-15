@@ -8,10 +8,10 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(MdParameter.class)
 public abstract class MdParameter_ extends lt.emasina.resthub.model.MdEntity_ {
 
-	public static volatile SingularAttribute<MdParameter, String> name;
-	public static volatile SingularAttribute<MdParameter, MdTable> table;
-	public static volatile SingularAttribute<MdParameter, MdType> type;
 	public static volatile SingularAttribute<MdParameter, Boolean> array;
+	public static volatile SingularAttribute<MdParameter, String> name;
+	public static volatile SingularAttribute<MdParameter, MdType> type;
+	public static volatile SingularAttribute<MdParameter, MdTable> table;
 
 }
 
