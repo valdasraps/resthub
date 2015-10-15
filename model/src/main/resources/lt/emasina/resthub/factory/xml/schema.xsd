@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="TABLES" type="mdTables"/>
+
+  <xs:element name="mdTable" type="mdTable"/>
+
+  <xs:complexType name="mdTables">
+    <xs:sequence>
+      <xs:element name="TABLE" type="mdTable" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="mdTable">
+    <xs:complexContent>
+      <xs:extension base="mdEntity">
+        <xs:sequence>
+          <xs:element name="NAMESPACE" type="xs:string"/>
+          <xs:element name="NAME" type="xs:string"/>
+          <xs:element name="SQL" type="xs:string"/>
+          <xs:element name="COLUMNS" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="COLUMN" type="mdColumn" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="PARAMETERS" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="PARAMETER" type="mdParameter" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="CACHE_TIME" type="xs:int"/>
+        <xs:attribute name="HIT_COUNT" type="xs:int"/>
+        <xs:attribute name="TIME_OUT" type="xs:int"/>
+        <xs:attribute name="ROWS_LIMIT" type="xs:int"/>
+        <xs:attribute name="CONNECTION_NAME" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="mdEntity" abstract="true">
+    <xs:sequence>
+      <xs:element name="METADATA" type="mdMapType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="mdColumn">
+    <xs:complexContent>
+      <xs:extension base="mdEntity">
+        <xs:sequence>
+          <xs:element name="NAME" type="xs:string"/>
+          <xs:element name="TYPE" type="mdType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="mdMapType">
+    <xs:sequence>
+      <xs:element name="ENTRY" type="mdMapEntryType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="mdMapEntryType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="KEY" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="mdParameter">
+    <xs:complexContent>
+      <xs:extension base="mdEntity">
+        <xs:sequence>
+          <xs:element name="NAME" type="xs:string"/>
+          <xs:element name="TYPE" type="mdType"/>
+          <xs:element name="ARRAY_TYPE" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="mdType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="STRING"/>
+      <xs:enumeration value="NUMBER"/>
+      <xs:enumeration value="DATE"/>
+      <xs:enumeration value="CLOB"/>
+      <xs:enumeration value="BLOB"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

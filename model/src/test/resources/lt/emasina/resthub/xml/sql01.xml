@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<TABLES>
+    <TABLE CACHE_TIME="0" HIT_COUNT="1" TIME_OUT="30" ROWS_LIMIT="1000" CONNECTION_NAME="amet">
+        <METADATA>
+            <ENTRY KEY="Lorem">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="ipsum">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="dolor">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="sit">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="amet">Lorem ipsum dolor sit amet</ENTRY>
+        </METADATA>
+        <NAMESPACE>Lorem</NAMESPACE>
+        <NAME>ipsum</NAME>
+        <SQL><![CDATA[
+            
+SELECT 
+  * 
+  FROM (
+    SELECT
+      *
+    FROM 
+      SCHEMA.NAME
+    )
+WHERE
+  REGEXP_LIKE(DATA, '[^0-9]' || :param || '[^0-9]')
+ORDER BY
+  DATA_COL ASC
+            
+]]></SQL>
+        <PARAMETERS>
+            <PARAMETER>
+                <NAME>param</NAME>
+                <TYPE>NUMBER</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+    <TABLE CACHE_TIME="0" HIT_COUNT="1" TIME_OUT="30" ROWS_LIMIT="1000" CONNECTION_NAME="hcal">
+        <METADATA>
+            <ENTRY KEY="Lorem">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="ipsum">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="dolor">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="sit">Lorem ipsum dolor sit amet</ENTRY>
+            <ENTRY KEY="amet">Lorem ipsum dolor sit amet</ENTRY>
+        </METADATA>
+        <NAMESPACE>Lorem</NAMESPACE>
+        <NAME>dolor</NAME>
+        <SQL>
+            Cras ullamcorper, augue in venenatis rhoncus, turpis leo posuere nibh, a condimentum arcu est eu turpis. 
+            Nullam sagittis purus eu sollicitudin molestie. Nam mollis purus augue, et lobortis mauris suscipit in. 
+            Duis ac ultricies lacus. Nam euismod dolor sem, eu tincidunt lacus euismod id. Nunc ut scelerisque justo, 
+            eget consectetur tortor. Donec porta accumsan magna vel sodales. Proin eu nisl tempus, bibendum augue vel, 
+            pharetra urna. Donec non arcu sed augue condimentum placerat vitae sit amet nisl. Etiam lobortis, orci vitae 
+            pharetra gravida, elit metus imperdiet nulla, in dignissim sem ligula vel lectus. Pellentesque ultrices, orci 
+            non tincidunt eleifend, quam tortor ullamcorper tortor, eu laoreet nisl justo a leo. Suspendisse non finibus 
+            urna. Maecenas nec arcu vitae neque ullamcorper malesuada. Praesent sodales ligula non leo volutpat rutrum. 
+        </SQL>
+        <PARAMETERS>
+            <PARAMETER>
+                <NAME>p1</NAME>
+                <TYPE>NUMBER</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+            <PARAMETER>
+                <NAME>p2</NAME>
+                <TYPE>NUMBER</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+</TABLES>
+

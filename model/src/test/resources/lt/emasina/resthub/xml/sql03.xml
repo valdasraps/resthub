@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TABLES>
+    <TABLE CACHE_TIME="120" HIT_COUNT="1" TIME_OUT="30" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA>
+            <ENTRY KEY="description">Complete example</ENTRY>
+        </METADATA>
+        <NAMESPACE>complete</NAMESPACE>
+        <NAME>example</NAME>
+        <SQL>This should be a complete example</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA>
+                    <ENTRY KEY="description">metadata</ENTRY>
+                </METADATA>
+                <NAME>c1</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA>
+                    <ENTRY KEY="description">metadata</ENTRY>
+                </METADATA>
+                <NAME>c2</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+        </COLUMNS>
+        <PARAMETERS>
+            <PARAMETER>
+                <METADATA>
+                    <ENTRY KEY="description">metadata</ENTRY>
+                </METADATA>
+                <NAME>p1</NAME>
+                <TYPE>NUMBER</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+            <PARAMETER>
+                <METADATA>
+                    <ENTRY KEY="description">metadata</ENTRY>
+                </METADATA>
+                <NAME>p2</NAME>
+                <TYPE>STRING</TYPE>
+                <ARRAY_TYPE>true</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+    
+</TABLES>

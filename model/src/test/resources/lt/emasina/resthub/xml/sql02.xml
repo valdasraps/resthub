@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TABLES>
+    <TABLE CACHE_TIME="120" HIT_COUNT="1" TIME_OUT="30" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA>
+            <ENTRY KEY="description">This is wrong XML</ENTRY>
+        </METADATA>
+        <NAMESPACE>wrong</NAMESPACE>
+        <NAME>xml</NAME>
+        <SQL_WRONG><![CDATA[
+            
+            This file should not be loaded as it is not correct!
+            
+        ]]></SQL_WRONG>
+    </TABLE>
+    
+</TABLES>
