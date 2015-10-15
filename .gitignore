@@ -33,5 +33,5 @@
 /test/.classpath
 /test/.project
 /test/.settings/
-
+/clients/python/target/
 /exec/target/
