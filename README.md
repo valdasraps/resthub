@@ -1,6 +1,9 @@
 RESTful API to Oracle databases
 =======
 
+[![Coverage Status](https://coveralls.io/repos/valdasraps/resthub/badge.svg?branch=master&service=github)](https://coveralls.io/github/valdasraps/resthub?branch=master)
+[![Build Status](https://travis-ci.org/valdasraps/resthub.svg?branch=master)](https://travis-ci.org/valdasraps/resthub)
+
 <a href="http://valdasraps.github.io/resthub" target="_blank">RestHub website</a><br>
 <a href="https://raw.githubusercontent.com/valdasraps/resthub/master/doc/RestHUB_docs.pdf" target="_blank">RestHub documentation</a>
 ![Architecture](https://raw.githubusercontent.com/valdasraps/resthub/master/doc/resthub.jpg "Architecture")
