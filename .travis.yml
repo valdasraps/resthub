@@ -1,7 +1,10 @@
+sudo: required
 language: java
 jdk:
   - openjdk7
-  - oraclejdk7
-  
+  - oraclejdke
+before_install:
+  - .travis/oracle/download.sh
+  - .travis/oracle/install.sh  
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
