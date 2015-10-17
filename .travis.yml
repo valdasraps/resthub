@@ -2,7 +2,8 @@ sudo: required
 language: java
 jdk:
   - openjdk7
-  - oraclejdke
+  - oraclejdk7
+
 before_install:
   - .travis/oracle/download.sh
   - .travis/oracle/install.sh  
