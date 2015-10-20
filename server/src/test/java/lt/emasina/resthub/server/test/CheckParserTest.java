@@ -1,8 +1,12 @@
 package lt.emasina.resthub.server.test;
 
+import lt.emasina.resthub.server.test.util.AbstractParser;
 import lt.emasina.resthub.server.parser.check.SubSelectDef;
 import lt.emasina.resthub.server.table.ServerTable;
 import lt.emasina.resthub.server.table.TableId;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import org.quartz.SchedulerException;
 
@@ -10,10 +14,12 @@ import org.quartz.SchedulerException;
  * SelectParserTestSuite
  * @author valdo
  */
-public class CheckParserTest extends AbstractParserTest {
+@RunWith(JUnit4.class)
+public class CheckParserTest extends AbstractParser {
     
     public CheckParserTest() throws SchedulerException {}    
     
+    @Test
     public void testSimpleSQL() {
         SubSelectDef ssd = getSubSelectDef("select * from test.customer a");
         assertEquals(1, ssd.getTables().size());
@@ -22,6 +28,7 @@ public class CheckParserTest extends AbstractParserTest {
         assertEquals(0, ssd.getParameterNames().size());
     }
 
+    @Test
     public void testLateralSubSelectSQL() {
         SubSelectDef ssd = getSubSelectDef("select * from (select * from test.customer a) b");
         assertEquals(ssd.getTables().size(), 1);
@@ -32,6 +39,7 @@ public class CheckParserTest extends AbstractParserTest {
         assertEquals(0, ssd.getParameterNames().size());
     }
     
+    @Test
     public void testExpressionSubSelectSQL() {
         SubSelectDef ssd = getSubSelectDef("select * from test.customer a where a.id = (select b.id from test.customer b where b.id = 10)");
         assertEquals(ssd.getTables().size(), 1);
@@ -44,6 +52,7 @@ public class CheckParserTest extends AbstractParserTest {
         assertEquals(0, ssd.getParameterNames().size());
     }
     
+    @Test
     public void testParametersSubSelectSQL() {
         SubSelectDef ssd = getSubSelectDef("select * from test.customer a where a.id = (select b.id from test.customer b where b.id = :id) and a.name = :name");
         assertEquals(ssd.getTables().size(), 1);

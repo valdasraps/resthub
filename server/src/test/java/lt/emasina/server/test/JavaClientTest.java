@@ -18,7 +18,7 @@ import org.junit.runners.JUnit4;
 
 @Log4j
 @RunWith(JUnit4.class)
-public class JavaClientWorker extends ServerSetup {
+public class JavaClientTest extends ServerSetup {
     
     private final static String HEADER_FILE = "client_header";
     private final static String DATA_FILE = "client_data";

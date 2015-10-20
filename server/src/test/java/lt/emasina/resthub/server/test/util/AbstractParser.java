@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test;
+package lt.emasina.resthub.server.test.util;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -12,8 +12,6 @@ import lt.emasina.resthub.server.query.QueryId;
 import lt.emasina.resthub.server.parser.check.CheckSelectParser;
 import lt.emasina.resthub.server.parser.check.SubSelectDef;
 import lt.emasina.resthub.server.parser.update.UpdateSelectParser;
-import lt.emasina.resthub.server.test.factory.ConnectionFactoryTest;
-import lt.emasina.resthub.server.test.factory.MetadataFactoryTest;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.statement.select.Select;
 import org.quartz.Scheduler;
@@ -25,13 +23,13 @@ import org.quartz.impl.StdSchedulerFactory;
  * SelectParserTestSuite
  * @author valdo
  */
-public abstract class AbstractParserTest extends TestCase {
+public abstract class AbstractParser extends TestCase {
     
     protected final Injector injector;
     protected final ResourceFactory rf;
     protected final MetadataFactoryIf mf;
 
-    public AbstractParserTest() throws SchedulerException {
+    public AbstractParser() throws SchedulerException {
         
         final SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         final Scheduler scheduler = schedulerFactory.getScheduler();

@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test.factory;
+package lt.emasina.resthub.server.test.util;
 
 import java.util.Collection;
 import java.util.Map;

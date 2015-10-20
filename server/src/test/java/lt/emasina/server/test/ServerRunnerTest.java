@@ -24,8 +24,8 @@ import org.restlet.representation.Representation;
 
 @Log4j
 @RunWith(JUnit4.class)
-public class ServerRunnerWorker extends ServerSetup {
-
+public class ServerRunnerTest extends ServerSetup {
+    
     @Test
     public void doTest() throws IOException, URISyntaxException, org.json.JSONException {
         

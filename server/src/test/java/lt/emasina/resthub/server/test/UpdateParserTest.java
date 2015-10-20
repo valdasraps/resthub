@@ -1,6 +1,10 @@
 package lt.emasina.resthub.server.test;
 
+import lt.emasina.resthub.server.test.util.AbstractParser;
 import net.sf.jsqlparser.statement.select.Select;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import org.quartz.SchedulerException;
 
@@ -8,16 +12,19 @@ import org.quartz.SchedulerException;
  * SelectParserTestSuite
  * @author valdo
  */
-public class UpdateParserTest extends AbstractParserTest {
+@RunWith(JUnit4.class)
+public class UpdateParserTest extends AbstractParser {
     
     public UpdateParserTest() throws SchedulerException {}
     
+    @Test
     public void testSimpleSql() {
         Select select = getUpdateSelect("select * from test.customer a");
         assertNull(select.getWithItemsList());
         assertEquals("SELECT * FROM (SELECT * FROM customer) a", select.toString());
     }
     
+    @Test
     public void testSimpleParameterSql() {
         Select s1 = getUpdateSelect("select * from test.customer a where a.id = :id");
         assertEquals("SELECT * FROM (SELECT * FROM customer) a WHERE a.id = :id", s1.toString());
@@ -26,6 +33,7 @@ public class UpdateParserTest extends AbstractParserTest {
         assertEquals("SELECT * FROM (SELECT * FROM customer WHERE id = :a_id) a WHERE a.id = :id", s2.toString());
     }
     
+    @Test
     public void testSimpleLateralSubselectSql() {
         Select s1 = getUpdateSelect("select * from (select * from test.customer a) b");
         assertEquals("SELECT * FROM (SELECT * FROM (SELECT * FROM customer) a) b", s1.toString());
@@ -34,6 +42,7 @@ public class UpdateParserTest extends AbstractParserTest {
         assertEquals("SELECT * FROM (SELECT * FROM (SELECT * FROM (SELECT * FROM customer) a) b JOIN (SELECT * FROM customer) c) d", s2.toString());
     }
     
+    @Test
     public void testExpressionSubselectSql() {
         Select s1 = getUpdateSelect("select * from (select * from test.customer a) b where b.id in (select c.id from test.customer c)");
         assertEquals("SELECT * FROM (SELECT * FROM (SELECT * FROM customer) a) b WHERE b.id IN (SELECT c.id FROM (SELECT * FROM customer) c)", s1.toString());
@@ -45,10 +54,12 @@ public class UpdateParserTest extends AbstractParserTest {
         assertEquals("SELECT * FROM (SELECT * FROM (SELECT * FROM customer WHERE id = :a_id) a WHERE a.id = :id) b WHERE b.id IN (SELECT c.id FROM (SELECT * FROM customer WHERE id = :c_id) c WHERE c.id = :id) AND b.id = :id", s3.toString());
     }
     
+    @Test
     public void testParametersSql() {
         getUpdateSelect("select *, :id i, :id1 i1 from test.customer_with_param a join (select * from test.customer_with_param b where b.id = :id) c on a.id = c.id where a.id = :id2");
     }
     
+    @Test
     public void testArrayParamSql() {
         getUpdateSelect("select b.* from test.customer_with_array_param b");
     }

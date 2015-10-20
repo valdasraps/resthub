@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test.factory;
+package lt.emasina.resthub.server.test.util;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -13,9 +13,9 @@ import oracle.jdbc.OracleConnection;
  */
 public class ConnectionFactoryTest implements ConnectionFactory {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
+    @Override
     public Collection<String> getConnectionNames() {
         return Collections.singleton("test");
     }

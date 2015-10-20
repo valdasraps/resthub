@@ -19,7 +19,6 @@ import org.json.JSONTokener;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.engine.header.Header;
@@ -31,7 +30,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author valdo
  */
 @Log4j
-@Ignore
 public class ServerSetup {
 
     public static final String HOST = "http://localhost:8112";
