@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ import org.restlet.representation.Representation;
 @Log4j
 public class ServerRunnerWorker implements Runnable {
 
-    private static final String[] EXCLUDE_HEADERS = {"Date", "Expires", "Accept-Ranges", "Allow"};
+    private static final String[] EXCLUDE_HEADERS = { "Date", "Expires", "Accept-Ranges", "Allow" };
 
     @Override
     public void run() {
@@ -42,18 +43,16 @@ public class ServerRunnerWorker implements Runnable {
         
         // Check Requests
        
-//        check(new TestRequest.Builder("r1","/queries").build());
-//        check(new TestRequest.Builder("r2","/tables").build());
-//        check(new TestRequest.Builder("r3","/table/store/customer").build());
-//        check(new TestRequest.Builder("r4","/table/store/sales").build());
-//        check(new TestRequest.Builder("r5","/table/store/products").build());
+        check(new TestRequest.Builder("r1","/queries").build());
+        check(new TestRequest.Builder("r2","/tables").build());
+        check(new TestRequest.Builder("r3","/table/store/customer").build());
+        check(new TestRequest.Builder("r4","/table/store/sales").build());
+        check(new TestRequest.Builder("r5","/table/store/products").build());
        
         // Check Queries
-        // (prefix, query, params, headers)
-//        check(new TestQuery.Builder("q1", "SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;", null, null).build());
+        check(new TestQuery.Builder("q1", "SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;", null, null).build());
         check(new TestQuery.Builder("q2", "SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;", "?p1=1000", null).build());
-//        check(new TestQuery.Builder("q3", "SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a", "?brand=Bravo", 
-//                                    new HashMap<String, String>() {{ put("Range", "rows=0-9"); }} ).build());
+        check(new TestQuery.Builder("q3", "SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a", "?brand=Bravo", new HashMap<String, String>() {{ put("Range", "rows=0-9"); }} ).build());
     }
 
     private void check(TestRequest query) throws IOException, URISyntaxException, org.json.JSONException {
@@ -66,7 +65,7 @@ public class ServerRunnerWorker implements Runnable {
         Series headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
         
         // Checking headers file
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("test_results/" + headerFile);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/lt/emasina/server/results/" + headerFile);
         
         if (inputStream == null) {
             headersToFile(headers, headerFile);
@@ -79,7 +78,7 @@ public class ServerRunnerWorker implements Runnable {
         Properties prop = new Properties();
         String dataFile = query.getPrefix() + "_data";
         // Checking data file
-        inputStream = getClass().getClassLoader().getResourceAsStream("test_results/" + dataFile);
+        inputStream = getClass().getClassLoader().getResourceAsStream("/lt/emasina/server/results/" + dataFile);
 
         // Check query count 
         client = query.count();
@@ -180,7 +179,7 @@ public class ServerRunnerWorker implements Runnable {
             prop.setProperty(name, value);
         }
         
-        File file = new File("src/test/resources/test_results/" + fileName);
+        File file = new File("src/test/resources/lt/emasina/server/results/" + fileName);
         prop.store(new FileOutputStream(file), "Query headers");
     }
 
@@ -190,7 +189,7 @@ public class ServerRunnerWorker implements Runnable {
 
         prop.setProperty(dataType, data);
 
-        File file = new File("src/test/resources/test_results/" + fileName);
+        File file = new File("src/test/resources/lt/emasina/server/results/" + fileName);
         prop.store(new FileOutputStream(file), "Query data");
     }
 

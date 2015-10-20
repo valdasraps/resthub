@@ -37,13 +37,10 @@ public class XmlResourceTableFactory extends XmlTableFactory {
     }
 
     @Override
-    public List<MdTable> getTables() {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(tablesFile)) {
+    public List<MdTable> getTables() throws Exception {
+        try (InputStream is = XmlResourceTableFactory.class.getResourceAsStream(tablesFile)) {
             return getTables(is);
-        } catch (Exception ex) {
-            log.fatal("Error while loading XML file", ex);
         }
-        return null;
     }
 
     @Override

@@ -23,12 +23,15 @@ import org.restlet.data.Protocol;
 public class TestSuite {
     
     public static final String HOST = "http://localhost:8112";
-    private static final String XML_RESOURCE = "lt/emasina/server/test/tables.xml";
+    private static final String XML_RESOURCE = "/lt/emasina/server/xml/tables.xml";
     
     @Test
     public void runTests() throws Exception {
         
-        ServerApp app = new ServerApp(new TestConnectionFactory(), new XmlResourceTableFactory(XML_RESOURCE));
+        String url = System.getenv("TEST_DATABASE_URL");
+        if (url == null) url = "192.168.54.1:1521/cerndev";
+        
+        ServerApp app = new ServerApp(new TestConnectionFactory(url), new XmlResourceTableFactory(XML_RESOURCE));
         Component comp = new Component();
         comp.getServers().add(Protocol.HTTP, 8112);
         comp.getDefaultHost().attach(app);
@@ -60,7 +63,7 @@ public class TestSuite {
 //            });
             
             exec.shutdown();
-            exec.awaitTermination(1, TimeUnit.DAYS);
+            exec.awaitTermination(5, TimeUnit.MINUTES);
         
         } finally {
             comp.stop();

@@ -14,17 +14,17 @@
             where
             pro_id = :id</SQL>
         <COLUMNS>
-            <COLUMN NUM="1">
+            <COLUMN>
                 <METADATA/>
                 <NAME>ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="2">
+            <COLUMN>
                 <METADATA/>
                 <NAME>BRAND</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="3">
+            <COLUMN>
                 <METADATA/>
                 <NAME>NAME</NAME>
                 <TYPE>STRING</TYPE>
@@ -57,24 +57,24 @@
             CUS_ID = :id                               
             or :id is null</SQL>
         <COLUMNS>
-            <COLUMN NUM="1">
+            <COLUMN>
                 <METADATA/>
                 <NAME>ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="2">
+            <COLUMN>
                 <METADATA>
                     <ENTRY KEY="description">Customer full name</ENTRY>
                 </METADATA>
                 <NAME>NAME</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="3">
+            <COLUMN>
                 <METADATA/>
                 <NAME>CITY</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="4">
+            <COLUMN>
                 <METADATA/>
                 <NAME>COUNTRY</NAME>
                 <TYPE>STRING</TYPE>
@@ -103,17 +103,17 @@
             from
             product</SQL>
         <COLUMNS>
-            <COLUMN NUM="1">
+            <COLUMN>
                 <METADATA/>
                 <NAME>ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="2">
+            <COLUMN>
                 <METADATA/>
                 <NAME>BRAND</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="3">
+            <COLUMN>
                 <METADATA/>
                 <NAME>NAME</NAME>
                 <TYPE>STRING</TYPE>
@@ -130,35 +130,35 @@
             from
             sales</SQL>
         <COLUMNS>
-            <COLUMN NUM="1">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_PRO_ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="2">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_TIME</NAME>
-                <TYPE>TIMESTAMP</TYPE>
+                <TYPE>DATE</TYPE>
             </COLUMN>
-            <COLUMN NUM="3">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_CUS_ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="4">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_COST</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="5">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_UNITS</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="6">
+            <COLUMN>
                 <METADATA/>
                 <NAME>SAL_ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
         </COLUMNS>
     </TABLE>
@@ -175,22 +175,22 @@
             from
             customer</SQL>
         <COLUMNS>
-            <COLUMN NUM="1">
+            <COLUMN>
                 <METADATA/>
                 <NAME>ID</NAME>
-                <TYPE>DECIMAL</TYPE>
+                <TYPE>NUMBER</TYPE>
             </COLUMN>
-            <COLUMN NUM="2">
+            <COLUMN>
                 <METADATA/>
                 <NAME>NAME</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="3">
+            <COLUMN>
                 <METADATA/>
                 <NAME>CITY</NAME>
                 <TYPE>STRING</TYPE>
             </COLUMN>
-            <COLUMN NUM="4">
+            <COLUMN>
                 <METADATA/>
                 <NAME>COUNTRY</NAME>
                 <TYPE>STRING</TYPE>

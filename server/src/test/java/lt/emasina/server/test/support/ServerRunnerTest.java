@@ -7,18 +7,13 @@ import lt.emasina.server.test.ServerRunnerWorker;
 
 public class ServerRunnerTest {
     
-    private static final int NTHREDS = 10;
+    private static final int NTHREDS = 5;
     
     public void testQueries() throws InterruptedException {
     
         ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
-        for (int i = 0; i < 150; i++) {
+        for (int i = 0; i < 10; i++) {
           executor.execute(new ServerRunnerWorker());
-          
-          if (i % 6 == 0) {
-              Thread.sleep(170);
-          }
-          //Thread.sleep(30000);
         }
         
         executor.shutdown();
