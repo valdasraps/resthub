@@ -2,32 +2,32 @@ package lt.emasina.server.test;
 
 import lt.emasina.server.test.support.TestRequest;
 import lt.emasina.server.test.support.TestQuery;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.header.Header;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
 import lombok.extern.log4j.Log4j;
 import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.restlet.representation.Representation;
 
 @Log4j
-public class ServerRunnerWorker {
+@RunWith(JUnit4.class)
+public class ServerRunnerWorker extends ServerSetup {
 
-    private static final String[] EXCLUDE_HEADERS = { "Date", "Expires", "Accept-Ranges", "Allow" };
-
-    public void setupQueries() throws IOException, URISyntaxException, org.json.JSONException {
+    @Test
+    public void doTest() throws IOException, URISyntaxException, org.json.JSONException {
         
         // Check Requests
        
@@ -46,140 +46,95 @@ public class ServerRunnerWorker {
 
     private void check(TestRequest query) throws IOException, URISyntaxException, org.json.JSONException {
                 
-        log.debug("Cheking query headers");
-        
         ClientResource client = query.options();
 
         String headerFile = query.getPrefix() + "_headers";
         Series headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
         
-        // Checking headers file
-        InputStream inputStream = ServerRunnerWorker.class.getResourceAsStream("/lt/emasina/server/results/" + headerFile);
+        // Checking headers
         
+        InputStream inputStream = getResultStream(headerFile);
         if (inputStream == null) {
             headersToFile(headers, headerFile);
         } else {
             compareHeaders(headers, inputStream);
         }
              
+        // Checking data
+        
         Properties prop = new Properties();
         String dataFile = query.getPrefix() + "_data";
-        
-        // Checking data file
-        log.info("Loading query data from file: " + dataFile);
-        inputStream = ServerRunnerWorker.class.getResourceAsStream("/lt/emasina/server/results/" + dataFile);
+        inputStream = getResultStream(dataFile);
+        boolean loaded = inputStream != null;
+        if (loaded) {
+            prop.load(inputStream);
+        }
 
         // Check query count 
         client = query.count();
-        if (client != null) 
-        {
+        if (client != null) {
             String count = client.getResponseEntity().getText();
-            if (inputStream == null) {
-                dataToFile(count, dataFile, "count", prop);
+            if (!loaded) {
+                prop.setProperty("count", count);
             } else {
-                prop.load(inputStream);
-                String exp_value = prop.getProperty("count");
-                assertEquals(exp_value, count);
+                assertEquals(prop.getProperty("count"), count);
             }
         }
                 
         // Delete query cache
-        // client = query.deleteCache(); 
+        
+        query.deleteCache(); 
         
         String[] contentTypes = headers.getValues("Content-Type").split(",");
         ArrayList<String> mimeTypes = new ArrayList<>();   
         
         // Check each contentType
-        
-        for (String contentType : contentTypes) {        
+        for (String contentType : contentTypes) {
             
             long t = System.currentTimeMillis();
             client = query.get(MediaType.valueOf(contentType));
-            log.debug(String.format("GET took: %d ms @%d", System.currentTimeMillis() - t, System.currentTimeMillis()));
+            log.info(String.format("GET took: %d ms @%d", System.currentTimeMillis() - t, System.currentTimeMillis()));
             
             Representation get = client.getResponseEntity();
             String data = get.getText();
             get.exhaust();
 
-            if (inputStream == null) {
-                dataToFile(data, dataFile, contentType, prop);
+            if (!loaded) {
+                prop.setProperty(contentType, data);
             } else {
-
-                log.info("Comparing " + contentType + " data");
-
-                prop.load(inputStream);
-                String expected_value = prop.getProperty(contentType);
-                assertEquals(expected_value, data);
+                
+                log.info(String.format("Comparing data: %s @ %s...", contentType, dataFile));
+                compareData(contentType, prop.getProperty(contentType), data);
                 
                 // Get unique content types
                 headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
                 String type = headers.getValues("Content-Type");
 
-                if(!mimeTypes.contains(type))
-                    mimeTypes.add(type);              
+                if(!mimeTypes.contains(type)) {
+                    mimeTypes.add(type);
+                }              
             }
         }
                        
         // Check cache size    
-        client = null; //client = query.cache();
+        client = query.cache();
        
         if (client != null) {
             String data = client.getResponseEntity().getText();
             JSONObject jsonObj = new JSONObject(data);
             log.debug("Comparing cache:" + jsonObj);
-            String test_value = jsonObj.getString("size");
-            String expected_value = Integer.toString( mimeTypes.size() );
+            int test_value = Integer.parseInt(jsonObj.getString("size"));
                     
-            assertEquals(expected_value, test_value);
+            assertEquals((int) 1, test_value);
         }
 
         // Delete query
-        // client = query.deleteQuery();
-
-    }
-
-    private void compareHeaders(Series headers, InputStream inputStream) throws IOException {
-
-        log.debug("Reading headers from file");
-        Properties prop = new Properties();
-        prop.load(inputStream);
-
-        for (Object header1 : headers) {
-            Header header = (Header) header1;
-            String name = header.getName();
-            String current_value = header.getValue();
-            String test_value = prop.getProperty(name);
-            if (!Arrays.asList(EXCLUDE_HEADERS).contains(name)) {
-                assertEquals(String.format("[%s] header value", name), test_value, current_value);
-            }
-        }
-
-    }
-
-    private void headersToFile(Series headers, String fileName) throws IOException {
-
-        log.debug("Writing headers to file");
-        Properties prop = new Properties();
-
-        for (Object header1 : headers) {
-            Header header = (Header) header1;
-            String name = header.getName();
-            String value = header.getValue();
-            prop.setProperty(name, value);
-        }
+        query.deleteQuery();
         
-        File file = new File("src/test/resources/lt/emasina/server/results/" + fileName);
-        prop.store(new FileOutputStream(file), "Query headers");
-    }
+        if (!loaded) {
+            prop.store(new FileOutputStream(getResultFile(dataFile)), "Query data");
+        }
 
-    private void dataToFile(String data, String fileName, String dataType, Properties prop) throws IOException {
-
-        log.debug("Writing data to file");
-
-        prop.setProperty(dataType, data);
-
-        File file = new File("src/test/resources/lt/emasina/server/results/" + fileName);
-        prop.store(new FileOutputStream(file), "Query data");
     }
 
 }

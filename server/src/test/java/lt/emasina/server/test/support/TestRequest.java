@@ -7,7 +7,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lt.emasina.server.test.TestSuite;
+import lt.emasina.server.test.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.restlet.data.MediaType;
@@ -26,7 +26,7 @@ public class TestRequest {
     private HashMap headers;
     
     public String getUrl() {
-        return TestSuite.HOST + path;
+        return ServerSetup.HOST + path;
     }
     
     public ClientResource post() throws IOException {
@@ -126,5 +126,5 @@ public class TestRequest {
         }
         
     }
-    
+
 }

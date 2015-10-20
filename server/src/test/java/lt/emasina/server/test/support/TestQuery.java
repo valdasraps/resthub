@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import lt.emasina.server.test.TestSuite;
+import lt.emasina.server.test.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -24,7 +24,7 @@ public class TestQuery extends TestRequest {
    
     @Override
     public ClientResource deleteQuery() throws IOException {
-        String url = TestSuite.HOST + "/query/" + this.id;
+        String url = ServerSetup.HOST + "/query/" + this.id;
         
         ClientResource client = new ClientResource(url);
         client.delete();
@@ -39,7 +39,7 @@ public class TestQuery extends TestRequest {
     
     @Override
     public ClientResource deleteCache() throws IOException {
-        String url = TestSuite.HOST + "/query/" + this.id + "/cache";
+        String url = ServerSetup.HOST + "/query/" + this.id + "/cache";
         
         ClientResource client = new ClientResource(url);
         client.delete();
@@ -54,7 +54,7 @@ public class TestQuery extends TestRequest {
     
     @Override
     public ClientResource count() throws IOException { 
-        String url = TestSuite.HOST + "/query/" + this.id + "/count";
+        String url = ServerSetup.HOST + "/query/" + this.id + "/count";
         if (this.params != null) url += this.params;
    
         ClientResource client = new ClientResource(url);
@@ -70,7 +70,7 @@ public class TestQuery extends TestRequest {
     
     @Override
     public ClientResource cache() throws IOException {         
-        String url = TestSuite.HOST + "/query/" + this.id + "/cache";
+        String url = ServerSetup.HOST + "/query/" + this.id + "/cache";
         
         log.debug("Checking query cache: "+getUrl());
 
@@ -87,7 +87,7 @@ public class TestQuery extends TestRequest {
         
     @Override
     public ClientResource get(MediaType type) throws IOException {    
-        String url = TestSuite.HOST + "/query/" + this.id + "/data";       
+        String url = ServerSetup.HOST + "/query/" + this.id + "/data";       
         if (this.params != null) url += this.params;
    
         ClientResource client = new ClientResource(url);
@@ -129,5 +129,5 @@ public class TestQuery extends TestRequest {
         }
         
     }
-
+    
 }
