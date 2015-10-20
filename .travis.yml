@@ -3,9 +3,10 @@ language: java
 jdk:
   - openjdk7
   - oraclejdk7
-
 before_install:
   - .travis/oracle/download.sh
   - .travis/oracle/install.sh  
+before_script:
+  - .travis/database.sh
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
