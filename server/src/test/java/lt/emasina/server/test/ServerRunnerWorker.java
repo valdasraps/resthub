@@ -41,6 +41,7 @@ public class ServerRunnerWorker {
         check(new TestQuery.Builder("q1", "SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;", null, null).build());
         check(new TestQuery.Builder("q2", "SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;", "?p1=1000", null).build());
         check(new TestQuery.Builder("q3", "SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a", "?brand=Bravo", new HashMap<String, String>() {{ put("Range", "rows=0-9"); }} ).build());
+        check(new TestQuery.Builder("q4", "SELECT * FROM store.sales a", null, null).build());
     }
 
     private void check(TestRequest query) throws IOException, URISyntaxException, org.json.JSONException {
@@ -53,7 +54,7 @@ public class ServerRunnerWorker {
         Series headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
         
         // Checking headers file
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("/lt/emasina/server/results/" + headerFile);
+        InputStream inputStream = ServerRunnerWorker.class.getResourceAsStream("/lt/emasina/server/results/" + headerFile);
         
         if (inputStream == null) {
             headersToFile(headers, headerFile);
@@ -61,12 +62,12 @@ public class ServerRunnerWorker {
             compareHeaders(headers, inputStream);
         }
              
-        log.debug("Cheking query data");
-
         Properties prop = new Properties();
         String dataFile = query.getPrefix() + "_data";
+        
         // Checking data file
-        inputStream = getClass().getClassLoader().getResourceAsStream("/lt/emasina/server/results/" + dataFile);
+        log.info("Loading query data from file: " + dataFile);
+        inputStream = ServerRunnerWorker.class.getResourceAsStream("/lt/emasina/server/results/" + dataFile);
 
         // Check query count 
         client = query.count();
@@ -104,7 +105,7 @@ public class ServerRunnerWorker {
                 dataToFile(data, dataFile, contentType, prop);
             } else {
 
-                log.debug("Comparing " + contentType + " data");
+                log.info("Comparing " + contentType + " data");
 
                 prop.load(inputStream);
                 String expected_value = prop.getProperty(contentType);

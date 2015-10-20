@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
  */
 public class XMLConverter implements DataConverter {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("y-M-d'T'H:ms:d");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     private static final DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
     private static final TransformerFactory TRF = TransformerFactory.newInstance(); 
     

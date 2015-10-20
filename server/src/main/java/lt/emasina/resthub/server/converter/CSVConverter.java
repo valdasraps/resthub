@@ -44,7 +44,7 @@ import org.restlet.representation.WriterRepresentation;
  */
 public class CSVConverter implements DataConverter {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("y-M-d H:ms:d");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
     private static final String FS = ",";
     private static final String NL = "\n";

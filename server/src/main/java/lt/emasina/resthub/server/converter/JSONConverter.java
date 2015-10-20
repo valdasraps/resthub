@@ -41,7 +41,7 @@ import org.restlet.representation.Representation;
  */
 public class JSONConverter implements DataConverter {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("y-M-d H:ms:d");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public Representation convert(final DataHandler handler, final Reference ref, final CcData data) throws Exception {

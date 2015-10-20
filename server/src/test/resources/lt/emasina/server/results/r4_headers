@@ -1,11 +1,11 @@
 #Query headers
-#Tue Oct 20 16:10:51 EEST 2015
+#Tue Oct 20 18:00:16 EEST 2015
 Access-Control-Allow-Origin=*
 Accept-Ranges=bytes
 Access-Control-Allow-Headers=Content-Type
 Access-Control-Allow-Methods=GET, OPTIONS
 Content-Length=0
 Server=Restlet-Framework/2.1rc1
-Date=Tue, 20 Oct 2015 13\:10\:51 GMT
+Date=Tue, 20 Oct 2015 15\:00\:16 GMT
 Allow=GET, OPTIONS
 Content-Type=application/json

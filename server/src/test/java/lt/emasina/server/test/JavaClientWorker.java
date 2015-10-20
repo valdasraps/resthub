@@ -30,7 +30,7 @@ public class JavaClientWorker {
         
         RestHubServer rh = new RestHubServer(TestSuite.HOST);
 
-        QueryManager qm = rh.newQueryManager("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;");
+        QueryManager qm = rh.newQueryManager("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 1500 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;");
         qm.addParameter("p1", random.nextInt());
 
         check(qm);
@@ -43,7 +43,7 @@ public class JavaClientWorker {
         Map headers = qm.options();
         
         // Checking headers file
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(HEADER_FILE);
+        InputStream inputStream = JavaClientWorker.class.getResourceAsStream(HEADER_FILE);
         
         // Getting available content types 
         String ct = (String) headers.get("Content-Type");
@@ -56,7 +56,7 @@ public class JavaClientWorker {
         }
 
         log.debug("Cheking query data");
-        inputStream = getClass().getClassLoader().getResourceAsStream(DATA_FILE);
+        inputStream = JavaClientWorker.class.getResourceAsStream(DATA_FILE);
         Properties prop = new Properties();
         
         // Check each contentType   
