@@ -3,21 +3,22 @@ package lt.emasina.server.test.support;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import lt.emasina.server.test.ServerRunnerWorker;
+import lt.emasina.server.test.JavaClientWorker;
 
-public class ServerRunnerTest {
-    
-    private static final int NTHREDS = 5;
-    
+public class JavaClientTest {
+
+    private static final int NTHREDS = 3;
+
     public void testQueries() throws InterruptedException {
-    
+
         ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
-        for (int i = 0; i < 10; i++) {
-          executor.execute(new ServerRunnerWorker());
+        for (int i = 0; i < 50; i++) {
+            executor.execute(new JavaClientWorker());
         }
         
         executor.shutdown();
-        executor.awaitTermination(2, TimeUnit.MINUTES);
-
+        executor.awaitTermination(1, TimeUnit.MINUTES);
+        
     }
+    
 }

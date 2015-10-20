@@ -1,5 +1,6 @@
 package lt.emasina.server.test;
 
+import lt.emasina.server.test.support.JavaClientTest;
 import lt.emasina.server.test.support.ServerRunnerTest;
 import lt.emasina.server.test.support.TestConnectionFactory;
 import java.util.concurrent.ExecutorService;
@@ -51,16 +52,16 @@ public class TestSuite {
                 }
             });
             
-//            exec.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        new JavaClientTest().testQueries();
-//                    } catch (InterruptedException ex) {
-//                        log.error(ex);
-//                    }
-//                }
-//            });
+            exec.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        new JavaClientTest().testQueries();
+                    } catch (InterruptedException ex) {
+                        log.error(ex);
+                    }
+                }
+            });
             
             exec.shutdown();
             exec.awaitTermination(5, TimeUnit.MINUTES);
