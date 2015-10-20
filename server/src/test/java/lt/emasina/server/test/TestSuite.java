@@ -1,11 +1,6 @@
 package lt.emasina.server.test;
 
-import lt.emasina.server.test.support.JavaClientTest;
-import lt.emasina.server.test.support.ServerRunnerTest;
 import lt.emasina.server.test.support.TestConnectionFactory;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.factory.XmlResourceTableFactory;
 import lt.emasina.resthub.server.ServerApp;
@@ -38,37 +33,11 @@ public class TestSuite {
         comp.getDefaultHost().attach(app);
         comp.start();
         
-        try {
-            ExecutorService exec = Executors.newFixedThreadPool(2);
-            
-            exec.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        new ServerRunnerTest().testQueries();
-                    } catch (InterruptedException ex) {
-                        log.error(ex);
-                    }
-                }
-            });
-            
-            exec.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        new JavaClientTest().testQueries();
-                    } catch (InterruptedException ex) {
-                        log.error(ex);
-                    }
-                }
-            });
-            
-            exec.shutdown();
-            exec.awaitTermination(5, TimeUnit.MINUTES);
+        new ServerRunnerWorker().setupQueries();
+        new JavaClientWorker().setupQueries();
         
-        } finally {
-            comp.stop();
-        }
+        comp.stop();
+
     }
     
 }

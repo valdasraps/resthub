@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,23 +19,13 @@ import org.restlet.engine.header.Header;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
 import lombok.extern.log4j.Log4j;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.representation.Representation;
 
 @Log4j
-public class ServerRunnerWorker implements Runnable {
+public class ServerRunnerWorker {
 
     private static final String[] EXCLUDE_HEADERS = { "Date", "Expires", "Accept-Ranges", "Allow" };
-
-    @Override
-    public void run() {
-        try {
-            setupQueries();
-        } catch (IOException | URISyntaxException | JSONException ex) {
-            Logger.getLogger(ServerRunnerWorker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     public void setupQueries() throws IOException, URISyntaxException, org.json.JSONException {
         

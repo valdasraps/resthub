@@ -18,22 +18,13 @@ import org.json.JSONException;
 import static org.junit.Assert.assertEquals;
 
 @Log4j
-public class JavaClientWorker implements Runnable{
+public class JavaClientWorker {
     
     private static final String HEADER_FILE = "/lt/emasina/server/results/client_headers";
     private static final String DATA_FILE = "/lt/emasina/server/results/client_data";
     private static final String[] EXCLUDE_HEADERS = {"Date", "Expires", "Accept-Ranges", "Allow"};
     
     private final Random random = new Random();
-    
-    @Override
-    public void run() {
-        try {
-            setupQueries();
-        } catch (IOException | URISyntaxException | JSONException ex) {
-            log.debug(String.format("Error in query setup (%s)", ex));
-        }
-    }
     
     public void setupQueries() throws IOException, URISyntaxException, org.json.JSONException {
         
