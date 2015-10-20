@@ -1,8 +1,5 @@
 #!/bin/sh -e
 
-pwd
-env
+cd server/src/test/ddl
 
-"$ORACLE_HOME/bin/sqlplus" -L -S / AS SYSDBA <<SQL
-select count(*) from cat;
-SQL
+"$ORACLE_HOME/bin/sqlplus" -L -S / AS SYSDBA @all.sql
