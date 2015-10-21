@@ -3,10 +3,10 @@ package lt.emasina.server.test;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import static junit.framework.TestCase.assertEquals;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.client.RestHubServer;
 import lt.emasina.resthub.model.DataResponse;
@@ -15,17 +15,19 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 @Log4j
 @RunWith(JUnit4.class)
 public class JavaClientTest extends ServerSetup {
-    
+
     private final static String HEADER_FILE = "client_header";
     private final static String DATA_FILE = "client_data";
     private final Random random = new Random();
     
     @Test
-    public void checkQueries() throws IOException, URISyntaxException, org.json.JSONException {
+    public void checkQueries() throws Exception {
         
         RestHubServer rh = new RestHubServer(ServerSetup.HOST);
 
@@ -33,6 +35,14 @@ public class JavaClientTest extends ServerSetup {
         qm.addParameter("p1", random.nextInt());
 
         check(qm);
+        
+        qm = rh.newQueryManager("SELECT s.SAL_TIME FROM store.sales s WHERE s.SAL_ID = :n__id");
+        qm.addParameter("id", 173);
+        
+        assertEquals("1998-01-17 23:00:49", qm.getDataJSON().getJSONArray("data").getJSONArray(0).getString(0));
+        
+        Text timeText = (Text) qm.getDataXML().getDocumentElement().getFirstChild().getFirstChild().getFirstChild();
+        assertEquals("1998-01-17T23:00:49", timeText.getData());
         
     }
     

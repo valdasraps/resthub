@@ -54,6 +54,7 @@ import org.hibernate.type.ClobType;
 import org.hibernate.type.DateType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TextType;
+import org.hibernate.type.TimestampType;
 import org.hibernate.type.WrapperBinaryType;
 import org.restlet.data.Status;
 
@@ -81,7 +82,7 @@ public class DataFactory {
                     query.addScalar(c.getName(), new ClobType());
                     break;
                 case DATE:
-                    query.addScalar(c.getName(), new DateType());
+                    query.addScalar(c.getName(), new TimestampType());
                     break;
                 case NUMBER:
                     query.addScalar(c.getName(), new BigDecimalType());
