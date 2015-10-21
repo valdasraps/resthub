@@ -35,6 +35,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.Select;
 import oracle.jdbc.OracleConnection;
 import lt.emasina.resthub.ConnectionFactory;
+import lt.emasina.resthub.exception.QueryException;
 import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.model.MdParameter;
 import lt.emasina.resthub.model.MdType;
@@ -94,11 +95,13 @@ public class TableBuilder implements Serializable {
         try (OracleConnection con = cf.getConnection(connectionName)) {
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 
+                List<String> columnNames = new ArrayList<>();
                 List<MdColumn> tempColumns = new ArrayList<>();
                 
                 // Create missing columns
                 ResultSetMetaData md = ps.getMetaData();
                 for (int i = 1; i <= md.getColumnCount(); i++) {
+                    
                     String name = md.getColumnName(i);
                     MdColumn col = null;
                     for (MdColumn c: columns) {
@@ -107,6 +110,13 @@ public class TableBuilder implements Serializable {
                             break;
                         }
                     }
+                    
+                    // Check repeating column names
+                    if (columnNames.contains(name)) {
+                        throw new QueryException("Non unique column names defined!");
+                    }
+                    columnNames.add(name);
+                    
                     if (col == null) {
                         col = new MdColumn();
                         col.setName(name);
@@ -116,6 +126,7 @@ public class TableBuilder implements Serializable {
                     col.setNumber(i);
                     col.setType(MdType.getMdType(md.getColumnType(i)));
                     col.beforeSave();
+                    
                     tempColumns.add(col);
                     
                 }

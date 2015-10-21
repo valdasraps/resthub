@@ -33,23 +33,26 @@ import org.xml.sax.SAXException;
 public class QueryManager {
 
     private final String url;
+    
     @Getter
     private final String entity;
+    
     @Getter
     private String id;
+    
     @Getter
-    private Map<String, Object> params = new HashMap<>();
-    @Getter
-    @Setter
+    private final Map<String, Object> params = new HashMap<>();
+    
+    @Getter @Setter
     private HashMap headers;
-    @Getter
-    @Setter
+    
+    @Getter @Setter
     private long page = 0;
-    @Getter
-    @Setter
+    
+    @Getter @Setter
     private long ppage = 0;
-    @Getter
-    @Setter
+    
+    @Getter @Setter
     private boolean forceRefresh = false;
     
     private final ReentrantReadWriteLock readWriteLock;
@@ -66,6 +69,7 @@ public class QueryManager {
 
     /**
      * Refreshes query in server. There is one request to server.
+     * @throws java.io.IOException
      */
     public void refresh() throws IOException {
         this.write.lock();
@@ -79,11 +83,60 @@ public class QueryManager {
     }
     
     /**
+     * Gets metadata from server and returns JSONObject. There is one request to 
+     * server.
+     * 
+     * @return An JSONObject object.
+     * @throws org.json.JSONException
+     * @throws java.io.IOException
+     */
+    public JSONObject getMetadata() throws JSONException, IOException{
+        this.read.lock();
+        try {
+            
+            if ((id == null) || (forceRefresh)) {
+                this.read.unlock();
+                refresh();
+                this.read.lock();
+            }
+
+            String path = "/query/" + id;
+            ClientResource client = new ClientResource(this.url + path);
+            try {
+
+                client.get();
+                client.release();
+                
+            } catch (ResourceException e) {
+                if (!forceRefresh && e.getStatus().getCode() == 404) {
+                    forceRefresh = true;
+                    this.read.unlock();
+                    try {
+                        return getMetadata();
+                    } finally {
+                        this.read.lock();
+                    }
+                } else {
+                    return null;
+                }
+            }
+            
+            Representation r = client.getResponseEntity();
+            return new JSONObject(r.getText());
+            
+        } finally {
+            this.read.unlock();
+        }
+    }
+    
+    /**
      * Gets getData from server and returns String. There is one request to 
      * server.
      * 
      * @param contentType Content type of the string.
      * @return An String object.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */  
     public DataResponse getData(String contentType) throws IOException, JSONException {        
         return getData(MediaType.valueOf(contentType));
@@ -95,6 +148,8 @@ public class QueryManager {
      * 
      * @param mediaType MediaType of the string.
      * @return An String object.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */  
     public DataResponse getData(MediaType mediaType) throws IOException, JSONException {
         this.read.lock();
@@ -167,6 +222,8 @@ public class QueryManager {
      * server.
      * 
      * @return An JSONObject object.
+     * @throws org.json.JSONException
+     * @throws java.io.IOException
      */
     public JSONObject getDataJSON() throws JSONException, IOException{
         String s = getData(MediaType.APPLICATION_JSON).getString();
@@ -178,6 +235,10 @@ public class QueryManager {
      * server.
      * 
      * @return An Document object.
+     * @throws java.io.IOException
+     * @throws javax.xml.parsers.ParserConfigurationException
+     * @throws org.json.JSONException
+     * @throws org.xml.sax.SAXException
      */
     public Document getDataXML() throws IOException, JSONException, SAXException, ParserConfigurationException{
         String s = getData(MediaType.APPLICATION_XML).getString();
@@ -189,6 +250,8 @@ public class QueryManager {
      * request to server.
      * 
      * @return An Two-Dimensional Array.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */
     public String[][] getDataTable() throws IOException, JSONException {
         Reader r = getData(MediaType.TEXT_CSV).getReader();
@@ -310,6 +373,8 @@ public class QueryManager {
      * Gets a Query object. There is one request to server.
      * 
      * @return Created Query object.
+     * @throws org.json.JSONException
+     * @throws java.io.IOException
      */
     public Query getQuery() throws JSONException, IOException {
         return getQ(false);
@@ -320,6 +385,8 @@ public class QueryManager {
      * request to server.
      * 
      * @return Created Query object.
+     * @throws org.json.JSONException
+     * @throws java.io.IOException
      */
     public Query getVerboseQuery() throws JSONException, IOException {
         return getQ(true);
@@ -334,4 +401,5 @@ public class QueryManager {
     public void addParameter(String key, Object object) {
         this.params.put(key, object);
     }
+    
 }
