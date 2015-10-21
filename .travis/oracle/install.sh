@@ -28,6 +28,6 @@ alter system set memory_max_target = 172m scope = spfile;
 alter system set memory_target = 172m scope = spfile;
 SQL
 
-sudo /etc/init.d/oracle-xe stop
-sudo /etc/init.d/oracle-xe start
+sudo AWK='/usr/bin/awk' /etc/init.d/oracle-xe stop
+sudo AWK='/usr/bin/awk' /etc/init.d/oracle-xe start
 
