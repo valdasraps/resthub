@@ -22,7 +22,9 @@ public class TestConnectionFactory implements ConnectionFactory {
     
     private final Map<String, ConnectionDescription> conections = Maps.newHashMap();
 
-    public TestConnectionFactory(String url) {
+    public TestConnectionFactory() {
+        String url = System.getenv("TEST_DATABASE_URL");
+        if (url == null) url = "192.168.54.1:1521/cerndev";
         try {
             Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException ex) {

@@ -26,8 +26,7 @@ sudo usermod -aG dba $USER
 "$ORACLE_HOME/bin/sqlplus" -L / AS SYSDBA <<SQL
 alter system set memory_max_target = 172m scope = spfile;
 alter system set memory_target = 172m scope = spfile;
+shutdown immediate
+startup
+exit
 SQL
-
-sudo AWK='/usr/bin/awk' /etc/init.d/oracle-xe stop
-sudo AWK='/usr/bin/awk' /etc/init.d/oracle-xe start
-

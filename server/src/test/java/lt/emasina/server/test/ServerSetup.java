@@ -39,11 +39,8 @@ public class ServerSetup {
     private static Component comp;
     
     @BeforeClass
-    public static void startServer() throws Exception {
-        String url = System.getenv("TEST_DATABASE_URL");
-        if (url == null) url = "192.168.54.1:1521/cerndev";
-        
-        ServerApp app = new ServerApp(new TestConnectionFactory(url), new XmlResourceTableFactory(XML_RESOURCE));
+    public static void startServer() throws Exception {       
+        ServerApp app = new ServerApp(new TestConnectionFactory(), new XmlResourceTableFactory(XML_RESOURCE));
         comp = new Component();
         comp.getServers().add(Protocol.HTTP, 8112);
         comp.getDefaultHost().attach(app);
