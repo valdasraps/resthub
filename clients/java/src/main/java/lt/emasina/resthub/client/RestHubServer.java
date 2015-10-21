@@ -11,9 +11,9 @@ import lt.emasina.resthub.util.Helper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-    /** 
-     * The RestHubServer class is used to get Namespace and Query objects.
-     */
+/** 
+ * The RestHubServer class is used to get Namespace and Query objects.
+ */
 @Getter
 public class RestHubServer {
 
@@ -43,6 +43,8 @@ public class RestHubServer {
      * server.
      * 
      * @return The list of Namespace objects.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */
     public List<Namespace> getNamespaces() throws IOException, JSONException{
         JSONObject jsonObject = Helper.getJSONObject(this.url);
@@ -62,6 +64,8 @@ public class RestHubServer {
      * server.
      * 
      * @return The list of query ids.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */
     public List<String> getQueryIdList() throws IOException, JSONException{
         JSONObject jsonObject = Helper.getJSONObject(this.url + "/queries");
@@ -81,10 +85,13 @@ public class RestHubServer {
      * 
      * @param id Existing Query id.
      * @return New QueryManager object.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
      */
     public QueryManager getQueryManager(String id) throws IOException, JSONException{
         JSONObject jsonObject = Helper.getJSONObject(this.url + "/query/" + id);
         
         return new QueryManager(url, jsonObject.getString("query"));
     }
+
 }

@@ -10,9 +10,9 @@ import org.restlet.representation.Representation;
 @Getter
 public class DataResponse {
     
-    private String string;
-    private Map headers;
-    private int status;
+    private final String string;
+    private final Map headers;
+    private final int status;
     
     public DataResponse(Representation r, Map headers, int status) throws IOException{
         this.string = r.getText();

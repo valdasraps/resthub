@@ -51,7 +51,6 @@ import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.BlobType;
 import org.hibernate.type.ClobType;
-import org.hibernate.type.DateType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TextType;
 import org.hibernate.type.TimestampType;

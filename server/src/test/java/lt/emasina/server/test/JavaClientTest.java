@@ -6,16 +6,20 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.client.RestHubServer;
 import lt.emasina.resthub.model.DataResponse;
 import lt.emasina.resthub.model.QueryManager;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.w3c.dom.Element;
+import org.restlet.resource.ResourceException;
 import org.w3c.dom.Text;
 
 @Log4j
@@ -30,11 +34,16 @@ public class JavaClientTest extends ServerSetup {
     public void checkQueries() throws Exception {
         
         RestHubServer rh = new RestHubServer(ServerSetup.HOST);
-
-        QueryManager qm = rh.newQueryManager("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 1500 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;");
+        QueryManager qm;
+        
+        // Simple query test
+        
+        qm = rh.newQueryManager("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 1500 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;");
         qm.addParameter("p1", random.nextInt());
 
         check(qm);
+
+        // Checking timestamp output
         
         qm = rh.newQueryManager("SELECT s.SAL_TIME FROM store.sales s WHERE s.SAL_ID = :n__id");
         qm.addParameter("id", 173);
@@ -43,6 +52,20 @@ public class JavaClientTest extends ServerSetup {
         
         Text timeText = (Text) qm.getDataXML().getDocumentElement().getFirstChild().getFirstChild().getFirstChild();
         assertEquals("1998-01-17T23:00:49", timeText.getData());
+        
+        // Checking same column names to fail
+        
+        qm = rh.newQueryManager("SELECT * FROM store.sales s1, store.sales s2 WHERE s1.SAL_ID = s2.SAL_ID and s1.SAL_ID = :n__id");
+        qm.addParameter("id", 173);
+        
+        try {
+            qm.refresh();
+            fail("Should have failed due to same columns...");
+        } catch (Exception ex) {
+            Assert.assertSame(ResourceException.class, ex.getClass());
+            ResourceException rex = (ResourceException) ex;
+            assertEquals(400, rex.getStatus().getCode());
+        }
         
     }
     
