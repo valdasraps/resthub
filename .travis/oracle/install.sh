@@ -25,9 +25,8 @@ sudo usermod -aG dba $USER
 
 "$ORACLE_HOME/bin/sqlplus" -L / AS SYSDBA <<SQL
 SHOW PARAMETER TARGET;
-select value from v$pgastat where name='maximum PGA allocated';
-alter system set memory_max_target = 512m scope = spfile;
-alter system set memory_target = 512m scope = spfile;
+alter system set memory_max_target = 412m scope = spfile;
+alter system set memory_target = 412m scope = spfile;
 ALTER SYSTEM SET SGA_TARGET = 0 scope = spfile;
 ALTER SYSTEM SET PGA_AGGREGATE_TARGET = 0 scope = spfile;
 shutdown immediate
