@@ -24,8 +24,13 @@ sudo usermod -aG dba $USER
 ( echo ; echo ; echo travis ; echo travis ; echo n ) | sudo AWK='/usr/bin/awk' /etc/init.d/oracle-xe configure
 
 "$ORACLE_HOME/bin/sqlplus" -L / AS SYSDBA <<SQL
-alter system set memory_max_target = 172m scope = spfile;
-alter system set memory_target = 172m;
+show parameter memory_target
+show parameter memory_max_target
+alter system set memory_max_target = 412m scope = spfile;
+alter system set memory_target = 412m;
 ALTER SYSTEM SET SGA_TARGET = 0;
 ALTER SYSTEM SET PGA_AGGREGATE_TARGET = 0;
+show parameter memory_target
+show parameter memory_max_target
 SQL
+free -m
