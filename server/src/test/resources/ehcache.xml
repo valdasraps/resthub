@@ -8,7 +8,7 @@
     dynamicConfig="true">
     
     <diskStore path="java.io.tmpdir"/>
-    <sizeOfPolicy maxDepth="100" maxDepthExceededBehavior="abort"/>
+    <sizeOfPolicy maxDepth="5" maxDepthExceededBehavior="abort"/>
     
     <cache name="data"
            eternal="false"

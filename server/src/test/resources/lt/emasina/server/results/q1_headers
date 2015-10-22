@@ -1,11 +1,11 @@
-#Query headers
-#Tue Oct 20 18:00:16 EEST 2015
+#Headers
+#Thu Oct 22 13:18:59 EEST 2015
 Access-Control-Allow-Origin=*
 Accept-Ranges=bytes
 Access-Control-Allow-Headers=Content-Type
-Access-Control-Allow-Methods=POST, GET, OPTIONS
 Content-Length=0
-Server=Restlet-Framework/2.1rc1
-Date=Tue, 20 Oct 2015 15\:00\:16 GMT
+Access-Control-Allow-Methods=POST, GET, OPTIONS
+Server=Restlet-Framework/2.1.4
+Date=Thu, 22 Oct 2015 10\:18\:59 GMT
 Allow=GET, OPTIONS, POST
 Content-Type=application/json,application/xml,text/xml,text/csv,text/plain

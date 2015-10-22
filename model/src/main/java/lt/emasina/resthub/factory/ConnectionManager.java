@@ -30,9 +30,9 @@ import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.ConnectionFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  * ConnectionManager class
@@ -75,7 +75,7 @@ public class ConnectionManager implements AutoCloseable {
                 }
             }
             
-            ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry(); 
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties()).build(); 
             factories.put(name, cfg.buildSessionFactory(serviceRegistry));
             
         }
