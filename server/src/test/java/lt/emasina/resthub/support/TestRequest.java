@@ -1,4 +1,4 @@
-package lt.emasina.server.test.support;
+package lt.emasina.resthub.support;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lt.emasina.server.test.ServerSetup;
+import lt.emasina.resthub.server.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.restlet.data.MediaType;

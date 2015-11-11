@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test.util;
+package lt.emasina.resthub.util;
 
 import java.sql.SQLException;
 import java.util.Collection;

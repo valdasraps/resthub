@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import net.sf.ehcache.util.concurrent.ConcurrentHashMap;
 import org.restlet.data.Reference;
@@ -43,6 +44,11 @@ import org.restlet.data.Reference;
 @Getter
 public class ServerAppConfig {
 
+    private static final int UPDATE_INTERVAL_SEC = 120;
+
+    @Setter
+    private int updateInterval = UPDATE_INTERVAL_SEC; 
+    
     private final List<PatternPair> refRewritePats = new ArrayList<>();
     private final Map<Reference, Reference> refCache = new ConcurrentHashMap<>();
     

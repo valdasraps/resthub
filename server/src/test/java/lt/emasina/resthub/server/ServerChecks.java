@@ -1,4 +1,4 @@
-package lt.emasina.server.test;
+package lt.emasina.resthub.server;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,8 +14,8 @@ import static junit.framework.TestCase.assertEquals;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.DataResponse;
 import lt.emasina.resthub.model.QueryManager;
-import static lt.emasina.server.test.ServerSetup.EXCLUDE_HEADERS;
-import lt.emasina.server.test.support.TestRequest;
+import static lt.emasina.resthub.server.ServerSetup.EXCLUDE_HEADERS;
+import lt.emasina.resthub.support.TestRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

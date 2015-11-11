@@ -1,8 +1,9 @@
-package lt.emasina.resthub.server.test;
+package lt.emasina.resthub;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import junit.framework.TestCase;
+import lt.emasina.resthub.server.ServerAppConfig;
 import lt.emasina.resthub.server.ServerAppConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,10 @@ public class ServerAppConfigTest extends TestCase {
             URL r = cfg.getReference(baseRef, null, "labas");
             assertEquals("https://some.web.server.domain/prefix/api/labas", r.toString());
         }
+        
+        cfg.setUpdateInterval(10);
+        assertEquals(10, cfg.getUpdateInterval());
+        
     }
 
 }

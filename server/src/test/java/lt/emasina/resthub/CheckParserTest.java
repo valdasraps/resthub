@@ -1,6 +1,6 @@
-package lt.emasina.resthub.server.test;
+package lt.emasina.resthub;
 
-import lt.emasina.resthub.server.test.util.AbstractParser;
+import lt.emasina.resthub.util.AbstractParser;
 import lt.emasina.resthub.server.parser.check.SubSelectDef;
 import lt.emasina.resthub.server.table.ServerTable;
 import lt.emasina.resthub.server.table.TableId;

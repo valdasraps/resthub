@@ -45,6 +45,7 @@ public abstract class XmlTableFactory extends TableFactory {
     
     private final JAXBContext context;
     private final Unmarshaller unmarshaller;
+    private boolean loadedOnce = false;
     
     public XmlTableFactory() throws IOException, SAXException, JAXBException {
         this.context = JAXBContext.newInstance(MdTables.class);
@@ -56,12 +57,13 @@ public abstract class XmlTableFactory extends TableFactory {
     
     protected List<MdTable> getTables(InputStream is) throws Exception {
         MdTables mdTables = (MdTables) unmarshaller.unmarshal(is);
+        this.loadedOnce = true;
         return mdTables.getTables();
     }
 
     @Override
     public boolean isRefresh() {
-        return Boolean.TRUE;
+        return ! loadedOnce;
     }
 
 }

@@ -1,7 +1,7 @@
-package lt.emasina.server.test;
+package lt.emasina.resthub.server;
 
-import lt.emasina.server.test.support.TestRequest;
-import lt.emasina.server.test.support.TestQuery;
+import lt.emasina.resthub.support.TestRequest;
+import lt.emasina.resthub.support.TestQuery;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;

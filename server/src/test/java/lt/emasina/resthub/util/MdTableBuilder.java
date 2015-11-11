@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test.util;
+package lt.emasina.resthub.util;
 
 import java.util.concurrent.atomic.AtomicLong;
 import lt.emasina.resthub.model.MdColumn;

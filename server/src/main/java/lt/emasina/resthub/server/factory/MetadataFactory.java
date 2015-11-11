@@ -47,8 +47,7 @@ public class MetadataFactory implements MetadataFactoryIf {
 
     private final static String ERROR_METADATA_KEY = "Error";
 
-    private final Map<TableId, ServerTable> tables = new ConcurrentHashMap<>();
-    private final Map<TableId, ServerTable> blacklist = new ConcurrentHashMap<>();
+    private final TableMaps tables = new TableMaps();
 
     @Inject
     private ResourceFactory rf;
@@ -80,79 +79,43 @@ public class MetadataFactory implements MetadataFactoryIf {
             // Update is needed!
             if (doRefresh) {
 
-                Set<TableId> ids = new HashSet<>();
-
+                // Tables to be included into map
+                TableMaps toload = new TableMaps();
+                
                 // Update or add tables
                 for (MdTable t : tf.getTables()) {
 
                     TableId id = new TableId(t);
                     ServerTable st = rf.create(t, tf);
 
-                    if (!blacklist.containsKey(id)) {
+                    st.getTable().getMetadata().remove(ERROR_METADATA_KEY);
 
-                        st.getTable().getMetadata().remove(ERROR_METADATA_KEY);
+                    try {
 
-                        try {
+                        // Check the table
+                        tb.collectColumns(t.getConnectionName(), t.getSql(), t.getColumns());
+                        tb.collectParameters(t.getSql(), t.getParameters());
 
-                            // Check the table
-                            tb.collectColumns(t.getConnectionName(), t.getSql(), t.getColumns());
-                            tb.collectParameters(t.getSql(), t.getParameters());
-
-                            ids.add(id);
-
-                            if (!hasTable(id)) {
-
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Adding table: %s", t));
-                                }
-
-                                tables.put(id, st);
-
-                            } else {
-
-                                MdTable t1 = getTable(id).getTable();
-                                if (t.getUpdateTime().after(t1.getUpdateTime())) {
-
-                                    if (log.isDebugEnabled()) {
-                                        log.debug(String.format("Updating table %s", t));
-                                    }
-
-                                    tables.put(id, st);
-                                    qf.removeQueries(id);
-                                }
-                            }
-
-                        } catch (Exception ex) {
-
-                            log.warn(String.format("Error while adding table %s.%s (will not be added!): %s", t.getNamespace(), t.getName(), ex.getMessage()));
-                            this.blacklist.put(id, st);
-                            st.getTable().getMetadata().put(ERROR_METADATA_KEY, ex.getMessage());
-
+                        if (!toload.addTable(tf, id, st)) {
+                            log.warn(String.format("Duplicate table definition, skipping: %s", t));
                         }
-                    }
-                }
 
-                // Selecting tables added by this tf
-                Set<TableId> exids = new HashSet<>();
-                for (TableId tid: tables.keySet()) {
-                    if (tf.equals(tables.get(tid).getTf())) {
-                        exids.add(tid);
-                    }
-                }
-                
-                // Remove tables that does not exist anymore
-                for (TableId id : exids) {
-                    if (!ids.contains(id)) {
+                    } catch (Exception ex) {
 
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("Removing table %s", id));
+                            log.debug(String.format("Error while adding table, skipping: %s", id), ex);
+                        } else {
+                            log.warn(String.format("Error while adding table, skipping: %s: %s", id, ex.getMessage()));
                         }
 
-                        tables.remove(id);
-                        qf.removeQueries(id);
+                        toload.addBlacklist(tf, id, st);
+                        st.getTable().getMetadata().put(ERROR_METADATA_KEY, ex.getMessage());
 
                     }
                 }
+
+                tables.load(tf, toload);
+                        
             }
 
             tf = tf.getNext();
@@ -165,31 +128,31 @@ public class MetadataFactory implements MetadataFactoryIf {
 
     @Override
     public Collection<ServerTable> getTables() {
-        return Collections.unmodifiableCollection(tables.values());
+        return Collections.unmodifiableCollection(tables.whitelist.values());
     }
 
     public Collection<ServerTable> getBlacklist() {
-        return Collections.unmodifiableCollection(blacklist.values());
+        return Collections.unmodifiableCollection(tables.blacklist.values());
     }
 
     public ServerTable getBlacklistTable(TableId id) {
-        return blacklist.get(id);
+        return tables.blacklist.get(id);
     }
 
     public void removeBlacklistTable(TableId id) {
-        blacklist.remove(id);
+        tables.remove(id);
         forceRefresh = true;
     }
 
     public void clearBlacklist() {
-        this.blacklist.clear();
+        tables.clearBlacklist();
         forceRefresh = true;
     }
 
     public void clearBlacklist(String namespace) {
-        for (TableId id : blacklist.keySet()) {
+        for (TableId id : tables.blacklist.keySet()) {
             if (id.getNamespace().equals(namespace)) {
-                blacklist.remove(id);
+                tables.remove(id);
             }
         }
         forceRefresh = true;
@@ -197,12 +160,12 @@ public class MetadataFactory implements MetadataFactoryIf {
 
     @Override
     public ServerTable getTable(TableId id) {
-        return tables.get(id);
+        return tables.whitelist.get(id);
     }
 
     @Override
     public boolean hasTable(TableId id) {
-        return tables.containsKey(id);
+        return tables.whitelist.containsKey(id);
     }
 
     public static JSONObject mapToJSONObject(Map<?, ?> map) {
@@ -233,6 +196,147 @@ public class MetadataFactory implements MetadataFactoryIf {
             }
         }
         return o;
+    }
+    
+    private class TableMaps  {
+        
+        private final Map<TableFactory, Set<TableId>> tfs = new ConcurrentHashMap<>();
+        private final Map<TableId, ServerTable> whitelist = new ConcurrentHashMap<>();
+        private final Map<TableId, ServerTable> blacklist = new ConcurrentHashMap<>();
+        
+        /**
+         * Add table to good table list
+         * @param tf TableFactory
+         * @param id Table identifier
+         * @param st Server table
+         * @return true if added, false if it already exists
+         */
+        public boolean addTable(TableFactory tf, TableId id, ServerTable st) {
+            if (this.whitelist.containsKey(id)) {
+                return false;
+            }
+            this.tfs.putIfAbsent(tf, new HashSet<TableId>());
+            this.tfs.get(tf).add(id);
+            this.whitelist.put(id, st);
+            this.blacklist.remove(id);
+            return true;
+        }
+        
+        /**
+         * Add table to bad table list
+         * @param tf TableFactory
+         * @param id Table identifier
+         * @param st Server table
+         * @return true if added, false if it already exists
+         */
+        public boolean addBlacklist(TableFactory tf, TableId id, ServerTable st) {
+            if (this.blacklist.containsKey(id)) {
+                return false;
+            }
+            this.tfs.putIfAbsent(tf, new HashSet<TableId>());
+            this.tfs.get(tf).add(id);
+            this.blacklist.put(id, st);
+            this.whitelist.remove(id);
+            return true;
+        }
+        
+        public void remove(TableId id) {
+            ServerTable st = blacklist.remove(id);
+            if (st == null) st = whitelist.remove(id);
+            if (st != null) {
+                TableFactory tf = st.getTf();
+                tfs.get(tf).remove(id);
+                if (tfs.get(tf).isEmpty()) {
+                    tfs.remove(tf);
+                }
+            }
+        }
+        
+        public void clearBlacklist() {
+            Set<TableId> toremove = new HashSet<>(blacklist.keySet());
+            for (TableId id: toremove) {
+                remove(id);
+            }
+        }
+        
+        public void load(TableFactory tf, TableMaps toload) {
+            
+            Set<TableId> old = tfs.get(tf);
+            if (toload.tfs.get(tf) != null) {
+                tfs.put(tf, toload.tfs.get(tf));
+            } else {
+                tfs.remove(tf);
+            }
+            
+            if (tfs.containsKey(tf)) {
+                for (TableId id: tfs.get(tf)) {
+                    
+                    qf.removeQueries(id);
+                    
+                    if (old != null && old.contains(id)) {
+
+                        if (toload.whitelist.containsKey(id)) {
+
+                            if (this.whitelist.containsKey(id)) {
+                                log.info(String.format("Updating table in white list: %s", id));
+                            } else {
+                                log.info(String.format("Moving table to white list: %s", id));
+                                this.blacklist.remove(id);
+                            }
+
+                            this.whitelist.put(id, toload.whitelist.get(id));
+
+                        } else {
+
+                            if (this.blacklist.containsKey(id)) {
+                                log.info(String.format("Updating table in black list: %s", id));
+                            } else {
+                                log.warn(String.format("Moving table to black list: %s", id));
+                                this.whitelist.remove(id);
+                            }
+
+                            this.blacklist.put(id, toload.blacklist.get(id));
+
+
+                        }
+
+                    } else {
+
+                        if (toload.whitelist.containsKey(id)) {
+
+                            this.whitelist.put(id, toload.whitelist.get(id));
+                            log.info(String.format("Adding table to white list: %s", id));
+
+                        } else {
+
+                            this.blacklist.put(id, toload.blacklist.get(id));
+                            log.warn(String.format("Adding table to black list: %s", id));
+
+                        }
+
+                    }
+                }
+            }
+            
+            if (old != null) {
+                for (TableId id: old) {
+                    if (!tfs.get(tf).contains(id)) {
+
+                        qf.removeQueries(id);
+                        
+                        if (this.whitelist.remove(id) != null) {
+                            log.warn(String.format("Table removed from white list: %s", id));
+                        } else {
+                            this.blacklist.remove(id);
+                            log.warn(String.format("Table removed from black table list: %s", id));
+                        }
+
+                    }
+                }
+            }
+            
+        }
+        
     }
 
 }

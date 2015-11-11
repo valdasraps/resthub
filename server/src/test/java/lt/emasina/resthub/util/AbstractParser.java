@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server.test.util;
+package lt.emasina.resthub.util;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;

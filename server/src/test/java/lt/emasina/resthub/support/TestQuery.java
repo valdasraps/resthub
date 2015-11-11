@@ -1,10 +1,10 @@
-package lt.emasina.server.test.support;
+package lt.emasina.resthub.support;
 
 import java.io.IOException;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import lt.emasina.server.test.ServerSetup;
+import lt.emasina.resthub.server.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

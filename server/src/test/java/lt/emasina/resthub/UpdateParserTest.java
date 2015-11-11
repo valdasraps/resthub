@@ -1,6 +1,6 @@
-package lt.emasina.resthub.server.test;
+package lt.emasina.resthub;
 
-import lt.emasina.resthub.server.test.util.AbstractParser;
+import lt.emasina.resthub.util.AbstractParser;
 import net.sf.jsqlparser.statement.select.Select;
 import org.junit.Test;
 import org.junit.runner.RunWith;

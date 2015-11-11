@@ -96,7 +96,7 @@ public class ServerApp extends BaseApp {
         };
         
         getInjector().getInstance(MetadataFactoryIf.class).refresh();
-        InjectorJobFactory.startUpdateJob(scheduler, getInjector().getInstance(InjectorJobFactory.class));
+        InjectorJobFactory.startUpdateJob(scheduler, getInjector().getInstance(InjectorJobFactory.class), cfg);
         
         getInjector().getInstance(CacheFactory.class);
         scheduler.start();

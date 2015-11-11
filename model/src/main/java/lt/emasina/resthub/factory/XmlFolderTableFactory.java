@@ -66,16 +66,18 @@ public class XmlFolderTableFactory extends XmlTableFactory {
     
     private Collection<Path> getFiles() {
         Set<Path> files = new HashSet<>();
-        for (File xmlFile: folder.listFiles(new FilenameFilter() {
+        try {
+            for (File xmlFile: folder.listFiles(new FilenameFilter() {
 
-            @Override
-            public boolean accept(File dir, String name) {
-                return XML_FILE.matcher(name).matches();
+                @Override
+                public boolean accept(File dir, String name) {
+                    return XML_FILE.matcher(name).matches();
+                }
+
+            })) {
+                files.add(xmlFile.toPath());
             }
-
-        })) {
-            files.add(xmlFile.toPath());
-        }
+        } catch (NullPointerException ex) { }
         return files;
     }
     

@@ -24,6 +24,7 @@ package lt.emasina.resthub.server.factory;
 import com.google.inject.Injector;
 import javax.inject.Inject;
 import lombok.extern.log4j.Log4j;
+import lt.emasina.resthub.server.ServerAppConfig;
 import lt.emasina.resthub.server.cache.CacheJob;
 import lt.emasina.resthub.server.handler.Handler;
 import lt.emasina.resthub.server.query.QueryStats;
@@ -57,13 +58,12 @@ public class InjectorJobFactory implements JobFactory {
     private static final String UPDATE_JOB_ID = "updateJob";
     private static final String UPDATE_JOB_GROUP_ID = "resthubUpdateJobs";
     private static final String UPDATE_TRIGGER_ID = "updateJobTrigger";
-    private static final int UPDATE_INTERVAL_SEC = 120;
-
-    public static void startUpdateJob(Scheduler scheduler, InjectorJobFactory jobFactory) throws SchedulerException {
+    
+    public static void startUpdateJob(Scheduler scheduler, InjectorJobFactory jobFactory, ServerAppConfig cfg) throws SchedulerException {
 
         JobDetail jobDetail = JobBuilder.newJob(UpdateJob.class).withIdentity(UPDATE_JOB_ID, UPDATE_JOB_GROUP_ID).build();
         Trigger trigger = TriggerBuilder.newTrigger().withIdentity(UPDATE_TRIGGER_ID).withSchedule(
-                SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(UPDATE_INTERVAL_SEC).repeatForever())
+                SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(cfg.getUpdateInterval()).repeatForever())
                 .build();
 
         scheduler.setJobFactory(jobFactory);

@@ -1,4 +1,4 @@
-package lt.emasina.server.test.support;
+package lt.emasina.resthub.support;
 
 import com.google.common.collect.Maps;
 import java.sql.DriverManager;
