@@ -51,8 +51,8 @@ public class XmlClasspathFactory extends XmlTableFactory {
     @Override
     public List<MdTable> getTables() {
         List<MdTable> tables = new ArrayList<>();
-        
-        for (String xmlFile: reflections.getStore().getResources(XML_FILE)) {
+
+        for (String xmlFile: reflections.getResources(XML_FILE)) {
             try (InputStream is = getClass().getClassLoader().getResourceAsStream(xmlFile)) {
                 List<MdTable> ts = getTables(is);
                 int numTables = 0;
