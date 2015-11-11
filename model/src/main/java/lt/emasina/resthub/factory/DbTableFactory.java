@@ -36,10 +36,12 @@ import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.model.MdTable;
 import lt.emasina.resthub.model.MdTable_;
 
-public class DbTableFactory implements TableFactory {
+public class DbTableFactory extends TableFactory {
     
     private final EntityManagerFactory emf;
     private final EntityManager em;
+    
+    private Date lastUpdate = null;
     
     public DbTableFactory(String persistenceUnitName) {
         this.emf = Persistence.createEntityManagerFactory(persistenceUnitName);
@@ -56,7 +58,11 @@ public class DbTableFactory implements TableFactory {
     }
     
     @Override
-    public boolean isRefresh(Date lastUpdate) {    
+    public boolean isRefresh() {
+        if (lastUpdate == null) {
+            return Boolean.TRUE;
+        }
+        
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         // If lastUpdate exists - check if it has changed
@@ -65,10 +71,9 @@ public class DbTableFactory implements TableFactory {
 
         cq.select(cb.greatest(root.get(MdTable_.updateTime)));
         Date newLastUpdate = em.createQuery(cq).getSingleResult();
-        boolean doRefresh = (newLastUpdate == null && lastUpdate != null) || 
-                            (newLastUpdate != null && lastUpdate == null) || 
-                            (newLastUpdate != null && lastUpdate != null && newLastUpdate.after(lastUpdate));
-        return doRefresh;
+        return (newLastUpdate == null && lastUpdate != null) || 
+               (newLastUpdate != null && lastUpdate == null) || 
+               (newLastUpdate != null && lastUpdate != null && newLastUpdate.after(lastUpdate));
     }
 
 
@@ -87,6 +92,8 @@ public class DbTableFactory implements TableFactory {
             tables.add(t);
         }
         
+        this.lastUpdate = new Date();
+        
         return tables;
 
     }
@@ -95,11 +102,6 @@ public class DbTableFactory implements TableFactory {
     public void close() throws Exception {
         this.em.close();
         this.emf.close();
-    }
-
-    @Override
-    public boolean isRefreshable() {
-        return true;
     }
     
 }

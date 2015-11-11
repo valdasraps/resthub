@@ -25,7 +25,6 @@ import com.google.inject.persist.Transactional;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,113 +44,125 @@ import org.json.JSONObject;
 @Log4j
 @Singleton
 public class MetadataFactory implements MetadataFactoryIf {
-   
+
     private final static String ERROR_METADATA_KEY = "Error";
-    
+
     private final Map<TableId, ServerTable> tables = new ConcurrentHashMap<>();
     private final Map<TableId, ServerTable> blacklist = new ConcurrentHashMap<>();
 
     @Inject
     private ResourceFactory rf;
-    
+
     @Inject
     private QueryFactory qf;
-    
+
     @Inject
-    private TableFactory tf;
-    
+    private TableFactory tfhead;
+
     @Inject
     private TableBuilder tb;
-    
-    private Date lastUpdate = null;
 
     @Getter
     private boolean forceRefresh = true;
-    
+
     @Transactional
     @Override
     public synchronized void refresh() throws Exception {
-        boolean doRefresh = forceRefresh || tf.isRefresh(lastUpdate);
+        TableFactory tf = tfhead;
+        while (tf != null) {
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("lastUpdate = %s, forceRefresh = %s, doRefresh = %s", 
-                lastUpdate, forceRefresh, doRefresh));
-        }
+            boolean doRefresh = forceRefresh || tf.isRefresh();
 
-        // Update is needed!
-        if (doRefresh) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("forceRefresh = %s, doRefresh = %s", forceRefresh, doRefresh));
+            }
 
-            lastUpdate = null;
+            // Update is needed!
+            if (doRefresh) {
 
-            Set<TableId> ids = new HashSet<>();
+                Set<TableId> ids = new HashSet<>();
 
-            // Update or add tables
-            for(MdTable t: tf.getTables()) {
-                
-                TableId id = new TableId(t);
-                ServerTable st = rf.create(t);
-                
-                if (!blacklist.containsKey(id)) {
-                    
-                    st.getTable().getMetadata().remove(ERROR_METADATA_KEY);
-                    
-                    try {
+                // Update or add tables
+                for (MdTable t : tf.getTables()) {
 
-                        // Check the table
-                        tb.collectColumns(t.getConnectionName(), t.getSql(), t.getColumns());
-                        tb.collectParameters(t.getSql(), t.getParameters());
+                    TableId id = new TableId(t);
+                    ServerTable st = rf.create(t, tf);
 
-                        ids.add(id);
+                    if (!blacklist.containsKey(id)) {
 
-                        if (!hasTable(id)) {
+                        st.getTable().getMetadata().remove(ERROR_METADATA_KEY);
 
-                            if (log.isDebugEnabled()) log.debug(String.format("Adding table: %s", t));
+                        try {
 
-                            tables.put(id, st);
+                            // Check the table
+                            tb.collectColumns(t.getConnectionName(), t.getSql(), t.getColumns());
+                            tb.collectParameters(t.getSql(), t.getParameters());
 
-                        } else {
-                            MdTable t1 = getTable(id).getTable();
-                            if (t.getUpdateTime().after(t1.getUpdateTime())) {
+                            ids.add(id);
 
-                                if (log.isDebugEnabled()) log.debug(String.format("Updating table %s", t));
+                            if (!hasTable(id)) {
+
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding table: %s", t));
+                                }
 
                                 tables.put(id, st);
-                                qf.removeQueries(id);
+
+                            } else {
+
+                                MdTable t1 = getTable(id).getTable();
+                                if (t.getUpdateTime().after(t1.getUpdateTime())) {
+
+                                    if (log.isDebugEnabled()) {
+                                        log.debug(String.format("Updating table %s", t));
+                                    }
+
+                                    tables.put(id, st);
+                                    qf.removeQueries(id);
+                                }
                             }
+
+                        } catch (Exception ex) {
+
+                            log.warn(String.format("Error while adding table %s.%s (will not be added!): %s", t.getNamespace(), t.getName(), ex.getMessage()));
+                            this.blacklist.put(id, st);
+                            st.getTable().getMetadata().put(ERROR_METADATA_KEY, ex.getMessage());
+
+                        }
+                    }
+                }
+
+                // Selecting tables added by this tf
+                Set<TableId> exids = new HashSet<>();
+                for (TableId tid: tables.keySet()) {
+                    if (tf.equals(tables.get(tid).getTf())) {
+                        exids.add(tid);
+                    }
+                }
+                
+                // Remove tables that does not exist anymore
+                for (TableId id : exids) {
+                    if (!ids.contains(id)) {
+
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Removing table %s", id));
                         }
 
-                        if (lastUpdate == null || t.getUpdateTime().after(lastUpdate)) {
-                            lastUpdate = t.getUpdateTime();
-                        }
+                        tables.remove(id);
+                        qf.removeQueries(id);
 
-                    } catch (Exception ex) {
-
-                        log.warn(String.format("Error while adding table %s.%s (will not be added!): %s", t.getNamespace(), t.getName(), ex.getMessage()));
-                        this.blacklist.put(id, st);
-                        st.getTable().getMetadata().put(ERROR_METADATA_KEY, ex.getMessage());
-                        
                     }
                 }
             }
 
-            // Remove tables that does not exist anymore
-            Set<TableId> exids = new HashSet<>();
-            exids.addAll(tables.keySet());
-            for (TableId id: exids) {
-                if (!ids.contains(id)) {
+            tf = tf.getNext();
 
-                    if (log.isDebugEnabled()) log.debug(String.format("Removing table %s", id));
-
-                    tables.remove(id);
-                    qf.removeQueries(id);
-                }
-            }
         }
-        
+
         forceRefresh = false;
-        
+
     }
-    
+
     @Override
     public Collection<ServerTable> getTables() {
         return Collections.unmodifiableCollection(tables.values());
@@ -160,30 +171,30 @@ public class MetadataFactory implements MetadataFactoryIf {
     public Collection<ServerTable> getBlacklist() {
         return Collections.unmodifiableCollection(blacklist.values());
     }
-    
+
     public ServerTable getBlacklistTable(TableId id) {
         return blacklist.get(id);
     }
-    
+
     public void removeBlacklistTable(TableId id) {
         blacklist.remove(id);
         forceRefresh = true;
     }
-    
+
     public void clearBlacklist() {
         this.blacklist.clear();
         forceRefresh = true;
     }
-    
+
     public void clearBlacklist(String namespace) {
-        for (TableId id: blacklist.keySet()) {
+        for (TableId id : blacklist.keySet()) {
             if (id.getNamespace().equals(namespace)) {
                 blacklist.remove(id);
             }
         }
         forceRefresh = true;
     }
-    
+
     @Override
     public ServerTable getTable(TableId id) {
         return tables.get(id);
@@ -193,27 +204,27 @@ public class MetadataFactory implements MetadataFactoryIf {
     public boolean hasTable(TableId id) {
         return tables.containsKey(id);
     }
-    
-    public static JSONObject mapToJSONObject(Map<?,?> map) {
+
+    public static JSONObject mapToJSONObject(Map<?, ?> map) {
         if (map == null || map.isEmpty()) {
             return null;
         }
         return new JSONObject(map);
     }
-    
+
     public static void injectPrivateField(Object o, Class<?> fieldHolderClass, String fieldName, Object value) throws Exception {
         Field fResourceMd = fieldHolderClass.getDeclaredField(fieldName);
         fResourceMd.setAccessible(true);
         fResourceMd.set(o, value);
     }
-    
+
     public static JSONObject beanToJSONObject(Object bean) throws Exception {
         if (bean == null) {
             return null;
         }
         JSONObject o = new JSONObject();
-        Map<?,?> describe = BeanUtils.describe(bean);
-        for (Object k: describe.keySet()) {
+        Map<?, ?> describe = BeanUtils.describe(bean);
+        for (Object k : describe.keySet()) {
             if (k instanceof String) {
                 String ks = (String) k;
                 if (!ks.equals("class")) {
@@ -223,5 +234,5 @@ public class MetadataFactory implements MetadataFactoryIf {
         }
         return o;
     }
-    
+
 }

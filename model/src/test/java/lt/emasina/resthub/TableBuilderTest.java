@@ -1,4 +1,4 @@
-package lt.emasina.resthub.parser;
+package lt.emasina.resthub;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;

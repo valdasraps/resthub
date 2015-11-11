@@ -21,18 +21,51 @@
  */
 package lt.emasina.resthub;
 
-import java.util.Date;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import lt.emasina.resthub.model.MdTable;
 
 /**
- * Table factory interface
+ * Table factory class
  * @author audrius
  */
-public interface TableFactory extends AutoCloseable{
+public abstract class TableFactory implements AutoCloseable{
     
-    public boolean isRefreshable();
-    public boolean isRefresh(Date lastUpdate);
-    public List<MdTable> getTables() throws Exception;
+    protected static final String TABLE_SOURCE_KEY = "Source";
+
+    public abstract boolean isRefresh();
+    public abstract List<MdTable> getTables() throws Exception;
+    
+    @Getter @Setter
+    private TableFactory next = null;
+
+    public void closeAll() throws Exception {
+        TableFactory tf = this;
+        while (tf != null) {
+            tf.close();
+            tf = tf.getNext();
+        }
+    }
+    
+    public static class Builder {
+        
+        private TableFactory head;
+        
+        public Builder add(TableFactory tf) {
+            TableFactory c = this.head;
+            if (c == null) this.head = tf;
+            else {
+                while (c.getNext() != null) c = c.getNext();
+                c.setNext(tf);
+            }
+            return this;
+        }
+        
+        public TableFactory build() {
+            return this.head;
+        }
+        
+    }
     
 }

@@ -32,13 +32,15 @@ import org.xml.sax.SAXException;
 @Log4j
 public class XmlResourceTableFactory extends XmlTableFactory {
 
+    private final String tablesResource;
+    
     public XmlResourceTableFactory(String tablesResource) throws IOException, SAXException, JAXBException {
-        super(tablesResource);
+        this.tablesResource = tablesResource;
     }
 
     @Override
     public List<MdTable> getTables() throws Exception {
-        try (InputStream is = XmlResourceTableFactory.class.getResourceAsStream(tablesFile)) {
+        try (InputStream is = XmlResourceTableFactory.class.getResourceAsStream(tablesResource)) {
             return getTables(is);
         }
     }

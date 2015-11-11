@@ -22,7 +22,12 @@
 package lt.emasina.resthub.factory;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import lombok.extern.log4j.Log4j;
@@ -32,21 +37,54 @@ import org.xml.sax.SAXException;
 @Log4j
 public class XmlFileTableFactory extends XmlTableFactory {
     
+    private final Path file;
+    
+    private FileTime lastModified = null;
+    private Boolean fileFound = null;
+    
     public XmlFileTableFactory(String tablesFile) throws IOException, SAXException, JAXBException {
-        super(tablesFile);
+        this.file = Paths.get(tablesFile);
     }
     
     @Override
     public List<MdTable> getTables() {
-        try (FileInputStream is = new FileInputStream(tablesFile)) {
+        try (FileInputStream is = new FileInputStream(this.file.toFile())) {
+            
+            this.lastModified = Files.getLastModifiedTime(file);
+            this.fileFound = true;
             return getTables(is);
+            
         } catch (Exception ex) {
+            
+            this.fileFound = ! ex.getClass().equals(FileNotFoundException.class);
             log.fatal("Error while loading XML file", ex);
-	}
+	
+        }
         return null;
     }
 
     @Override
     public void close() throws Exception { }
 
+    @Override
+    public boolean isRefresh() {
+        if (this.lastModified == null) {
+            
+            return Boolean.TRUE;
+            
+        } else {
+            
+            try {
+                
+                return Files.getLastModifiedTime(file).compareTo(this.lastModified) != 0 || fileFound == false;
+                
+            } catch (IOException ex) {
+                
+                return fileFound;
+                
+            }
+            
+        }
+    }
+    
 }

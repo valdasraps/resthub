@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.xml.bind.JAXBException;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.MdTable;
@@ -40,13 +39,9 @@ import org.xml.sax.SAXException;
 @Log4j
 public class XmlClasspathFactory extends XmlTableFactory {
 
-    private static final String TABLE_SOURCE_KEY = "Source";
-    private static final Pattern XML_FILE = Pattern.compile(".*\\.xml");
-
     private final Reflections reflections;
     
     public XmlClasspathFactory(String tablesClassPath) throws IOException, SAXException, JAXBException {
-        super(tablesClassPath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Will be looking for tables xml at %s", tablesClassPath));
         }

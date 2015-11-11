@@ -30,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lt.emasina.resthub.TableFactory;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.statement.Statement;
@@ -56,11 +57,13 @@ public class ServerTable {
     
     private final TableId id;
     private final MdTable table;
+    private final TableFactory tf;
 
     @Inject
-    public ServerTable(@Assisted MdTable table) {
+    public ServerTable(@Assisted MdTable table, @Assisted TableFactory tf) {
         this.id = new TableId(table);
         this.table = table;
+        this.tf = tf;
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -89,6 +92,12 @@ public class ServerTable {
             if (isCacheable()) {
                 ret.put("cache", getReference("table", ref, "cache"));
             }
+
+            JSONObject tfo = new JSONObject();
+            tfo.append("id", tfo.hashCode());
+            tfo.append("type", tfo.getClass().getSimpleName());
+            ret.put("tableFactory", tfo);
+            
         }
 
         JSONArray cols = new JSONArray();

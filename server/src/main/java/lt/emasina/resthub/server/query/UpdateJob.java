@@ -53,12 +53,10 @@ public class UpdateJob implements Job {
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
         
-        if (tf.isRefreshable()) {
-            try {
-                mf.refresh(); 
-            } catch (Exception ex) {
-                throw new JobExecutionException(ex);
-            }
+        try {
+            mf.refresh(); 
+        } catch (Exception ex) {
+            throw new JobExecutionException(ex);
         }
         
         qf.cleanQueries();

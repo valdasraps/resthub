@@ -105,10 +105,11 @@ public class ServerApp extends BaseApp {
 
     @Override
     public synchronized void stop() throws Exception {
+
         super.stop();
         getInjector().getInstance(Scheduler.class).shutdown();
         getInjector().getInstance(CacheFactory.class).close();
-        getInjector().getInstance(TableFactory.class).close();
+        getInjector().getInstance(TableFactory.class).closeAll();
     }
     
     @Override

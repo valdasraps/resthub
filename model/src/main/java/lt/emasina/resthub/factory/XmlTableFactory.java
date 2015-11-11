@@ -23,8 +23,8 @@ package lt.emasina.resthub.factory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -37,17 +37,16 @@ import lt.emasina.resthub.model.MdTables;
 import org.xml.sax.SAXException;
 
 @Log4j
-public abstract class XmlTableFactory implements TableFactory {
+public abstract class XmlTableFactory extends TableFactory {
 
+    protected static final Pattern XML_FILE = Pattern.compile(".*\\.xml", Pattern.CASE_INSENSITIVE);
     private static final String XML_SCHEMA_FILE = "/lt/emasina/resthub/factory/xml/schema.xsd";
     private static final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
     
-    protected final String tablesFile;
     private final JAXBContext context;
     private final Unmarshaller unmarshaller;
     
-    public XmlTableFactory(String tablesFile) throws IOException, SAXException, JAXBException {
-        this.tablesFile = tablesFile;
+    public XmlTableFactory() throws IOException, SAXException, JAXBException {
         this.context = JAXBContext.newInstance(MdTables.class);
         this.unmarshaller = context.createUnmarshaller();
         try (InputStream is = XmlTableFactory.class.getResourceAsStream(XML_SCHEMA_FILE)) {
@@ -55,19 +54,14 @@ public abstract class XmlTableFactory implements TableFactory {
         }
     }
     
-    @Override
-    public boolean isRefresh(Date lastUpdate) {
-        return lastUpdate == null;
-    }
-
     protected List<MdTable> getTables(InputStream is) throws Exception {
         MdTables mdTables = (MdTables) unmarshaller.unmarshal(is);
         return mdTables.getTables();
     }
 
     @Override
-    public boolean isRefreshable() {
-        return false;
+    public boolean isRefresh() {
+        return Boolean.TRUE;
     }
 
 }

@@ -156,8 +156,11 @@ public class QueryManager {
         try {
             if ((id == null) || (forceRefresh)) {
                 this.read.unlock();
-                refresh();
-                this.read.lock();
+                try {
+                    refresh();
+                } finally {
+                    this.read.lock();
+                }
             }
 
             String path = "/query/" + id;
@@ -310,8 +313,11 @@ public class QueryManager {
             Map m;
             if ((id == null) || (forceRefresh)) {
                 this.read.unlock();
-                refresh();
-                this.read.lock();
+                try {
+                    refresh();
+                } finally {
+                    this.read.lock();
+                }
             }
             String path = "/query/" + id + "/data";
             ClientResource client = new ClientResource(this.url + path);

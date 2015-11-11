@@ -30,8 +30,8 @@ import lt.emasina.resthub.model.MdTable;
  * ResourceId
  * @author valdo
  */
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 @EqualsAndHashCode(of = {"namespace", "name"})
 public class TableId {
 
@@ -39,7 +39,8 @@ public class TableId {
     private final String name;
     
     public TableId(MdTable t) {
-        this(t.getNamespace(), t.getName());
+        this.namespace = t.getNamespace();
+        this.name = t.getName();
     }
 
     @Override

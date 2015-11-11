@@ -1,4 +1,4 @@
-package lt.emasina.resthub.xml;
+package lt.emasina.resthub;
 
 import java.io.IOException;
 import java.util.List;

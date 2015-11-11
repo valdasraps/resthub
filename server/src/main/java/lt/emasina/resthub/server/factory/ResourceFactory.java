@@ -21,6 +21,7 @@
  */
 package lt.emasina.resthub.server.factory;
 
+import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.exception.QueryException;
 import lt.emasina.resthub.model.MdTable;
 import lt.emasina.resthub.server.exporter.LobExporter;
@@ -44,7 +45,7 @@ import org.restlet.data.Form;
  */
 public interface ResourceFactory {
 
-    public ServerTable create(MdTable table);
+    public ServerTable create(MdTable table, TableFactory tf);
     public QueryId create(String sql) throws QueryException;
     public Query create(QueryId qid) throws QueryException;
     
