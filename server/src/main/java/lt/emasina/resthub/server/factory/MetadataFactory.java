@@ -215,7 +215,9 @@ public class MetadataFactory implements MetadataFactoryIf {
             if (this.whitelist.containsKey(id)) {
                 return false;
             }
-            this.tfs.putIfAbsent(tf, new HashSet<TableId>());
+            if (!this.tfs.containsKey(tf)) {
+                this.tfs.put(tf, new HashSet<TableId>());
+            }
             this.tfs.get(tf).add(id);
             this.whitelist.put(id, st);
             this.blacklist.remove(id);
@@ -233,7 +235,9 @@ public class MetadataFactory implements MetadataFactoryIf {
             if (this.blacklist.containsKey(id)) {
                 return false;
             }
-            this.tfs.putIfAbsent(tf, new HashSet<TableId>());
+            if (!this.tfs.containsKey(tf)) {
+                this.tfs.put(tf, new HashSet<TableId>());
+            }
             this.tfs.get(tf).add(id);
             this.blacklist.put(id, st);
             this.whitelist.remove(id);
