@@ -94,8 +94,8 @@ public class ServerTable {
             }
 
             JSONObject tfo = new JSONObject();
-            tfo.append("id", tfo.hashCode());
-            tfo.append("type", tfo.getClass().getSimpleName());
+            tfo.put("id", tfo.hashCode());
+            tfo.put("type", tf.getClass().getSimpleName());
             ret.put("tableFactory", tfo);
             
         }
