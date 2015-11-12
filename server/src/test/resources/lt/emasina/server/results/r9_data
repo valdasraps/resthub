@@ -1,3 +1,0 @@
-#Query data
-#Thu Nov 12 11:50:28 EET 2015
-application/json={"tableFactory"\:{"id"\:1720353515,"type"\:"XmlResourceTableFactory"},"cache"\:"http\://localhost\:8112/table/store/products/cache","hitCount"\:2,"columns"\:[{"name"\:"ID","type"\:"NUMBER"},{"name"\:"BRAND","type"\:"STRING"},{"name"\:"NAME","type"\:"STRING"}],"connection"\:"default","id"\:"store.products","rowsLimit"\:1000,"sql"\:"\\n            select\\n            PRO_ID as id,\\n            PRO_BRAND as brand,\\n            PRO_NAME as name            \\n            from\\n            product","cacheTime"\:20}

@@ -93,10 +93,7 @@ public class ServerTable {
                 ret.put("cache", getReference("table", ref, "cache"));
             }
 
-            JSONObject tfo = new JSONObject();
-            tfo.put("id", tfo.hashCode());
-            tfo.put("type", tf.getClass().getSimpleName());
-            ret.put("tableFactory", tfo);
+            ret.put("tableFactory", tf.getClass().getSimpleName());
             
         }
 

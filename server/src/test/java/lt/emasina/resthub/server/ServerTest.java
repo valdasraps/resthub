@@ -33,9 +33,9 @@ public class ServerTest extends ServerSetup {
         checks.check(new TestRequest.Builder("r3","/table/store/customer").build());
         checks.check(new TestRequest.Builder("r4","/table/store/sales").build());
         checks.check(new TestRequest.Builder("r5","/table/store/products").build());
-        checks.check(new TestRequest.Builder("r7","/table/store/customer?v=true").build());
-        checks.check(new TestRequest.Builder("r8","/table/store/sales?v=true").build());
-        checks.check(new TestRequest.Builder("r9","/table/store/products?v=true").build());
+        checks.check(new TestRequest.Builder("r6","/table/store/customer?v=true").build());
+        checks.check(new TestRequest.Builder("r7","/table/store/sales?v=true").build());
+        checks.check(new TestRequest.Builder("r8","/table/store/products?v=true").build());
        
         // Check Queries
         checks.check(new TestQuery.Builder("q1", "SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;", null, null).build());
