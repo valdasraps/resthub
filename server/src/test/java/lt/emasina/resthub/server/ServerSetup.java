@@ -59,6 +59,7 @@ public class ServerSetup {
         
         ServerAppConfig cfg = new ServerAppConfig();
         cfg.setUpdateInterval(10);
+        cfg.setServiceVersion("1.11.11");
         
         ServerApp app = new ServerApp(new TestConnectionFactory(), 
                 new TableFactory.Builder()

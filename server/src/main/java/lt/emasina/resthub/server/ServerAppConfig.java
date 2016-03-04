@@ -21,12 +21,15 @@
  */
 package lt.emasina.resthub.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -45,9 +48,27 @@ import org.restlet.data.Reference;
 public class ServerAppConfig {
 
     private static final int UPDATE_INTERVAL_SEC = 120;
-
+    private static final String RESTHUB_PROPERTIES = "/resthub.properties";
+    private static final String VERSION_UNDEFINED = "undefined";
+    
     @Setter
-    private int updateInterval = UPDATE_INTERVAL_SEC; 
+    private int updateInterval = UPDATE_INTERVAL_SEC;
+    
+    @Setter
+    private String serviceVersion = VERSION_UNDEFINED;
+    
+    private final String resthubVersion;
+    
+    public ServerAppConfig() {
+        //ServerAppConfig.class
+        Properties props = new Properties();
+        try (InputStream is = ServerAppConfig.class.getResourceAsStream(RESTHUB_PROPERTIES)) {
+            props.load(is);
+        } catch (IOException ex) {
+            log.warn("Error while loading properties file " + RESTHUB_PROPERTIES, ex);
+        }
+        this.resthubVersion = props.getProperty("resthub_version", VERSION_UNDEFINED);
+    }
     
     private final List<PatternPair> refRewritePats = new ArrayList<>();
     private final Map<Reference, Reference> refCache = new ConcurrentHashMap<>();

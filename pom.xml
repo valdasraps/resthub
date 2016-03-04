@@ -5,7 +5,7 @@
     
     <groupId>lt.emasina.resthub</groupId>
     <artifactId>resthub</artifactId>
-    <version>0.6</version>
+    <version>0.6.4</version>
     <packaging>pom</packaging>
     <name>resthub</name>
     
@@ -170,7 +170,7 @@
         <dependency> 
             <groupId>com.oracle</groupId> 
             <artifactId>ojdbc6</artifactId> 
-            <version>11.2.0.3</version>
+            <version>11.2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

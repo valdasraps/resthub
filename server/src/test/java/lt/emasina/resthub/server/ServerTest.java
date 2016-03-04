@@ -28,6 +28,7 @@ public class ServerTest extends ServerSetup {
         
         // Check Requests
        
+        checks.check(new TestRequest.Builder("i0","/info").build());
         checks.check(new TestRequest.Builder("r1","/queries").build());
         checks.check(new TestRequest.Builder("r2","/tables").build());
         checks.check(new TestRequest.Builder("r3","/table/store/customer").build());

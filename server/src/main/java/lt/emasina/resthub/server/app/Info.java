@@ -55,9 +55,14 @@ public class Info extends ServerBaseResource {
             
             JSONObject q = new JSONObject();
             q.put("allowed_functions", new JSONArray(CheckExpressionParser.getAllowedFunctions()));
+
+            JSONObject v = new JSONObject();
+            v.put("service", cfg.getServiceVersion());
+            v.put("resthub", cfg.getResthubVersion());
             
             JSONObject o = new JSONObject();
             o.put("query", q);
+            o.put("version", v);
             
             getResponse().setEntity(new JsonRepresentation(o));           
             
