@@ -21,6 +21,8 @@
  */
 package lt.emasina.resthub.server.app;
 
+import java.util.Iterator;
+import java.util.TreeSet;
 import lt.emasina.resthub.server.exception.ServerErrorException;
 import lt.emasina.resthub.server.table.ServerTable;
 import lt.emasina.resthub.server.table.TableId;
@@ -33,13 +35,13 @@ import org.restlet.resource.Options;
 public class Tables extends ServerBaseResource {
 
     private String namespace = null;
-    
+
     @Override
     public void doInit() {
         super.doInit();
         this.namespace = super.getAttr(String.class, "tableNs");
     }
-    
+
     @Options
     public void define() {
         addHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -50,26 +52,40 @@ public class Tables extends ServerBaseResource {
     @Get
     public void describe() {
         try {
-            JSONObject ret = new JSONObject();
+            JSONObject ret = new JSONObjectOrdered();
             for (ServerTable tmd : mf.getTables()) {
                 TableId id = tmd.getId();
-                if (namespace != null) {
+            if (namespace != null) {
                     if (namespace.equals(id.getNamespace())) {
                         ret.put(id.getName(), tmd.getReference("table", getHostRef()));
                     }
-                } else {
+            } else {
                     if (!ret.has(id.getNamespace())) {
-                        ret.put(id.getNamespace(), new JSONObject());
+                        ret.put(id.getNamespace(), new JSONObjectOrdered());
                     }
                     JSONObject nso = (JSONObject) ret.get(id.getNamespace());
                     nso.put(id.getName(), tmd.getReference("table", getHostRef()));
                 }
             }
-            getResponse().setEntity(new JsonRepresentation(ret));
-            
+                getResponse().setEntity(new JsonRepresentation(ret));
+
         } catch (JSONException ex) {
             throw new ServerErrorException(ex);
         }
     }
-    
+
+    private class JSONObjectOrdered extends JSONObject {
+
+        @Override
+        public Iterator keys() {
+            TreeSet<Object> sortedKeys = new TreeSet<>();
+            Iterator keys = super.keys();
+            while (keys.hasNext()) {
+                sortedKeys.add(keys.next());
+            }
+            return sortedKeys.iterator();
+        }
+
+    }
+
 }
