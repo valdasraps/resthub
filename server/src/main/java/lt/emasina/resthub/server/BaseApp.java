@@ -52,6 +52,7 @@ public abstract class BaseApp extends Application {
             Logger logger = log.getLoggerRepository().getLogger(SQL_BINDER_CLASS.getName());
             logger.setLevel(Level.TRACE);
         }
+        setStatusService(new ResponseStatusService());
     }
     
     public Injector getInjector() {

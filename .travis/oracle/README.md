@@ -13,7 +13,7 @@ To use this tool, you must have an Oracle account with which you have accepted
 the current license agreement for [Oracle Database Express Edition][].
 
 1. Add your Oracle username and password to your build [environment variables][],
-   either as hidden repository settings or secure variables:
+   either as hidden repository settings or encrypted variables:
 
    | Variable Name              | Value         |
    | -------------------------- | ------------- |
@@ -23,7 +23,8 @@ the current license agreement for [Oracle Database Express Edition][].
 2. Add the version information to your build environment variables:
 
    ```yaml
-   - ORACLE_FILE=oracle-xe-11.2.0-1.0.x86_64.rpm.zip
+   - ORACLE_COOKIE=sqldev
+   - ORACLE_FILE=oracle11g/xe/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
    - ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe
    - ORACLE_SID=XE
    ```
@@ -31,19 +32,19 @@ the current license agreement for [Oracle Database Express Edition][].
 3. Download and extract the [latest release][] into your project. For example,
 
    ```shell
-   wget 'https://github.com/cbandy/travis-oracle/archive/v1.1.0.tar.gz'
+   wget 'https://github.com/cbandy/travis-oracle/archive/v2.0.0.tar.gz'
    mkdir -p .travis/oracle
-   tar --extract --gzip --strip-components 1 --directory .travis/oracle --file v1.1.0.tar.gz
+   tar xz --strip-components 1 -C .travis/oracle -f v2.0.0.tar.gz
    ```
 
-4. Enable [`sudo`](http://docs.travis-ci.com/user/workers/standard-infrastructure):
+4. Enable [`sudo`](https://docs.travis-ci.com/user/workers/standard-infrastructure/):
 
    ```yaml
    sudo: required
    ```
 
 5. Finally, execute the extracted scripts as part of your build, usually
-   during [`before_install`](http://docs.travis-ci.com/user/build-lifecycle):
+   during [`before_install`](https://docs.travis-ci.com/user/customizing-the-build/#The-Build-Lifecycle):
 
    ```yaml
    - .travis/oracle/download.sh
@@ -53,6 +54,11 @@ the current license agreement for [Oracle Database Express Edition][].
 [SQL\*Plus][] is installed to `$ORACLE_HOME/bin/sqlplus`, and the current user
 has both normal and DBA access without a password, i.e. `/` and `/ AS SYSDBA`.
 
-[environment variables]: http://docs.travis-ci.com/user/environment-variables
+[OCI][] and [OCCI][] libraries and header files are in `$ORACLE_HOME/lib` and
+`$ORACLE_HOME/rdbms/public`, respectively.
+
+[environment variables]: https://docs.travis-ci.com/user/environment-variables/
 [latest release]: https://github.com/cbandy/travis-oracle/releases/latest
+[OCCI]: http://www.oracle.com/pls/topic/lookup?ctx=xe112&id=LNCPP
+[OCI]: http://www.oracle.com/pls/topic/lookup?ctx=xe112&id=LNOCI
 [SQL\*Plus]: http://www.oracle.com/pls/topic/lookup?ctx=xe112&id=SQPUG

@@ -89,4 +89,12 @@ public class ServerSetup {
         Files.copy(src, tar);
     }
     
+    public static void main(String[] args) {
+        try {
+            startServer();
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+        }
+    }
+    
 }

@@ -4,7 +4,7 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>clients</artifactId>
-        <version>0.6.4</version>
+        <version>0.6.6</version>
     </parent>
     <artifactId>jquery</artifactId>
     <packaging>war</packaging>
