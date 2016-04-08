@@ -86,6 +86,10 @@ public abstract class BaseResource extends ServerResource {
         return convertValue(clazz, str);
     }
 
+    protected boolean isParam(String name) throws ResourceException {
+        return getQuery().getNames().contains(name);
+    }
+    
     protected <T> T getParam(Class<T> clazz, String name, T defaultValue) throws ResourceException {
         T v = getParam(clazz, name);
         return v == null ? defaultValue : v;

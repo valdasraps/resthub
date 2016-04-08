@@ -50,7 +50,7 @@ public abstract class ServerBaseResource extends BaseResource {
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
-        this.verbose = getParam(Boolean.class, "v", false);
+        this.verbose = isParam("_verbose");
         
         if (log.isDebugEnabled()) {
             log.debug(String.format("Init app: %s, %s in %s", this.getClass().getName(), this.hashCode(), Thread.currentThread()));
