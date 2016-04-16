@@ -1,5 +1,4 @@
-import re, simplejson as json
-from rhapi import RhApi, RhApiError
+from rhapi import RhApi
 
 # App URL
 URL  = "http://localhost:8888/api/"
@@ -21,14 +20,15 @@ def main():
         q = "select * from hcal.runs r where r.runnumber > :run"
         p = {"run": 231700 }
 
-        print api.query(q)
-        print api.count(q, p)
+        qid = api.qid(q)
+        print api.query(qid)
+        print api.count(qid, p)
 
-        print api.csv(q, p)
-        print api.xml(q, p)
-        print api.json(q, p)
+        print api.csv(qid, p)
+        print api.xml(qid, p)
+        print api.json(qid, p)
 
-    except RhApiError, e:
+    except Exception, e:
         print e
 
 if __name__ == '__main__':
