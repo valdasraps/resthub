@@ -5,7 +5,7 @@
 
 cd "$(dirname "$(readlink -f "$0")")"
 
-npm install bluebird phantomjs
+npm install bluebird phantomjs node-phantom-simple
 
 export COOKIES='cookies.txt'
 export USER_AGENT='Mozilla/5.0'
