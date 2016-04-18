@@ -26,7 +26,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -97,7 +97,8 @@ public class XMLConverter implements DataConverter {
                     String svalue = null;
                     switch (column.getType()) {
                         case DATE:
-                            svalue = DATE_FORMAT.format((Date) value);
+                            Calendar cal = (Calendar) value;
+                            svalue = DATE_FORMAT.format(cal.getTime());
                             break;
                         case NUMBER:
                             svalue = ((BigDecimal) value).toPlainString();

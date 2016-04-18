@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -87,7 +88,8 @@ public class CSVConverter implements DataConverter {
                 if (value != null) { 
                     switch (column.getType()) {
                         case DATE:
-                            sb.append(DATE_FORMAT.format((Date) value)); 
+                            Calendar cal = (Calendar) value;
+                            sb.append(DATE_FORMAT.format(cal.getTime())); 
                             break;
                         case STRING:
                             sb.append(escapeStr((String) value)); 

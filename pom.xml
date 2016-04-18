@@ -5,7 +5,7 @@
     
     <groupId>lt.emasina.resthub</groupId>
     <artifactId>resthub</artifactId>
-    <version>0.6.7</version>
+    <version>0.6.8</version>
     <packaging>pom</packaging>
     <name>resthub</name>
     

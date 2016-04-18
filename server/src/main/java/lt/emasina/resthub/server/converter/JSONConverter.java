@@ -23,7 +23,7 @@ package lt.emasina.resthub.server.converter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 import lt.emasina.resthub.server.cache.CcData;
 import lt.emasina.resthub.server.handler.DataHandler;
@@ -66,7 +66,8 @@ public class JSONConverter implements DataConverter {
             public void visitCol() {
                 switch (column.getType()) {
                     case DATE:
-                        o.put(value != null ? DATE_FORMAT.format((Date) value) : null);
+                        Calendar cal = (Calendar) value;
+                        o.put(value != null ? DATE_FORMAT.format(cal.getTime()) : null);
                         break;
                     case CLOB:
                     case BLOB:

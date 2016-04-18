@@ -50,10 +50,10 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.BlobType;
+import org.hibernate.type.CalendarType;
 import org.hibernate.type.ClobType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TextType;
-import org.hibernate.type.TimestampType;
 import org.hibernate.type.WrapperBinaryType;
 import org.restlet.data.Status;
 
@@ -81,7 +81,7 @@ public class DataFactory {
                     query.addScalar(c.getName(), new ClobType());
                     break;
                 case DATE:
-                    query.addScalar(c.getName(), new TimestampType());
+                    query.addScalar(c.getName(), new CalendarType());
                     break;
                 case NUMBER:
                     query.addScalar(c.getName(), new BigDecimalType());
