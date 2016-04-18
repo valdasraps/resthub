@@ -9,6 +9,7 @@ cd "$(dirname "$(readlink -f "$0")")"
 
 echo "$(basename $ORACLE_FILE)"
 ls -l "$(basename $ORACLE_FILE)"
+cat "$(basename $ORACLE_FILE)"
 
 sudo apt-get -qq update
 sudo apt-get --no-install-recommends -qq install bc libaio1 rpm unzip
