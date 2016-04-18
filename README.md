@@ -1,6 +1,9 @@
 RESTful API to Oracle databases
 =======
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/lt.emasina/resthub/badge.svg)](https://maven-badges.herokuapp.com/maven-central/lt.emasina/resthub/)
+[![LGPLv3 License](http://img.shields.io/badge/license-LGPLv3-blue.svg)](https://www.gnu.org/licenses/lgpl.html)
+[![Java Development Kit 1.7](https://img.shields.io/badge/JDK-1.7-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
 [![Coverage Status](https://coveralls.io/repos/valdasraps/resthub/badge.svg?branch=master&service=github)](https://coveralls.io/github/valdasraps/resthub?branch=master)
 [![Build Status](https://travis-ci.org/valdasraps/resthub.svg?branch=master)](https://travis-ci.org/valdasraps/resthub)
 
