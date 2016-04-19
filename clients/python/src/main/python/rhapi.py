@@ -110,17 +110,17 @@ class RhApi:
             else:
                 return rdata
 
-    def folders(self):
+    def folders(self, verbose = False):
         """
         Get list of folders
         """
-        return self.get(["tables"]).keys()
+        return self.get(["tables"], verbose = verbose).keys()
 
-    def tables(self, folder):
+    def tables(self, folder, verbose = False):
         """
         Get tables for folder or all
         """
-        raw = self.get(["tables"])
+        raw = self.get(["tables"], verbose = verbose)
         d = []
         for t in raw[folder].keys(): 
             d.append(t)
@@ -130,9 +130,7 @@ class RhApi:
         """
         Get info for table
         """
-        params = {}
-        if verbose: params["v"] = "true"
-        return self.get(["table", folder, table])
+        return self.get(["table", folder, table], verbose = verbose)
 
     def qid(self, query):
         """
@@ -147,13 +145,13 @@ class RhApi:
         """
         return self.get(["query", qid], verbose = verbose)
 
-    def count(self, qid, params = None):
+    def count(self, qid, params = None, verbose = False):
         """
         Get number of rows in a query 
         """
-        return int(self.get(["query", qid, "count"], params = params))
+        return int(self.get(["query", qid, "count"], params = params, verbose = verbose))
 
-    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None):
+    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False):
         """
         Get data rows
         """
@@ -172,28 +170,28 @@ class RhApi:
                 ps.extend(["page", pagesize, page]);
                 
         ps.append("data")
-        return self.get(ps, None, { "Accept": form }, params)
+        return self.get(ps, None, { "Accept": form }, params, verbose = verbose)
 
-    def csv(self, query, params = None, pagesize = None, page = None):
+    def csv(self, query, params = None, pagesize = None, page = None, verbose = False):
         """
         Get rows in CSV format 
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'text/csv', pagesize, page)
+        return self.data(qid, params, 'text/csv', pagesize, page, verbose = verbose)
 
-    def xml(self, query, params = None, pagesize = None, page = None):
+    def xml(self, query, params = None, pagesize = None, page = None, verbose = False):
         """
         Get rows in XML format 
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'text/xml', pagesize, page)
+        return self.data(qid, params, 'text/xml', pagesize, page, verbose = verbose)
 
-    def json(self, query, params = None, pagesize = None, page = None):
+    def json(self, query, params = None, pagesize = None, page = None, verbose = False):
         """
         Get rows in JSON format 
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'application/json', pagesize, page)
+        return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose)
 
 from optparse import OptionParser
 import pprint
@@ -209,14 +207,15 @@ class CLIClient:
         
         self.pp = pprint.PrettyPrinter(indent=4)
         self.parser = OptionParser(USAGE)
-        self.parser.add_option("-v", "--verbose", dest = "verbose", help = "verbose output", action = "store_true", default = False)
-        self.parser.add_option("-u", "--url",     dest = "url",     help = "service URL", metavar = "URL", default=DEFAULT_URL)
-        self.parser.add_option("-f", "--format",  dest = "format",  help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT", default=DEFAULT_FORMAT)
-        self.parser.add_option("-c", "--count",   dest = "count",   help = "instead of QUERY data return # of rows", action = "store_true", default = False)
-        self.parser.add_option("-s", "--size",    dest = "size",    help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
-        self.parser.add_option("-g", "--page",    dest = "page",    help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
-        self.parser.add_option("-a", "--all",     dest = "all",     help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
-        self.parser.add_option("-p", dest = "param",   help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
+        self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output", action = "store_true", default = False)
+        self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL", metavar = "URL", default=DEFAULT_URL)
+        self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT", default=DEFAULT_FORMAT)
+        self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
+        self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
+        self.parser.add_option("-g", "--page",     dest = "page",     help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
+        self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
+        self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA", action = "store_true", default = False)
+        self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
 
     def pprint(self, data):
         self.pp.pprint(data)
@@ -231,7 +230,7 @@ class CLIClient:
 
             # Folders
             if len(args) == 0:
-                self.pprint(api.folders())
+                self.pprint(api.folders(verbose = options.verbose))
                 return 0
 
             if len(args) > 1:
@@ -242,13 +241,13 @@ class CLIClient:
 
             # FOLDER tables
             if re.match("^[a-zA-Z0-9_]+$", arg) is not None:
-                self.pprint(api.tables(arg))
+                self.pprint(api.tables(arg, verbose = options.verbose))
                 return 0
 
             # FOLDER.TABLE
             if re.match("^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$", arg) is not None:
                 parts = arg.split(".")
-                self.pprint(api.table(parts[0], parts[1]))
+                self.pprint(api.table(parts[0], parts[1], verbose = options.verbose))
                 return 0
 
             # QUERY
@@ -263,14 +262,19 @@ class CLIClient:
                             
                 if options.count:
                     
-                    print api.count(api.qid(arg), params = params)
+                    print api.count(api.qid(arg), params = params, verbose = options.verbose)
                     
+                elif options.metadata:
+                    
+                    qid = api.qid(arg)
+                    print self.pprint(api.query(qid, verbose = options.verbose))
+                        
                 else:
                     
                     if FORMATS.count(options.format) == 0:
                         
                         self.parser.error('Format %s not understood: please use one of %s' % (options.format, ",".join(FORMATS)))
-                        
+
                     else:
                         
                         if options.size and options.page and options.all:
@@ -278,13 +282,13 @@ class CLIClient:
                         
                         if options.format == 'csv':
                             try:
-                                print api.csv(arg, params = params, pagesize = options.size, page = options.page)
+                                print api.csv(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.csv(arg, params = params, pagesize = e.rowsLimit, page = page)
+                                        res = api.csv(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
                                         if page == 1:
                                             print res,
                                         else:
@@ -294,14 +298,14 @@ class CLIClient:
 
                         if options.format == 'xml':
                             try:
-                                print api.xml(arg, params = params, pagesize = options.size, page = options.page)
+                                print api.xml(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     print '<?xml version="1.0" encoding="UTF-8" standalone="no"?><data>', 
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.xml(arg, params = params, pagesize = e.rowsLimit, page = page)
+                                        res = api.xml(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
                                         root = minidom.parseString(res).documentElement
                                         for row in root.getElementsByTagName('row'):
                                             print row.toxml(),
@@ -311,14 +315,14 @@ class CLIClient:
 
                         if options.format == 'json':
                             try:
-                                print api.json(arg, params = params, pagesize = options.size, page = options.page)
+                                print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     print '{"data": [', 
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page)
+                                        res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
                                         comma = ','
                                         if page == 1: comma = ''
                                         for d in res['data']:
