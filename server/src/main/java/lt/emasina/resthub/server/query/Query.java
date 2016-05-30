@@ -221,6 +221,7 @@ public class Query {
             col.put("name", c.getName());
             col.put("type", c.getType());
             col.put("cname", c.getCName());
+            col.put("jname", c.getJName());
             cols.put(col);
         }
         return cols;

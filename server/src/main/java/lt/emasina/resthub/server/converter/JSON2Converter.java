@@ -22,10 +22,12 @@
 package lt.emasina.resthub.server.converter;
 
 import java.util.Calendar;
+import static lt.emasina.resthub.server.converter.JSONConverterBase.DATE_FORMAT;
 
 import lt.emasina.resthub.server.handler.DataHandler;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.restlet.data.Reference;
 
 /**
@@ -33,32 +35,33 @@ import org.restlet.data.Reference;
  *
  * @author valdo
  */
-public class JSONConverter extends JSONConverterBase {
+public class JSON2Converter extends JSONConverterBase {
 
     @Override
     protected DataVisitor getDataVisitor(final DataHandler handler, final Reference ref, final JSONArray arr) {
         return new DataVisitor(handler) {
 
-            private JSONArray o;
+            private JSONObject o;
 
             @Override
             public void startRow() {
-                o = new JSONArray();
+                o = new JSONObject();
             }
 
             @Override
-            public void visitCol() {
+            public void visitCol() throws Exception {
+                String name = column.getJName();
                 switch (column.getType()) {
                     case DATE:
                         Calendar cal = (Calendar) value;
-                        o.put(value != null ? DATE_FORMAT.format(cal.getTime()) : null);
+                        o.put(name, value != null ? DATE_FORMAT.format(cal.getTime()) : null);
                         break;
                     case CLOB:
                     case BLOB:
-                        o.put(getLobReference(ref));
+                        o.put(name, getLobReference(ref));
                         break;
                     default:
-                        o.put(value);
+                        o.put(name, value);
                 }
             }
 

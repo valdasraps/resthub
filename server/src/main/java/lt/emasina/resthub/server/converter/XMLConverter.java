@@ -79,6 +79,7 @@ public class XMLConverter implements DataConverter {
                 appendElement(doc, "name", col).setTextContent(c.getName());
                 appendElement(doc, "type", col).setTextContent(c.getType().name());
                 appendElement(doc, "cname", col).setTextContent(c.getCName());
+                appendElement(doc, "jname", col).setTextContent(c.getJName());
             }
         }
         

@@ -27,8 +27,11 @@ import lt.emasina.resthub.server.query.Query;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Options;
+import org.restlet.resource.ResourceException;
 
 /**
  * Queries
@@ -55,6 +58,14 @@ public class Queries extends ServerBaseResource {
         } catch (JSONException ex) {
             throw new ServerErrorException(ex);
         }
+    }
+    
+    @Delete
+    public void remove() throws ResourceException {
+        for (Query qmd: qf.getQueries()) {
+            qf.removeQuery(qmd.getQid().getId());
+        }
+        getResponse().setEntity(new StringRepresentation(Boolean.toString(qf.getQueries().isEmpty())));
     }
     
 }

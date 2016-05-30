@@ -39,7 +39,7 @@ import lt.emasina.resthub.exception.QueryException;
 import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.model.MdParameter;
 import lt.emasina.resthub.model.MdType;
-import lt.emasina.resthub.util.CNameUtil;
+import lt.emasina.resthub.util.NameUtil;
 
 public class TableBuilder implements Serializable {
 
@@ -120,7 +120,8 @@ public class TableBuilder implements Serializable {
                     if (col == null) {
                         col = new MdColumn();
                         col.setName(name);
-                        col.setCName(CNameUtil.normalize(name));
+                        col.setCName(NameUtil.getCName(name));
+                        col.setJName(NameUtil.getJName(name));
                     }
 
                     col.setNumber(i);

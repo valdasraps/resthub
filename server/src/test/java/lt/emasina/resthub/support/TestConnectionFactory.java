@@ -24,7 +24,7 @@ public class TestConnectionFactory implements ConnectionFactory {
 
     public TestConnectionFactory() {
         String url = System.getenv("TEST_DATABASE_URL");
-        if (url == null) url = "192.168.54.1:1521/cerndev";
+        if (url == null) url = "oracle-cern.mif:1521/cerndev";
         //url = "localhost:1521/xe";
         try {
             Class.forName("oracle.jdbc.OracleDriver");

@@ -48,6 +48,7 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 import com.google.common.collect.Maps;
+import lt.emasina.resthub.server.converter.JSON2Converter;
 
 /**
  * Data
@@ -58,6 +59,7 @@ public class Data extends PagedData {
     public final static Map<MediaType, DataConverter> CONVERTERS = Maps.newLinkedHashMap();
     public final static List<MediaType> SUPPORTED_TYPES;
     static {
+        CONVERTERS.put(new MediaType("application/json2"), new JSON2Converter());
         CONVERTERS.put(MediaType.APPLICATION_JSON, new JSONConverter());
         CONVERTERS.put(MediaType.APPLICATION_XML, new XMLConverter());
         CONVERTERS.put(MediaType.TEXT_XML, new XMLConverter());

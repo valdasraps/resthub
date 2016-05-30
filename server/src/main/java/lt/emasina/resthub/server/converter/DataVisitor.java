@@ -47,10 +47,10 @@ public abstract class DataVisitor {
     protected Object value;
     
     public abstract void startRow();
-    public abstract void visitCol();
+    public abstract void visitCol() throws Exception;
     public abstract void endRow();
     
-    public void visit(List<Object[]> data) {
+    public void visit(List<Object[]> data) throws Exception {
         if (data != null) {
             for (rowNumber = 0; rowNumber < data.size(); rowNumber++) {
                 Object[] row = data.get(rowNumber);

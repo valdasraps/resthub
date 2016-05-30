@@ -21,6 +21,7 @@
  */
 package lt.emasina.resthub.util;
 
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
  * CNameUtil
  * @author valdo
  */
-public class CNameUtil {
+public class NameUtil {
     
     private static final Pattern CNAME_PATTERN = Pattern.compile(
             "^[A-Z_a-z\\u00C0\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02ff\\u0370-\\u037d"
@@ -50,12 +51,12 @@ public class CNameUtil {
           + "\\uf900-\\ufdcf\\ufdf0-\\ufffd\\-\\.0-9\\u00b7\\u0300-\\u036f"
           + "\\u203f-\\u2040]");
     
-    public static boolean isValid(String name) {
+    public static boolean isCName(String name) {
         return CNAME_PATTERN.matcher(name).matches();
     }
     
-    public static String normalize(String name) {
-        if (isValid(name)) {
+    public static String getCName(String name) {
+        if (isCName(name)) {
             return name;
         }
         
@@ -72,5 +73,14 @@ public class CNameUtil {
         return name;
     }
     
+    public static String getJName(String name) {
+        String ename = "";
+        StringTokenizer tok = new StringTokenizer(name, " _");
+        while (tok.hasMoreTokens()) {
+            String t = tok.nextToken();
+            ename += t.substring(0, 1).toUpperCase().concat(t.substring(1).toLowerCase());
+        }
+        return ename.substring(0, 1).toLowerCase().concat(ename.substring(1));
+    }
     
 }

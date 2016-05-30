@@ -62,9 +62,19 @@ public class MdColumn extends MdEntity {
     @XmlElement(name = "NAME", required = true)
     private String name;
     
+    /**
+     * A Canonical Name version for name
+     */
     @Transient
     @XmlTransient
     private String cName;
+    
+    /**
+     * Javascript Name version for name
+     */
+    @Transient
+    @XmlTransient
+    private String jName;
 
     @Basic
     @Column(name = "TYPE", nullable = false)

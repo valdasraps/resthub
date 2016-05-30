@@ -77,8 +77,8 @@ public class TestRequest {
     
     public ClientResource deleteQuery() throws IOException { 
         return null;
-    } 
-   
+    }
+    
     public ClientResource cache() throws IOException { 
         return null;
     }

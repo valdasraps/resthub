@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import junit.framework.TestCase;
 import lt.emasina.resthub.server.ServerAppConfig;
-import lt.emasina.resthub.server.ServerAppConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
