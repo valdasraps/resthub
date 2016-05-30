@@ -188,10 +188,17 @@ class RhApi:
 
     def json(self, query, params = None, pagesize = None, page = None, verbose = False):
         """
-        Get rows in JSON format 
+        Get rows in JSON format (array of arrays)
         """
         qid = self.qid(query)
         return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose)
+    
+    def json2(self, query, params = None, pagesize = None, page = None, verbose = False):
+        """
+        Get rows in JSON2 format (array or objects)
+        """
+        qid = self.qid(query)
+        return self.data(qid, params, 'application/json2', pagesize, page, verbose = verbose)
 
 from optparse import OptionParser
 import pprint
@@ -199,7 +206,7 @@ import pprint
 USAGE = 'usage: %prog [-v] [-u URL] [ FOLDER | FOLDER.TABLE | QUERY ]'
 DEFAULT_URL = "http://vocms00169:2113"
 DEFAULT_FORMAT = "csv"
-FORMATS = [ "csv", "xml", "json" ]
+FORMATS = [ "csv", "xml", "json", "json2" ]
 
 class CLIClient:
     
@@ -313,9 +320,12 @@ class CLIClient:
                                 else:
                                     raise e
 
-                        if options.format == 'json':
+                        if options.format in ['json','json2']:
                             try:
-                                print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                if options.format == 'json':
+                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                else:
+                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
