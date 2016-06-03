@@ -73,7 +73,7 @@ public class Data extends PagedData {
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();       
-        this.printColumns = getParam(Boolean.class, "cols", false);
+        this.printColumns = isParam("_cols");
     }
     
     @Options

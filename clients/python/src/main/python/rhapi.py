@@ -57,23 +57,21 @@ class RhApi:
                 print arg, 
             print
 
-    def get(self, parts, data = None, headers = None, params = None, verbose = False):
+    def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False):
         """
         General API call (do not use it directly!)
         """
+
+        if type(params) != dict: params = {}
+        if verbose: params["_verbose"] = True
+        if cols: params["_cols"] = True
 
         #
         # Constructing request path
         #
 
         callurl = self.url + "/".join(urllib2.quote(str(p)) for p in parts)
-        if params != None:
-            callurl = callurl + "?" + "&".join(p + "=" + urllib2.quote(str(params[p])) for p in params.keys())
-            if verbose:
-                callurl = callurl + "&_verbose"
-        else:
-            if verbose:
-                callurl = callurl + "?_verbose"
+        callurl = callurl + "?" + "&".join(p + "=" + urllib2.quote(str(params[p])) for p in params.keys())
 
         sdata = None
         if data != None:
@@ -110,6 +108,12 @@ class RhApi:
             else:
                 return rdata
 
+    def info(self, verbose = False):
+        """
+        Get server version information
+        """
+        return self.get(["info"], verbose = verbose)
+    
     def folders(self, verbose = False):
         """
         Get list of folders
@@ -151,7 +155,7 @@ class RhApi:
         """
         return int(self.get(["query", qid, "count"], params = params, verbose = verbose))
 
-    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False):
+    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False, cols = False):
         """
         Get data rows
         """
@@ -170,7 +174,7 @@ class RhApi:
                 ps.extend(["page", pagesize, page]);
                 
         ps.append("data")
-        return self.get(ps, None, { "Accept": form }, params, verbose = verbose)
+        return self.get(ps, None, { "Accept": form }, params, verbose = verbose, cols = cols)
 
     def csv(self, query, params = None, pagesize = None, page = None, verbose = False):
         """
@@ -186,19 +190,19 @@ class RhApi:
         qid = self.qid(query)
         return self.data(qid, params, 'text/xml', pagesize, page, verbose = verbose)
 
-    def json(self, query, params = None, pagesize = None, page = None, verbose = False):
+    def json(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False):
         """
         Get rows in JSON format (array of arrays)
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose)
+        return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose, cols = cols)
     
-    def json2(self, query, params = None, pagesize = None, page = None, verbose = False):
+    def json2(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False):
         """
         Get rows in JSON2 format (array or objects)
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'application/json2', pagesize, page, verbose = verbose)
+        return self.data(qid, params, 'application/json2', pagesize, page, verbose = verbose, cols = cols)
 
 from optparse import OptionParser
 import pprint
@@ -220,6 +224,8 @@ class CLIClient:
         self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
         self.parser.add_option("-g", "--page",     dest = "page",     help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
+        self.parser.add_option("-l", "--cols",     dest = "cols",     help = "add column metadata if possible. Default: false", action = "store_true", default = False)
+        self.parser.add_option("-i", "--info",     dest = "info",     help = "print server version information", action = "store_true", default = False)
         self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
         self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA", action = "store_true", default = False)
         self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
@@ -234,6 +240,11 @@ class CLIClient:
             (options, args) = self.parser.parse_args()
 
             api = RhApi(options.url, debug = options.verbose)
+
+            # Info
+            if options.info:
+                self.pprint(api.info(verbose = options.verbose))
+                return 0
 
             # Folders
             if len(args) == 0:
@@ -323,9 +334,9 @@ class CLIClient:
                         if options.format in ['json','json2']:
                             try:
                                 if options.format == 'json':
-                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
                                 else:
-                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0

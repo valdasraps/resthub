@@ -43,6 +43,7 @@ public class ServerTest extends ServerSetup {
         checks.check(new TestQuery.Builder("q2", "SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;", "?p1=1000", null).build());
         checks.check(new TestQuery.Builder("q3", "SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a", "?brand=Bravo", new HashMap<String, String>() {{ put("Range", "rows=0-9"); }} ).build());
         checks.check(new TestQuery.Builder("q4", "SELECT * FROM store.sales a", null, null).build());
+        checks.check(new TestQuery.Builder("q5", "SELECT * FROM store.products p", "?_cols", null).build());
     }
     
     @Test
