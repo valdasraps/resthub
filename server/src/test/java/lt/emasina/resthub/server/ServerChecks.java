@@ -138,8 +138,8 @@ public class ServerChecks {
                 prop.setProperty(contentType, data);
             } else {
                 
-                log.info(String.format("Comparing data: %s @ %s...", contentType, dataFile));
-                compareData(contentType, prop.getProperty(contentType), data);
+                log.info(String.format("Comparing data: %s @ %s...", get.getMediaType().toString(), dataFile));
+                compareData(get.getMediaType().toString(), prop.getProperty(contentType), data);
                 
                 // Get unique content types
                 headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
