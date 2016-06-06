@@ -21,12 +21,16 @@
  */
 package lt.emasina.resthub.server.app;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import javax.inject.Inject;
 
 import lt.emasina.resthub.server.exporter.CountExporter;
 import lt.emasina.resthub.server.factory.ResourceFactory;
 import lt.emasina.resthub.server.handler.CountHandler;
 import lt.emasina.resthub.server.query.Query;
+import org.restlet.data.Method;
 
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
@@ -53,9 +57,9 @@ public class Count extends ServerBaseResource {
     
     @Options
     public void define() {
-        addHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-        addHeader("Access-Control-Allow-Headers", "Content-Type");
-        addHeader("Content-Type", "text/plain");
+        getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.GET, Method.OPTIONS)));
+        getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
+        addHeader("X-Content-Types", "text/plain");
     }
 
     @Get

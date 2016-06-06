@@ -42,14 +42,13 @@ import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.header.Header;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.util.Series;
 
 import com.google.inject.Inject;
 import lt.emasina.resthub.server.ServerAppConfig;
+import org.restlet.data.Header;
 
 /**
  * BaseResource class
@@ -241,29 +240,19 @@ public abstract class BaseResource extends ServerResource {
     }
     
     @SuppressWarnings("unchecked")
-	public static void addHeader(Message message, String name, String value) {
-        Series<Header> headers = (Series<Header>)
-        message.getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-        if (headers == null) {
-            headers = new Series<>(Header.class);
-            message.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
-        }
-        headers.add(new Header(name, value));
+    public static void addHeader(Message message, String name, String value) {
+        message.getHeaders().add(new Header(name, value));
     }
     
     @SuppressWarnings("unchecked")
-	public static void removeHeader(Message message, String name, String value) {
-        Series<Header> headers = (Series<Header>)
-        message.getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-        if (headers != null) {
-            Set<Header> headersToRemove = new HashSet<>();
-            for(Header header: headers) {
-                if (header.getName().equals(name) && header.getValue().equals(value)){
-                    headersToRemove.add(header);
-                }
+    public static void removeHeader(Message message, String name, String value) {
+        Set<Header> headersToRemove = new HashSet<>();
+        for(Header header: message.getHeaders()) {
+            if (header.getName().equals(name) && header.getValue().equals(value)){
+                headersToRemove.add(header);
             }
-            headers.removeAll(headersToRemove);
         }
+        message.getHeaders().removeAll(headersToRemove);
     }
     
 }

@@ -10,8 +10,8 @@ import lombok.Setter;
 import lt.emasina.resthub.server.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
@@ -70,7 +70,7 @@ public class TestRequest {
         client.release();
 
         assertTrue(client.getStatus().isSuccess());
-        assertEquals(200, client.getStatus().getCode());
+        assertEquals(204, client.getStatus().getCode());
         
         return client;
     }

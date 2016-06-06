@@ -47,7 +47,7 @@ public class TestQuery extends TestRequest {
         log.debug("Deleting cache: " + url);
  
         assertTrue(client.getStatus().isSuccess());
-        assertEquals(200, client.getStatus().getCode());
+        assertEquals(204, client.getStatus().getCode());
         
         return client;
     } 

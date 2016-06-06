@@ -48,7 +48,11 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import lt.emasina.resthub.server.converter.JSON2Converter;
+import org.restlet.data.Method;
 
 /**
  * Data
@@ -78,13 +82,13 @@ public class Data extends PagedData {
     
     @Options
     public void define() {
-        addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        addHeader("Access-Control-Allow-Headers", "Content-Type");     
+        getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
+        getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.POST, Method.GET, Method.OPTIONS)));
         StringBuilder sb = new StringBuilder();
         for (MediaType mt: SUPPORTED_TYPES) {
             sb.append(sb.length() > 0 ? "," : "").append(mt);
         }
-        addHeader("Content-Type", sb.toString());
+        addHeader("X-Content-Types", sb.toString());
     }
     
     @Post("text")

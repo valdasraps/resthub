@@ -24,7 +24,7 @@ public class Query {
     private String md5;
     private boolean eternal;
     
-    private Map<String, String> metadata;
+    private final Map<String, String> metadata;
     private Map<String, Long> stats;
 
     public Query(String id, JSONObject ob, boolean v) throws JSONException {

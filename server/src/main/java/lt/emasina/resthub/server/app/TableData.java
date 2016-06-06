@@ -22,9 +22,13 @@
 package lt.emasina.resthub.server.app;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import lt.emasina.resthub.model.MdTable;
 import lt.emasina.resthub.server.table.ServerTable;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.resource.Get;
 import org.restlet.resource.Options;
 import org.restlet.resource.ResourceException;
@@ -42,13 +46,13 @@ public class TableData extends ServerBaseResource {
     
     @Options
     public void define() {
-        addHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-        addHeader("Access-Control-Allow-Headers", "Content-Type");     
+        getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.GET, Method.OPTIONS)));
+        getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
         StringBuilder sb = new StringBuilder();
         for (MediaType mt: Data.SUPPORTED_TYPES) {
             sb.append(sb.length() > 0 ? "," : "").append(mt);
         }
-        addHeader("Content-Type", sb.toString());
+        addHeader("X-Content-Types", sb.toString());
     }
     
     @Get

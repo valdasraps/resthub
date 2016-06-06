@@ -20,8 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
-import org.restlet.engine.header.Header;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
@@ -56,7 +56,7 @@ public class ServerChecks {
         }
         
         // Getting available content types 
-        String ct = (String) headers.get("Content-Type");
+        String ct = (String) headers.get("X-Content-Types");
         String[] contentTypes = ct.split(",");     
         
         // Check each contentType   
@@ -120,7 +120,7 @@ public class ServerChecks {
         
         query.deleteCache(); 
         
-        String[] contentTypes = headers.getValues("Content-Type").split(",");
+        String[] contentTypes = headers.getValues("X-Content-Types").split(",");
         ArrayList<String> mimeTypes = new ArrayList<>();   
         
         // Check each contentType

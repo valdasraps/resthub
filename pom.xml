@@ -16,6 +16,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <restlet-version>2.3.7</restlet-version>
     </properties>
     
     <licenses>
@@ -85,11 +86,11 @@
     </modules>
     
     <repositories>
-        <repository>  
-            <id>maven-restlet</id>  
-            <name>Public online Restlet repository</name>  
-            <url>http://maven.restlet.org</url>  
-        </repository>  
+        <repository>
+            <id>maven-restlet</id>
+            <name>Restlet repository</name>
+            <url>https://maven.restlet.com</url>
+        </repository>
         <repository>
             <id>valdasraps-releases</id>
             <url>https://github.com/valdasraps/mvn-repo/raw/master/releases</url>
@@ -104,7 +105,7 @@
         <dependency>
             <groupId>org.restlet.jse</groupId>  
             <artifactId>org.restlet.ext.json</artifactId>  
-            <version>2.1.4</version>  
+            <version>${restlet-version}</version>  
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -144,17 +145,17 @@
         <dependency>  
             <groupId>org.restlet.jse</groupId>  
             <artifactId>org.restlet</artifactId>  
-            <version>2.1.4</version>  
+            <version>${restlet-version}</version>  
         </dependency>  
         <dependency>  
             <groupId>org.restlet.jse</groupId>  
             <artifactId>org.restlet.ext.simple</artifactId>  
-            <version>2.1.4</version>  
+            <version>${restlet-version}</version>  
         </dependency>
         <dependency>  
             <groupId>org.restlet.jse</groupId>  
             <artifactId>org.restlet.ext.xml</artifactId>  
-            <version>2.1.4</version>  
+            <version>${restlet-version}</version>  
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>

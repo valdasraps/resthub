@@ -21,10 +21,14 @@
  */
 package lt.emasina.resthub.server.app;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import lt.emasina.resthub.server.exception.ClientErrorException;
 import lt.emasina.resthub.server.exception.ServerErrorException;
 import lt.emasina.resthub.server.table.TableId;
 import org.json.JSONException;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Delete;
@@ -49,9 +53,9 @@ public class BlacklistTable extends ServerBaseResource {
     
     @Options
     public void define() {
-        addHeader("Access-Control-Allow-Methods", "GET, DELETE, OPTIONS");
-        addHeader("Access-Control-Allow-Headers", "Content-Type");
-        addHeader("Content-Type", "application/json");
+        getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.DELETE, Method.GET, Method.OPTIONS)));
+        getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
+        addHeader("X-Content-Types", "application/json");
     }
 
     @Get

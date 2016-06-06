@@ -19,9 +19,8 @@ import lombok.Setter;
 import lt.emasina.resthub.util.Helper;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
-import org.restlet.engine.header.Header;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -52,9 +51,6 @@ public class QueryManager {
     @Getter @Setter
     private long ppage = 0;
     
-    @Getter @Setter
-    private boolean forceRefresh = false;
-    
     private final ReentrantReadWriteLock readWriteLock;
     private final Lock read;
     private final Lock write;
@@ -62,7 +58,7 @@ public class QueryManager {
     public QueryManager(String url, String sql) {
         this.url = url;
         this.entity = sql;
-        this.readWriteLock =  new ReentrantReadWriteLock();
+        this.readWriteLock = new ReentrantReadWriteLock();
         this.read  = readWriteLock.readLock();
         this.write = readWriteLock.writeLock();
     }
@@ -82,48 +78,43 @@ public class QueryManager {
         }
     }
     
+    public JSONObject getMetadata() throws JSONException, IOException {
+        return getMetadata(false);
+    }
+    
     /**
      * Gets metadata from server and returns JSONObject. There is one request to 
      * server.
      * 
+     * @param forceRefresh
      * @return An JSONObject object.
      * @throws org.json.JSONException
      * @throws java.io.IOException
      */
-    public JSONObject getMetadata() throws JSONException, IOException{
+    public JSONObject getMetadata(boolean forceRefresh) throws JSONException, IOException {
+        
+        if (id == null || forceRefresh) {
+            refresh();
+        }
+            
         this.read.lock();
         try {
-            
-            if ((id == null) || (forceRefresh)) {
-                this.read.unlock();
-                refresh();
-                this.read.lock();
-            }
 
             String path = "/query/" + id;
             ClientResource client = new ClientResource(this.url + path);
-            try {
-
-                client.get();
-                client.release();
+            client.get();
+            client.release();
                 
-            } catch (ResourceException e) {
-                if (!forceRefresh && e.getStatus().getCode() == 404) {
-                    forceRefresh = true;
-                    this.read.unlock();
-                    try {
-                        return getMetadata();
-                    } finally {
-                        this.read.lock();
-                    }
-                } else {
-                    return null;
-                }
-            }
-            
             Representation r = client.getResponseEntity();
             return new JSONObject(r.getText());
             
+        } catch (ResourceException e) {
+            this.read.unlock();
+            if (!forceRefresh && e.getStatus().getCode() == 404) {
+                return getMetadata(true);
+            } else {
+                return null;
+            }
         } finally {
             this.read.unlock();
         }
@@ -139,7 +130,21 @@ public class QueryManager {
      * @throws org.json.JSONException
      */  
     public DataResponse getData(String contentType) throws IOException, JSONException {        
-        return getData(MediaType.valueOf(contentType));
+        return getData(MediaType.valueOf(contentType), false);
+    }
+    
+    /**
+     * Gets getData from server and returns String. There is one request to 
+     * server.
+     * 
+     * @param contentType Content type of the string.
+     * @param forceRefresh
+     * @return An String object.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
+     */  
+    public DataResponse getData(String contentType, boolean forceRefresh) throws IOException, JSONException {        
+        return getData(MediaType.valueOf(contentType), forceRefresh);
     }
     
     /**
@@ -152,16 +157,26 @@ public class QueryManager {
      * @throws org.json.JSONException
      */  
     public DataResponse getData(MediaType mediaType) throws IOException, JSONException {
+        return getData(mediaType, false);
+    }
+    
+    /**
+     * Gets getData from server and returns String. There is one request to 
+     * server.
+     * 
+     * @param mediaType MediaType of the string.
+     * @param forceRefresh
+     * @return An String object.
+     * @throws java.io.IOException
+     * @throws org.json.JSONException
+     */  
+    public DataResponse getData(MediaType mediaType, boolean forceRefresh) throws IOException, JSONException {
+        if (id == null || forceRefresh) {
+            refresh();
+        }
+        
         this.read.lock();
         try {
-            if ((id == null) || (forceRefresh)) {
-                this.read.unlock();
-                try {
-                    refresh();
-                } finally {
-                    this.read.lock();
-                }
-            }
 
             String path = "/query/" + id;
             if (ppage > 0 && page > 0) {
@@ -200,10 +215,9 @@ public class QueryManager {
                 
             } catch (ResourceException e) {
                 if (!forceRefresh && e.getStatus().getCode() == 404) {
-                    forceRefresh = true;
                     this.read.unlock();
                     try {
-                        return getData(mediaType);
+                        return getData(mediaType, true);
                     } finally {
                         this.read.lock();
                     }
@@ -273,12 +287,7 @@ public class QueryManager {
     }
 
     private void addHeaders(ClientResource client) {
-        Series<Header> reqHeaders = (Series<Header>) client.getRequestAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
-        if (reqHeaders == null) {
-            reqHeaders = new Series(Header.class);
-            client.getRequestAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, reqHeaders);
-        }
-
+        Series<Header> reqHeaders = client.getRequest().getHeaders();
         Iterator it = headers.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
@@ -307,18 +316,17 @@ public class QueryManager {
     }
     
     public Map options() throws IOException {
+        return options(false);
+    }
+    
+    public Map options(boolean forceRefresh) throws IOException {
+        
+        if (id == null || forceRefresh) {
+            refresh();
+        }
         
         this.read.lock();
         try {
-            Map m;
-            if ((id == null) || (forceRefresh)) {
-                this.read.unlock();
-                try {
-                    refresh();
-                } finally {
-                    this.read.lock();
-                }
-            }
             String path = "/query/" + id + "/data";
             ClientResource client = new ClientResource(this.url + path);
             if (headers != null) {
@@ -327,41 +335,14 @@ public class QueryManager {
             client.options();
             client.release();
             
-            m = ((Series) client.getResponseAttributes().get("org.restlet.http.headers")).getValuesMap();
-            return m;
+            return ((Series) client.getResponseAttributes().get("org.restlet.http.headers")).getValuesMap();
+            
         } finally {
             this.read.unlock();
         }
     }
-    
-//    public Object metaDataObject() throws IOException, JSONException {
-//        if ((id == null) || (forceRefresh)) {
-//            refresh();
-//        }
-//
-//        String path = "/query/" + id + "?v=" + isVerbose();
-//
-//        ClientResource client = new ClientResource(this.url + path);
-//        if (headers != null) {
-//            addHeaders(client);
-//        }
-//        if (getMediaType() == null) {
-//            client.get();
-//        } else {
-//            client.get(getMediaType());
-//        }
-//        String r = client.getResponseEntity().getText();
-//        if (getMediaType() == MediaType.APPLICATION_JSON) {
-//            return new JSONObject(r);
-//        }
-//        return r;
-//    }
 
-//    public Object columnsObject() throws IOException, JSONException {
-//        return ((JSONObject) metaDataObject()).get("columns");
-//    }
-
-    private Query getQ(boolean v) throws JSONException, IOException {
+    private Query getQ(boolean v, boolean forceRefresh) throws JSONException, IOException {
         if ((id == null) || (forceRefresh)) {
             refresh();
         }
@@ -383,7 +364,7 @@ public class QueryManager {
      * @throws java.io.IOException
      */
     public Query getQuery() throws JSONException, IOException {
-        return getQ(false);
+        return getQ(false, false);
     }
 
     /**
@@ -395,7 +376,7 @@ public class QueryManager {
      * @throws java.io.IOException
      */
     public Query getVerboseQuery() throws JSONException, IOException {
-        return getQ(true);
+        return getQ(true, false);
     }
     
     /**

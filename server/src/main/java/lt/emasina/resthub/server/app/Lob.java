@@ -22,6 +22,9 @@
 package lt.emasina.resthub.server.app;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.model.MdType;
 import lt.emasina.resthub.server.cache.CacheStats;
@@ -36,6 +39,7 @@ import lt.emasina.resthub.server.converter.LobConverter;
 import lt.emasina.resthub.server.exporter.LobExporter;
 import lt.emasina.resthub.server.handler.LobHandler;
 import static lt.emasina.resthub.server.util.ClientAssert.badRequestIfNot;
+import org.restlet.data.Method;
 
 /**
  * Lob
@@ -73,9 +77,9 @@ public class Lob extends PagedData {
     
     @Options
     public void define() {
-        addHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-        addHeader("Access-Control-Allow-Headers", "Content-Type");     
-        addHeader("Content-Type", this.handler.getMediaType().toString());
+        getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.GET, Method.OPTIONS)));
+        getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
+        addHeader("X-Content-Types", this.handler.getMediaType().toString());
     }
     
     @Get

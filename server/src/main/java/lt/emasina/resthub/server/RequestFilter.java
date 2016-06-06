@@ -21,7 +21,6 @@
  */
 package lt.emasina.resthub.server;
 
-import lt.emasina.resthub.server.app.BaseResource;
 
 import org.restlet.Context;
 import org.restlet.Request;
@@ -40,7 +39,8 @@ public class RequestFilter extends Filter {
     
     @Override
     protected void afterHandle(Request request, Response response) {
-        BaseResource.addHeader(response, "Access-Control-Allow-Origin", "*");
+        //BaseResource.addHeader(response, "Access-Control-Allow-Origin", "*");
+        response.setAccessControlAllowOrigin("*");
         super.afterHandle(request, response);
     }
 
