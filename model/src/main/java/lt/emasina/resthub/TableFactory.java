@@ -22,6 +22,7 @@
 package lt.emasina.resthub;
 
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lt.emasina.resthub.model.MdTable;
@@ -30,7 +31,7 @@ import lt.emasina.resthub.model.MdTable;
  * Table factory class
  * @author audrius
  */
-public abstract class TableFactory implements AutoCloseable{
+public abstract class TableFactory implements AutoCloseable {
     
     protected static final String TABLE_SOURCE_KEY = "Source";
 
@@ -39,6 +40,16 @@ public abstract class TableFactory implements AutoCloseable{
     
     @Getter @Setter
     private TableFactory next = null;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private ConnectionFactory cf;
+    
+    public void init(ConnectionFactory cf) {
+        this.cf = cf;
+        if (next != null) {
+            next.init(cf);
+        }
+    }
 
     public void closeAll() throws Exception {
         TableFactory tf = this;

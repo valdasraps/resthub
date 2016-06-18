@@ -7,20 +7,35 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>resthub</artifactId>
-        <version>0.6.10</version>
+        <version>0.6.11</version>
     </parent>
     
     <artifactId>server</artifactId>
     <packaging>jar</packaging>
     <name>server</name>
     
+    <properties>
+        <!--test.server.url>oracle-cern.mif:1521/cerndev</test.server.url-->
+        <test.server.url>localhost:1521/xe</test.server.url>
+        <test.server.user>resthub_test</test.server.user>
+        <test.server.passwd>test</test.server.passwd>
+    </properties>
+    
     <build>
+        
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        
         <plugins>
             
             <plugin>

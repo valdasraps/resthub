@@ -38,7 +38,7 @@ public class ResponseStatusService extends StatusService {
             ret.setMediaType(MediaType.TEXT_PLAIN);
             return ret;
         }
-        return super.getRepresentation(status, request, response);
+        return super.toRepresentation(status, request, response);
     }
 
 }

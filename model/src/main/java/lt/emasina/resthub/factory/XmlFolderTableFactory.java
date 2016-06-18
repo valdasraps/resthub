@@ -54,10 +54,7 @@ public class XmlFolderTableFactory extends XmlTableFactory {
         
     public XmlFolderTableFactory(String folderName) throws IOException, SAXException, JAXBException {
         this.folder = Paths.get(folderName).toFile();
-        
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Will be looking for tables xml at %s", folderName));
-        }
+        log.info(String.format("Will be looking for tables xml at %s", folderName));
     }
     
     private boolean isValid() {
@@ -113,9 +110,7 @@ public class XmlFolderTableFactory extends XmlTableFactory {
                     log.info(String.format("%d tables loaded from XML file: %s", numTables, xmlFile));
                     
                 } catch (Exception ex) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Error while loading tables from XML file %s: %s", xmlFile, ex));
-                    }
+                    log.warn(String.format("Error while loading tables from XML file %s: %s", xmlFile, ex));
                 }
                 
             }

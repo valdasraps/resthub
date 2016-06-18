@@ -74,6 +74,9 @@ public class ServerApp extends BaseApp {
         }
         
         final Scheduler scheduler = schedulerFactory.getScheduler();
+        
+        // Initialize tableFactory recursively
+        tableFactory.init(connectionFactory);
 
         this.applicationModules = new AbstractModule[] { 
             new AbstractModule() {

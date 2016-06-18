@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
+import lt.emasina.resthub.ConnectionFactory;
 import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.factory.TableBuilder;
 import org.apache.commons.beanutils.BeanUtils;

@@ -80,6 +80,10 @@ public class ServerChecks {
     }
     
     public void check(TestRequest query) throws IOException, URISyntaxException, org.json.JSONException {
+        check(query, Boolean.FALSE);
+    }
+    
+    public void check(TestRequest query, Boolean skipData) throws IOException, URISyntaxException, org.json.JSONException {
                 
         ClientResource client = query.options();
 
@@ -94,6 +98,8 @@ public class ServerChecks {
         } else {
             compareHeaders(headers, inputStream);
         }
+        
+        if (skipData) return;
              
         // Checking data
         

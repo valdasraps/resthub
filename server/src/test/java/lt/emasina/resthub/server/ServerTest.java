@@ -27,9 +27,9 @@ public class ServerTest extends ServerSetup {
     public void requestTest() throws IOException, URISyntaxException, org.json.JSONException {
         
         // Check Requests
-       
+               
         checks.check(new TestRequest.Builder("i0","/info").build());
-        checks.check(new TestRequest.Builder("r1","/queries").build());
+        checks.check(new TestRequest.Builder("r1","/queries").build(), Boolean.TRUE);
         checks.check(new TestRequest.Builder("r2","/tables").build());
         checks.check(new TestRequest.Builder("r3","/table/store/customer").build());
         checks.check(new TestRequest.Builder("r4","/table/store/sales").build());
