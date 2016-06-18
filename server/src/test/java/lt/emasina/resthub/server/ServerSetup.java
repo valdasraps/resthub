@@ -9,9 +9,11 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import lt.emasina.resthub.support.TestConnectionFactory;
 import lombok.extern.log4j.Log4j;
+import lt.emasina.resthub.ConnectionFactory;
 import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.factory.XmlFolderTableFactory;
 import lt.emasina.resthub.factory.XmlResourceTableFactory;
+import lt.emasina.resthub.support.TestSqlTableFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -32,15 +34,16 @@ public class ServerSetup {
     private static final String XML_RESOURCE = "/lt/emasina/server/xml/tables.xml";
     protected static final String XML_FOLDER = "target/test/folder";
 
-    protected static final Path folder = Paths.get(XML_FOLDER);
+    protected static final Path FOLDER = Paths.get(XML_FOLDER);
     
     protected static Component comp;
+    protected static ConnectionFactory cf;
     
     @BeforeClass
     public static void startServer() throws Exception {
         
-        if (Files.exists(folder)) {
-            Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+        if (Files.exists(FOLDER)) {
+            Files.walkFileTree(FOLDER, new SimpleFileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -61,10 +64,13 @@ public class ServerSetup {
         cfg.setUpdateInterval(10);
         cfg.setServiceVersion("1.11.11");
         
-        ServerApp app = new ServerApp(new TestConnectionFactory(), 
+        cf = new TestConnectionFactory();
+        
+        ServerApp app = new ServerApp(cf, 
                 new TableFactory.Builder()
                     .add(new XmlResourceTableFactory(XML_RESOURCE))
                     .add(new XmlFolderTableFactory(XML_FOLDER))
+                    .add(new TestSqlTableFactory())
                         .build(), cfg);
         comp = new Component();
         comp.getServers().add(Protocol.HTTP, 8112);
@@ -78,13 +84,13 @@ public class ServerSetup {
     }
     
     protected static void deleteFile(String fileName) throws IOException {
-        Path file = folder.resolve(fileName); 
+        Path file = FOLDER.resolve(fileName); 
         Files.deleteIfExists(file);
     }
     
     protected static void copyFile(String fileName) throws IOException {
         Path src = Paths.get("src/test/resources/lt/emasina/server/xml/" + fileName);
-        Path tar = folder.resolve(fileName); 
+        Path tar = FOLDER.resolve(fileName); 
         deleteFile(fileName);
         Files.copy(src, tar);
     }

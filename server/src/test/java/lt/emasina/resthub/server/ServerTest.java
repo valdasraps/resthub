@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.restlet.resource.ResourceException;
 import org.w3c.dom.Text;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
 
 @Log4j
 @RunWith(JUnit4.class)

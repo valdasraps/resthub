@@ -10,6 +10,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Log4j
 @Getter

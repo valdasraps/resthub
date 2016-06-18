@@ -1,7 +1,8 @@
 package lt.emasina.resthub;
 
-import lt.emasina.resthub.server.ServerTableFactoryTest;
+import lt.emasina.resthub.server.XmlServerTableFactoryTest;
 import lt.emasina.resthub.server.ServerTest;
+import lt.emasina.resthub.server.SqlServerTableFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -13,7 +14,9 @@ import org.junit.runners.Suite.SuiteClasses;
     ServerAppConfigTest.class,
     UpdateParserTest.class,
     
-    ServerTableFactoryTest.class,
+    XmlServerTableFactoryTest.class,
+    SqlServerTableFactoryTest.class,
+    
     ServerTest.class
         
 })

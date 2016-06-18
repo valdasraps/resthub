@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import lt.emasina.resthub.ConnectionFactory;
 import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.factory.TableBuilder;
 import org.apache.commons.beanutils.BeanUtils;
@@ -74,7 +73,7 @@ public class MetadataFactory implements MetadataFactoryIf {
             boolean doRefresh = forceRefresh || tf.isRefresh();
 
             if (log.isDebugEnabled()) {
-                log.debug(String.format("forceRefresh = %s, doRefresh = %s", forceRefresh, doRefresh));
+                log.debug(String.format("tf = %s, forceRefresh = %s, doRefresh = %s", tf, forceRefresh, doRefresh));
             }
 
             // Update is needed!
@@ -325,7 +324,7 @@ public class MetadataFactory implements MetadataFactoryIf {
             
             if (old != null) {
                 for (TableId id: old) {
-                    if (!tfs.get(tf).contains(id)) {
+                    if (!tfs.containsKey(tf) || !tfs.get(tf).contains(id)) {
 
                         qf.removeQueries(id);
                         

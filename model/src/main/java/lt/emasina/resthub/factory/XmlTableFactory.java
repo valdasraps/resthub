@@ -41,7 +41,7 @@ public abstract class XmlTableFactory extends TableFactory {
 
     protected static final Pattern XML_FILE = Pattern.compile(".*\\.xml", Pattern.CASE_INSENSITIVE);
     private static final String XML_SCHEMA_FILE = "/lt/emasina/resthub/factory/xml/schema.xsd";
-    private static final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    private static final SchemaFactory FACTORY = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
     
     private final JAXBContext context;
     private final Unmarshaller unmarshaller;
@@ -51,7 +51,7 @@ public abstract class XmlTableFactory extends TableFactory {
         this.context = JAXBContext.newInstance(MdTables.class);
         this.unmarshaller = context.createUnmarshaller();
         try (InputStream is = XmlTableFactory.class.getResourceAsStream(XML_SCHEMA_FILE)) {
-            this.unmarshaller.setSchema(factory.newSchema(new StreamSource(is)));
+            this.unmarshaller.setSchema(FACTORY.newSchema(new StreamSource(is)));
         }
     }
     

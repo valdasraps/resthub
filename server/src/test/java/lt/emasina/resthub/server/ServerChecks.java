@@ -26,6 +26,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
 import org.skyscreamer.jsonassert.JSONAssert;
+import static junit.framework.TestCase.assertEquals;
 
 @Log4j
 public class ServerChecks {

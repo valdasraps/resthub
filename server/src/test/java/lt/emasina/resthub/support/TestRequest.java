@@ -15,6 +15,8 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -110,6 +112,10 @@ public class TestRequest {
     public static class Builder {
         
         private final TestRequest req = new TestRequest();
+        
+        public Builder(String path) {
+            req.path = path;
+        }
         
         public Builder(String prefix, String path) {
             req.prefix = prefix;

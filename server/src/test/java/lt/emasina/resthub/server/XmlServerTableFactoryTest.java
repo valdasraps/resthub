@@ -14,7 +14,7 @@ import org.restlet.data.MediaType;
 
 @Log4j
 @RunWith(JUnit4.class)
-public class ServerTableFactoryTest extends ServerSetup {
+public class XmlServerTableFactoryTest extends ServerSetup {
 
     @Test
     public void refreshTests() throws Exception {
@@ -26,7 +26,7 @@ public class ServerTableFactoryTest extends ServerSetup {
         
         // No tables from files (empty directory)
         
-        Files.createDirectories(folder);       
+        Files.createDirectories(FOLDER);       
         Thread.sleep(11000);
         
         testEmpty();
