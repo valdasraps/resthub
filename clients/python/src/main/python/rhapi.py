@@ -1,9 +1,8 @@
 import urllib2
 import re
-import simplejson as json
+import json
 import sys
 import xml.dom.minidom as minidom
-
 """
 Python object that enables connection to RestHub API.
 Errors, fixes and suggestions to be sent to project 
@@ -28,6 +27,17 @@ class RhApiPageSizeError(Exception):
         
     def __str__(self):
         return 'Page size (%d) is larger than rows limit (%d) for a single result' % (self.pageSize, self.rowsLimit)
+
+class BadColumnNameError(Exception):
+    
+    def __init__(self, bad_column, columns_list, table_name):
+        self.bad_column = bad_column
+        self.columns_list = columns_list
+        self.table_name = table_name
+    def __str__(self):
+        return 'Column name (%s) does not exist in the table (%s). Try these columns: (%s).'\
+             % (self.bad_column, self.table_name, json.dumps(self.columns_list))
+
 
 
 class RhApi:
@@ -220,7 +230,7 @@ class CLIClient:
         self.parser = OptionParser(USAGE)
         self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output", action = "store_true", default = False)
         self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL", metavar = "URL", default=DEFAULT_URL)
-        self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT", default=DEFAULT_FORMAT)
+        self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT")
         self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
         self.parser.add_option("-g", "--page",     dest = "page",     help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
@@ -232,6 +242,72 @@ class CLIClient:
 
     def pprint(self, data):
         self.pp.pprint(data)
+
+    def basicSelect(self, arg, api, param, verbose):
+        split_arg = arg.split(".")
+        table_metadata = api.table(split_arg[0], split_arg[1], verbose=verbose)
+        table_name = split_arg[1]
+        # get table names list from meta data
+        column_names_list = []
+        for i in table_metadata["columns"]:
+            column_names_list.append(i["name"])
+        
+        arg = 'select * from ' + arg + ' a'
+        # get and save to list values from p parameters
+        params_length = 0
+        if param is not None:
+            param.sort()
+            
+        if param:
+            param_column_names_list = []
+            param_column_value_list = [] 
+            split_where = []
+            params_length = len(param)
+            # assign param values to lists
+            for i in param:
+                split_where = i.split("=")
+                param_column_names_list.append(split_where[0])
+                param_column_value_list.append(split_where[1])
+            
+            # check if value of first parameter belongs to column names                                
+            for i in param_column_names_list:
+                if i not in column_names_list:
+                    raise BadColumnNameError(i, column_names_list, table_name)
+                
+        if params_length != 0:
+            # build where statements            
+            previous = next = None
+            for index, obj in enumerate(param_column_names_list):
+                if index > 0:
+                    previous = param_column_names_list[index-1]
+                if index < (params_length -1):
+                    next = param_column_names_list[index+1]
+                if params_length == 1:
+                    arg = arg + " where a." + param_column_names_list[index] + " = :" + param_column_names_list[index]                
+                else:
+                    if index == 0:
+                        if param_column_names_list[index] == next:
+                            arg = arg + " where (a." + param_column_names_list[index] + " = :" + param_column_names_list[index]
+                        else:
+                            arg = arg + " where a." + param_column_names_list[index] + " = :" + param_column_names_list[index]
+                    else:
+                        if previous == param_column_names_list[index]:
+                            
+                            if param_column_names_list[index] != next:
+                                arg = arg + " or a." + param_column_names_list[index] + " = :" + param_column_names_list[index] + str(index) + ")"
+                                param[index] = param_column_names_list[index] + str(index) + '=' + param_column_value_list[index]
+                            else:
+                                arg = arg + " or a." + param_column_names_list[index] + " = :" + param_column_names_list[index] + str(index)
+                                param[index] = param_column_names_list[index] + str(index) + '=' + param_column_value_list[index]
+                        else:
+                            if param_column_names_list[index] != next:
+                                arg = arg + " and a." + param_column_names_list[index] + " = :" + param_column_names_list[index]
+                            else:
+                                arg = arg + " and ( a." + param_column_names_list[index] + " = :" + param_column_names_list[index]                  
+                
+                previous = next = None
+                
+        return arg, param
 
     def run(self):
 
@@ -262,15 +338,22 @@ class CLIClient:
                 self.pprint(api.tables(arg, verbose = options.verbose))
                 return 0
 
+
             # FOLDER.TABLE
-            if re.match("^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$", arg) is not None:
+            if ((re.match("^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$", arg) is not None) and (options.format is None)):
                 parts = arg.split(".")
                 self.pprint(api.table(parts[0], parts[1], verbose = options.verbose))
                 return 0
-
+            
+            # if format is Null, assign format to default format
+            if options.format is None:
+                options.format = DEFAULT_FORMAT
+            
             # QUERY
-            if re.match("^select ", arg, re.IGNORECASE) is not None:
-
+            if re.match("^select ", arg, re.IGNORECASE) is not None or \
+            (re.match("^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$", arg) is not None and (options.format is not None)):
+                if (re.match("^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$", arg) is not None and (options.format is not None)):
+                    arg, options.param = self.basicSelect(arg, api, options.param, options.verbose)                    
                 params = {}
                 if options.param:
                     for ps in options.param:
@@ -335,8 +418,12 @@ class CLIClient:
                             try:
                                 if options.format == 'json':
                                     print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
+                                    #print_json = api.json(arg, params=params, pagesize=options.size, page=options.page, verbose=options.verbose, cols=options.cols)
+                                    #print (json.dumps(print_json, sort_keys=True, indent=4, separators=(',', ': ')))
                                 else:
                                     print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
+                                    #print_json = api.json(arg, params=params, pagesize=options.size, page=options.page, verbose=options.verbose, cols=options.cols)
+                                    #print (json.dumps(print_json, sort_keys=True, indent=4, separators=(',', ': ')))
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
