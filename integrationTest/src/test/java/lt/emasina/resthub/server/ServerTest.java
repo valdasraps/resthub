@@ -29,6 +29,7 @@ public class ServerTest extends ServerSetup {
     public void requestTest() throws IOException, URISyntaxException, org.json.JSONException {
         
         // Check Requests
+
         checks.check(new TestRequest.Builder("i0","/info").build());
         checks.check(new TestRequest.Builder("r1","/queries").build(), Boolean.TRUE);
         checks.check(new TestRequest.Builder("r2","/tables").build());
@@ -61,10 +62,8 @@ public class ServerTest extends ServerSetup {
         checks.check(qm);
 
         // Checking timestamp output
-        System.out.println("@@@@@@@@@@@@3");
         qm = rh.newQueryManager("SELECT s.SAL_TIME FROM store.sales s WHERE s.SAL_ID = :n__id");
         qm.addParameter("id", 173);
-        System.out.println("@@@@@@@@@@@@4");
         assertEquals("1998-01-17 23:00:49", qm.getDataJSON().getJSONArray("data").getJSONArray(0).getString(0));
         
         Text timeText = (Text) qm.getDataXML().getDocumentElement().getFirstChild().getFirstChild().getFirstChild();
@@ -74,7 +73,6 @@ public class ServerTest extends ServerSetup {
         
         qm = rh.newQueryManager("SELECT * FROM store.sales s1, store.sales s2 WHERE s1.SAL_ID = s2.SAL_ID and s1.SAL_ID = :n__id");
         qm.addParameter("id", 173);
-        System.out.println("@@@@@@@@@@@@5");
         try {
             qm.refresh();
             fail("Should have failed due to same columns...");
