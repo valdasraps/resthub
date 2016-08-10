@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TABLES>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>folder</NAMESPACE>
+        <NAME>table1</NAME>
+        <SQL>
+            select
+            PRO_ID as id         
+            from
+            product  
+            where
+            pro_id = :id</SQL>
+        <PARAMETERS>
+            <PARAMETER>
+                <METADATA/>
+                <NAME>id</NAME>
+                <TYPE>STRING</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+</TABLES>

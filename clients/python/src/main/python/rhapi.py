@@ -449,8 +449,8 @@ class CLIClient:
             print "ERROR: %s\nDetails: %s, consider --all option" % (type(e).__name__, e)
 
         except urllib2.HTTPError, e:
-            
-            print "ERROR: %s\nDetails: %s" % (e.reason, e.read())
+            reason = e.reason if hasattr(e, 'reason') else '%d %s' % (e.code, e.msg)
+            print "ERROR: %s\nDetails: %s" % (reason, e.read())
             
         except Exception, e:
             
