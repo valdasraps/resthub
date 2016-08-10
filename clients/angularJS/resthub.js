@@ -1,4 +1,7 @@
-angular.module('YourAppName')
+angular.module('resthub', [])
+
+.constant('ResthubApiUrl', 'http://localhost:2113')
+
 .factory('resthub', function(ResthubApiUrl, $http) {
   return{
 

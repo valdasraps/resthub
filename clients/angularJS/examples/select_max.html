@@ -1,0 +1,36 @@
+<html>
+<head>
+  <script src="js/angular.js"></script>
+  <script src="js/app.js"></script>
+  <script src="../resthub.js"></script>
+
+  <script>
+    angular.module("Examples")
+    .controller('SelectMax', function($scope, resthub){
+
+      $scope.output = "loading...";
+
+      var sql = "SELECT * FROM wbm.fills_full f WHERE f.LHCFILL IS NOT NULL ORDER BY f.lhcfill DESC";
+
+      var options = {};
+
+      options['type'] = "application/json2"
+      options['page'] = 1;
+      options['ppage'] = 1;   // per page
+      options['sql'] = sql;
+
+      resthub.query(options)
+      .then(function(data){
+        $scope.output = data;
+      });
+
+    });
+
+  </script>
+</head>
+<body ng-app="Examples">
+  <div ng-controller="SelectMax">
+      Query output : <pre>{{output | json:4}}</pre>
+  </div>
+</body>
+</html>
