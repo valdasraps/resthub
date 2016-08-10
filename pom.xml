@@ -83,6 +83,7 @@
         <module>server</module>
         <module>model</module>
         <module>clients</module>
+        <module>integrationTest</module>
     </modules>
     
     <repositories>

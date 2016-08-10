@@ -1,1 +1,0 @@
-select * from gem_int2r.parts a where a.ID = :ID

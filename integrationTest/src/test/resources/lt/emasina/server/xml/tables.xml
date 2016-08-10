@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TABLES>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>store</NAMESPACE>
+        <NAME>single_product</NAME>
+        <SQL>
+            select
+            PRO_ID as id,
+            PRO_BRAND as brand,
+            PRO_NAME as name            
+            from
+            product  
+            where
+            pro_id = :id</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA/>
+                <NAME>ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>BRAND</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>NAME</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+        </COLUMNS>
+        <PARAMETERS>
+            <PARAMETER>
+                <METADATA/>
+                <NAME>id</NAME>
+                <TYPE>STRING</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA>
+            <ENTRY KEY="description">Customer information</ENTRY>
+        </METADATA>
+        <NAMESPACE>store</NAMESPACE>
+        <NAME>customer</NAME>
+        <SQL>
+            select
+            CUS_ID as id,
+            CUS_LNAME || ' ' || CUS_FNAME as name,
+            CUS_CITY as city,
+            CUS_COUNTRY as country                                    
+            from
+            customer                          
+            where
+            CUS_ID = :id                               
+            or :id is null</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA/>
+                <NAME>ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA>
+                    <ENTRY KEY="description">Customer full name</ENTRY>
+                </METADATA>
+                <NAME>NAME</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>CITY</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>COUNTRY</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+        </COLUMNS>
+        <PARAMETERS>
+            <PARAMETER>
+                <METADATA>
+                    <ENTRY KEY="description">Customer unique identifier. If not provided - all customers are returned</ENTRY>
+                </METADATA>
+                <NAME>id</NAME>
+                <TYPE>STRING</TYPE>
+                <ARRAY_TYPE>false</ARRAY_TYPE>
+            </PARAMETER>
+        </PARAMETERS>
+    </TABLE>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>store</NAMESPACE>
+        <NAME>products</NAME>
+        <SQL>
+            select
+            PRO_ID as id,
+            PRO_BRAND as brand,
+            PRO_NAME as name            
+            from
+            product</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA/>
+                <NAME>ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>BRAND</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>NAME</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+        </COLUMNS>
+    </TABLE>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>store</NAMESPACE>
+        <NAME>sales</NAME>
+        <SQL>
+            select
+            * 
+            from
+            sales</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_PRO_ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_TIME</NAME>
+                <TYPE>DATE</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_CUS_ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_COST</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_UNITS</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>SAL_ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+        </COLUMNS>
+    </TABLE>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>store</NAMESPACE>
+        <NAME>customers</NAME>
+        <SQL>
+            select
+            CUS_ID as id,
+            CUS_LNAME || ' ' || CUS_FNAME as name,
+            CUS_CITY as city,
+            CUS_COUNTRY as country            
+            from
+            customer</SQL>
+        <COLUMNS>
+            <COLUMN>
+                <METADATA/>
+                <NAME>ID</NAME>
+                <TYPE>NUMBER</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>NAME</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>CITY</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+            <COLUMN>
+                <METADATA/>
+                <NAME>COUNTRY</NAME>
+                <TYPE>STRING</TYPE>
+            </COLUMN>
+        </COLUMNS>
+    </TABLE>
+</TABLES>

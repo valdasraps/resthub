@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>lt.emasina.resthub</groupId>
+        <artifactId>resthub</artifactId>
+        <version>0.6.12</version>
+    </parent>
+    
+    <artifactId>integrationTest</artifactId>
+    <packaging>jar</packaging>
+    <name>integrationTest</name>
+    
+    <properties>
+        <!--test.server.url>oracle-cern.mif:1521/cerndev</test.server.url-->
+        <test.server.url>localhost:1521/xe</test.server.url>
+        <test.server.user>resthub_test</test.server.user>
+        <test.server.passwd>test</test.server.passwd>
+    </properties>
+    
+    <build>
+        
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        
+        <plugins>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.8</version>
+                <configuration>
+                    <verbose>false</verbose>
+                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                    <canUpdateDescription>false</canUpdateDescription>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>first</id>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <licenseName>lgpl_v3</licenseName>
+                            <roots>
+                                <root>src/main/java</root>
+                            </roots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                    <includes>
+                        <include>**/TestSuite.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>java</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    
+
+
+</project>
