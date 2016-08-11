@@ -53,17 +53,31 @@ class Files(object):
 
 class Rhapi_test_cases(unittest.TestCase):
     
+    #function for sort dict in dict
+    def deep_sort(self, obj):
+        if isinstance(obj, dict):
+            _sorted = {}
+            for key in sorted(obj):
+                _sorted[key] = self.deep_sort(obj[key])
+        elif isinstance(obj, list):
+            new_list = []
+            for val in obj:
+                new_list.append(self.deep_sort(val))
+            _sorted = sorted(new_list)
+        else:
+            _sorted = obj
+        return _sorted
+    
     def test_get(self):
         self.assertIsNotNone(api.get(["info"], verbose = False))    
     
     def test_info(self):
         pprint = api.info()        
-                
         files = Files()
         #files.saveToFile(pprint, RESOURCES_PATH + 'test_info.json')
         data_from_file = files.loadFromFile(RESOURCES_PATH+'test_info.json', 'json')
-        
-        self.assertEquals(pprint, data_from_file)
+
+        self.assertEquals(self.deep_sort(pprint), self.deep_sort(data_from_file))
         
     def test_folders(self):
         folders = ''.join(api.folders())
@@ -104,7 +118,7 @@ class Rhapi_test_cases(unittest.TestCase):
         #files.saveToFile(query, RESOURCES_PATH+'test_query.json')
         data_from_file = files.loadFromFile(RESOURCES_PATH+'test_query.json', 'json')
         
-        self.assertEquals(data_from_file, query)
+        self.assertEquals(self.deep_sort(data_from_file), self.deep_sort(query))
             
     def test_count(self):
         q = "select r.* from store.customer r where r.id = :id"
