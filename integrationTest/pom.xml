@@ -15,8 +15,8 @@
     <name>integrationTest</name>
     
     <properties>
-        <!--test.server.url>oracle-cern.mif:1521/cerndev</test.server.url-->
-        <test.server.url>localhost:1521/xe</test.server.url>
+        <test.server.url>oracle-cern.mif:1521/cerndev</test.server.url>
+        <!--test.server.url>localhost:1521/xe</test.server.url-->
         <test.server.user>resthub_test</test.server.user>
         <test.server.passwd>test</test.server.passwd>
     </properties>
@@ -130,6 +130,4 @@
         </dependency>
     </dependencies>
     
-
-
 </project>

@@ -51,7 +51,7 @@ public class SqlServerTableFactoryTest extends ServerSetup {
     }
     
     private void execDdl(String ddl) throws SQLException {
-        try (OracleConnection con = cf.getConnection("default")) {
+        try (OracleConnection con = WORKER.getCf().getConnection("default")) {
             try (Statement st = con.createStatement()) {
                 st.execute(ddl);
             }

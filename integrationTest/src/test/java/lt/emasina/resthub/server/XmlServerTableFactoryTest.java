@@ -26,7 +26,7 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         
         // No tables from files (empty directory)
         
-        Files.createDirectories(FOLDER);       
+        Files.createDirectories(ServerWorker.FOLDER);       
         Thread.sleep(11000);
         
         testEmpty();
