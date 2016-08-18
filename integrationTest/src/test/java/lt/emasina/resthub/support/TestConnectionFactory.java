@@ -2,12 +2,10 @@ package lt.emasina.resthub.support;
 
 import com.google.common.collect.Maps;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,26 +22,14 @@ import oracle.jdbc.OracleConnection;
 public class TestConnectionFactory implements ConnectionFactory {
     
     private final Map<String, ConnectionDescription> conections = Maps.newHashMap();
-    private final Properties testing = new Properties();
-
-    public TestConnectionFactory() throws IOException {
-        
-        try (InputStream is = TestConnectionFactory.class.getResourceAsStream("/testing.properties")) {
-            testing.load(is);
-        }
-        
-        String url = System.getenv("TEST_DATABASE_URL");
-        if (url == null) {
-            url = testing.getProperty("test.server.url");
-        }
-        
+    
+    public TestConnectionFactory(String url, String username, String password) throws IOException {
         try {
             Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException ex) {
             log.error("Error while retrieving OracleDriver", ex);
         }
-        conections.put("default",  new ConnectionDescription("jdbc:oracle:thin:@" + url, 
-                testing.getProperty("test.server.user"), testing.getProperty("test.server.passwd")));
+        conections.put("default",  new ConnectionDescription("jdbc:oracle:thin:@" + url, username, password));
     }
     
     @Override

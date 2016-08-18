@@ -35,3 +35,4 @@
 /test/.settings/
 /clients/python/target/
 /exec/target/
+/integrationTest/target/
