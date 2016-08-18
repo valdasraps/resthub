@@ -128,12 +128,6 @@
             <artifactId>server</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ws-commons</groupId>
-            <artifactId>tcpmon</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     
 </project>

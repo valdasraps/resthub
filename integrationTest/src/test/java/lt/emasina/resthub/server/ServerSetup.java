@@ -30,8 +30,8 @@ public class ServerSetup {
     
     @AfterClass
     public static void stopServer() throws Exception {
-        WORKER.stopServer();
-        //WORKER.stopTunnel();
+        //WORKER.stopServer();
+        WORKER.stopTunnel();
     }
     
     protected static void deleteFile(String fileName) throws IOException {
