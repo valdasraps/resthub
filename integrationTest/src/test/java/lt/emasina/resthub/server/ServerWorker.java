@@ -50,6 +50,8 @@ public class ServerWorker {
     
     private ExecutorService tunnelExecutor;
     
+    private TcpTunnel tcp;
+    
     public ServerWorker() {
         Properties testing = new Properties();
         try (InputStream is = TestConnectionFactory.class.getResourceAsStream("/testing.properties")) {
@@ -73,15 +75,16 @@ public class ServerWorker {
     }
     
     public void startTunnel() {
-        this.tunnelExecutor = Executors.newSingleThreadExecutor();
-        this.tunnelExecutor.submit(new Runnable() {
+    	this.tunnelExecutor = Executors.newSingleThreadExecutor();
+    	this.tunnelExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 
                 try {
-                    
-                    TcpTunnel.main(new String[] { TUNNEL_PORT, host, port, "UTF-8" });
-                    
+                	tcp = new TcpTunnel(Integer.parseInt(TUNNEL_PORT), host, Integer.parseInt(port));
+                    //tcp.main((new String[] { TUNNEL_PORT, host, port}));
+                    //TcpTunnel.main(new String[] { TUNNEL_PORT, host, port, "UTF-8" });
+                	tcp.start();
                 } catch (IOException ex) {
                     log.fatal(ex);
                 }
@@ -94,10 +97,14 @@ public class ServerWorker {
         }
     }
     
-    public void stopTunnel() {
+    public void stopTunnel() throws InterruptedException {
         if (this.tunnelExecutor != null) {
             this.tunnelExecutor.shutdownNow();
             this.tunnelExecutor = null;
+            
+            
+            tcp.stop();
+            Thread.sleep(10000);
         }
     }
     
