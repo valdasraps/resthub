@@ -11,6 +11,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -21,7 +22,7 @@ import lt.emasina.resthub.factory.XmlFolderTableFactory;
 import lt.emasina.resthub.factory.XmlResourceTableFactory;
 import lt.emasina.resthub.support.TestConnectionFactory;
 import lt.emasina.resthub.support.TestSqlTableFactory;
-import org.apache.ws.commons.tcpmon.TcpTunnel;
+import lt.emasina.resthub.support.TcpTunnel;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
