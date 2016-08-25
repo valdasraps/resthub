@@ -6,7 +6,6 @@ import { ResthubService } from './resthub.service';
   selector: 'resthub-example',
   providers: [ResthubService],
   template: `
-  <pre> </pre>
   <pre> {{ rh_output }} </pre>
   `
 })
