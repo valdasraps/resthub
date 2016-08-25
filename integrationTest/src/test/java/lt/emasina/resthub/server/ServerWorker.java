@@ -82,8 +82,6 @@ public class ServerWorker {
                 
                 try {
                 	tcp = new TcpTunnel(Integer.parseInt(TUNNEL_PORT), host, Integer.parseInt(port));
-                    //tcp.main((new String[] { TUNNEL_PORT, host, port}));
-                    //TcpTunnel.main(new String[] { TUNNEL_PORT, host, port, "UTF-8" });
                 	tcp.start();
                 } catch (IOException ex) {
                     log.fatal(ex);
@@ -101,7 +99,6 @@ public class ServerWorker {
         if (this.tunnelExecutor != null) {
             this.tunnelExecutor.shutdownNow();
             this.tunnelExecutor = null;
-            
             
             tcp.stop();
             Thread.sleep(10000);

@@ -58,8 +58,6 @@ public class TunnelTest extends TunnelSetup {
 		// Checking output with tcp tunnel started again
 		qm = rh.newQueryManager("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 1500 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;");
 		qm.addParameter("p1", 12);
-		System.out.println(qm.getDataJSON().getJSONArray("data")
-				.getJSONArray(0).getString(0));
 		assertEquals("1501", qm.getDataJSON().getJSONArray("data")
 				.getJSONArray(0).getString(0));
 
