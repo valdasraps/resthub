@@ -72,7 +72,8 @@ public class TcpTunnel {
     private final Set<RelayClient> clients = new HashSet<>();
 
     public void start() throws IOException {
-        new Thread() {
+        System.out.println("Tcp Tunnel Started");
+    	new Thread() {
             @Override
             public void run() {
                 try {
@@ -94,7 +95,7 @@ public class TcpTunnel {
     }
 
     public void stop() {
-
+    	System.out.println("Tcp Tunnel Stopped");
         try {
             ss.close();
         } catch (IOException | NullPointerException ex) { }
@@ -111,24 +112,20 @@ public class TcpTunnel {
     }
 
     public static void main(String[] args) throws IOException {
-        final TcpTunnel t = new TcpTunnel(8888, "localhost", 80);
-
+        final TcpTunnel t = new TcpTunnel(15222, "oracle-cern.mif", 1521);
         t.start();
-
-        System.in.read();
-        System.out.println("Stopping");
-
+        //System.in.read();
+        System.out.println("Just started tcpTunnel main. Stopping");
         t.stop();
+        //System.in.read();
+        //System.out.println("Starting");
 
-        System.in.read();
-        System.out.println("Starting");
+        //t.start();
 
-        t.start();
+        //System.in.read();
+        //System.out.println("Stopping");
 
-        System.in.read();
-        System.out.println("Stopping");
-
-        t.stop();
+        //t.stop();
         
     }
 
