@@ -11,6 +11,7 @@ using std::map;
 
 #include "Request.h"
 #include "Response.h"
+#include "Query.h"
 
 class CURLError : public std::runtime_error{
 public:
@@ -22,24 +23,26 @@ public:
 class Resthub {
 
 public:
-
   Resthub(std::string url);
   ~Resthub();
 
  Response info();
  Response folders();
- Response tables(std::__cxx11::string folder);
- Response table();
- Response qid();
- Response query();
- Response count();
- Response data();
+ Response tables(string folder);
+ Response table(string folder, string table);
+ Response table_cache(string folder, string table);
 
- Response csv();
- Response xml();
- Response json();
- Response json2();
+ Response blacklist();
+ Response blacklist(string folder);
+ Response blacklist(string folder, string table);
 
+ Response blacklist_delete();
+ Response blacklist_delete(string folder);
+ Response blacklist_delete(string folder, string table);
+
+ Query query(string sql);
+
+ Response queries();
 private:
  // Data members
  void* m_curl_h;
@@ -51,7 +54,10 @@ private:
 
  // Methods
  Request* get(string path, map<string, string> params = {});
- Request* post(string url);
+ Request* post(string path, string data);
+ Request* delete_(string path);
+
+ friend class Query;
 };
 
 #endif

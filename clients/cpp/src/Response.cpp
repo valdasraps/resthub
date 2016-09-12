@@ -18,5 +18,5 @@ bool Response::ok()
 string Response::str()
 {
   assert(ok());
-  return m_req->m_data.str();
+  return m_req->m_data_in.str();
 }

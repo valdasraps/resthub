@@ -1,4 +1,8 @@
 
+#ifndef RESPONSE_H
+#define RESPONSE_H
+
+
 #include "Request.h"
 
 class Response {
@@ -12,4 +16,13 @@ public:
 
   string str();
 
+  long to_int() {
+    return std::stol(str());
+  }
+
+  double to_float() {
+    return std::stof(str());
+  }
 };
+
+#endif // RESPONSE_H

@@ -10,18 +10,23 @@ using std::string;
 using std::map;
 
 class Request {
-  void* m_curl;
-
-  string m_url;
-  std::stringbuf m_data;
 
   enum State {
     NONE, INIT, RUNNING, DONE, ERROR
   };
 
   State m_state;
+protected:
+  void* m_curl;
+
+  void* m_curl_header_list = 0;
+
+  string m_url;
+  std::stringbuf m_data_in;
+  std::stringbuf m_data_out;
 
   friend class Response;
+  friend class Resthub;
 public:
   Request(string url, map<string, string> params);
   ~Request();
@@ -45,9 +50,14 @@ public:
 
   State state();
   bool ok();
+  
+  void header(string header, string value);
+
 protected:
   static size_t write_data(void* buffer, size_t size, size_t nmemb, Request* req);
+  static size_t read_data(char *buffer, size_t size, size_t nitems, Request* req);
 
+  void enable_output();
   void perform();
 };
 
@@ -62,6 +72,20 @@ public:
 
 class PostRequest : public Request {
 public:
+  PostRequest(string url, string data);
+
+  virtual Method method() {
+    return GET;
+  }
+};
+
+class DeleteRequest : public Request {
+public:
+  DeleteRequest(string url);
+
+  virtual Method method() {
+    return DELETE;
+  }
 };
 
 #endif // REQUEST_H
