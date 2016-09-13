@@ -1,5 +1,6 @@
 
 #include "Response.h"
+using namespace resthub;
 
 #include <cassert>
 

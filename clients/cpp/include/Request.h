@@ -6,6 +6,8 @@
 #include <map>
 #include <sstream>
 
+namespace resthub {
+
 using std::string;
 using std::map;
 
@@ -106,4 +108,5 @@ public:
   }
 };
 
+}
 #endif // REQUEST_H

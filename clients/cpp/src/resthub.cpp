@@ -1,15 +1,15 @@
 
 #include "resthub.h"
+using namespace resthub;
+
+#include <cassert>
+using namespace std;
 
 #include <curl/curl.h>
 
-#include <cassert>
-
 #include "json.hpp"
-
 using json = nlohmann::json;
 
-using namespace std;
 
 Resthub::Resthub(string server_url)
 {

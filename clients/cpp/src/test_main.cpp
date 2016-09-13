@@ -1,8 +1,8 @@
 
 #include "resthub.h"
+using namespace resthub;
 
 #include <iostream>
-
 using namespace std;
 
 int main(int argc, char** argv) {

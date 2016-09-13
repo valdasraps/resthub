@@ -1,5 +1,10 @@
 
+#include "resthub.h"
+using namespace resthub;
+
 #include <cassert>
+#include <regex>
+#include <iostream>
 
 using namespace std;
 
@@ -7,10 +12,6 @@ using namespace std;
 
 #include "Request.h"
 
-#include "resthub.h"
-
-#include <regex>
-#include <iostream>
 
 void Request::link_resthub(Resthub* rh) {
   assert(m_resthub == 0);

@@ -7,6 +7,8 @@
 
 #include "Response.h"
 
+namespace resthub {
+
 using std::string;
 
 class Resthub;
@@ -75,4 +77,5 @@ private:
   Request* data_req(string data_type, map<string, string> params = {}, int page = -1, int rows_per_page = -1);
 };
 
+}
 #endif // QUERY_H

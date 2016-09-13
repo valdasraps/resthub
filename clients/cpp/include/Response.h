@@ -2,8 +2,9 @@
 #ifndef RESPONSE_H
 #define RESPONSE_H
 
-
 #include "Request.h"
+
+namespace resthub {
 
 class Response {
   Request* m_req;
@@ -28,5 +29,7 @@ public:
     return std::stof(str());
   }
 };
+
+}
 
 #endif // RESPONSE_H

@@ -2,6 +2,7 @@
 #include "Query.h"
 
 #include "resthub.h"
+using namespace resthub;
 
 using namespace std;
 

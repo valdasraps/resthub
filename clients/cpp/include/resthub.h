@@ -7,13 +7,15 @@
 #include <set>
 #include <vector>
 
-using std::string;
-using std::vector;
-using std::map;
-
 #include "Request.h"
 #include "Response.h"
 #include "Query.h"
+
+namespace resthub {
+
+using std::string;
+using std::vector;
+using std::map;
 
 class CURLError : public std::runtime_error{
 public:
@@ -65,4 +67,5 @@ private:
  friend class Query;
 };
 
+}
 #endif
