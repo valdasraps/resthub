@@ -49,6 +49,20 @@ public:
     return data_req("application/json2", params, page, rows_per_page);
   }
 
+  // Without params alternatives
+#define WITHOUT_PARAMS(FUNC) \
+  Response FUNC(int page = -1, int rows_per_page = -1) \
+  { \
+    return FUNC({}, page, rows_per_page); \
+  }
+
+  WITHOUT_PARAMS(csv)
+  WITHOUT_PARAMS(xml)
+  WITHOUT_PARAMS(json)
+  WITHOUT_PARAMS(json2)
+
+#undef WITHOUT_PARAMS
+
   Response cache();
   Response cache_delete();
 
