@@ -5,15 +5,25 @@
 
 using namespace std;
 
-Query::Query(Resthub* parent, string id)
+Query::Query(Resthub* parent, string id, bool owner)
 {
   m_resthub = parent;
   m_id = id;
+  m_owner = owner;
+}
+
+Query::Query(Query&& rhs)
+{
+  m_resthub = rhs.m_resthub;
+  m_id = rhs.m_id;
+  m_owner = rhs.m_owner;
+  rhs.m_owner = false;
 }
 
 Query::~Query()
 {
-  m_resthub->delete_("query/"+m_id);
+  if(m_owner)
+    m_resthub->delete_("query/"+m_id);
 }
 
 Response Query::cache()

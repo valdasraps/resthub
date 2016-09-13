@@ -15,8 +15,10 @@ class Query {
 
   friend class Resthub;
 
-  Query(Resthub* parent, string id);
+  Query(Resthub* parent, string id, bool owner = true);
 public:
+  Query(const Query&) = delete;
+  Query(Query&& rhs);
   ~Query();
 
   string id() {
@@ -53,7 +55,8 @@ public:
   Response function(string func);
 private:
   Resthub* m_resthub;
-  string m_id;
+  string   m_id;
+  bool     m_owner; // Does this object own the query on the server.
 
   Request* data_req(string data_type, map<string, string> params = {}, int page = -1, int rows_per_page = -1);
 };

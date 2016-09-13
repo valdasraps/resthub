@@ -13,7 +13,6 @@ public:
 
   bool ok();
 
-
   string str();
 
   long to_int() {

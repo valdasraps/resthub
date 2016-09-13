@@ -43,9 +43,15 @@ int main(int argc, char** argv) {
   RUN_EX(q.json({}, 1, 3));
   RUN_EX(q.json({}, 1, 3));
 
+  cout << "resthub.queries() response:\n";
+  vector<Query> queries = resthub.queries();
 
-
-  RUN(queries());
+  {
+    int i = 0;
+    for(Query& q : queries) {
+      cout << "[" << i++ << "] = " << q.str() << endl;
+    }
+  }
 
   RUN(blacklist());
   RUN(blacklist("gem_int2r"));

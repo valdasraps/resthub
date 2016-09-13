@@ -107,15 +107,22 @@ Query Resthub::query(string sql)
   req->header("Content-Type", "text");
   Response r(req);
 
-  cout << r.str() << endl;
-
   return Query(this, r.str());
 }
 
-Response Resthub::queries()
+vector<Query> Resthub::queries()
 {
   Request* req = get("queries");
-  return req;
+  Response r(req);
+
+  json a = json::parse(r.str());
+
+  vector<Query> queries;
+
+  for (json::iterator it = a.begin(); it != a.end(); ++it) {
+    queries.push_back(Query(this, it.key(), false));
+  }
+  return queries;
 }
 
 Request* Resthub::get(string path, map<string, string> params)

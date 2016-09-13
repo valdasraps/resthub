@@ -5,8 +5,10 @@
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 
 using std::string;
+using std::vector;
 using std::map;
 
 #include "Request.h"
@@ -42,7 +44,8 @@ public:
 
  Query query(string sql);
 
- Response queries();
+ vector<Query> queries();
+
 private:
  // Data members
  void* m_curl_h;
