@@ -24,28 +24,52 @@ public:
   static void check(int curl_code);
 };
 
+/*!
+ * \brief Main Resthub API class
+ */
 class Resthub {
 
 public:
   Resthub(std::string url);
   ~Resthub();
 
+  /*!
+  * \brief Server info
+  * \return
+  */
  Response info();
  Response folders();
  Response tables(string folder);
  Response table(string folder, string table);
  Response table_cache(string folder, string table);
 
+ /*!
+  * \brief Access blacklist
+  * \return
+  */
  Response blacklist();
  Response blacklist(string folder);
  Response blacklist(string folder, string table);
 
+ /*!
+  * \brief Remove blacklist items
+  * \return
+  */
  Response blacklist_delete();
  Response blacklist_delete(string folder);
  Response blacklist_delete(string folder, string table);
 
+ /*!
+  * \brief Create query
+  * \param sql SQL statement
+  * \return Query wrapper
+  */
  Query query(string sql);
 
+ /*!
+  * \brief List of all queries on server.
+  * \return
+  */
  vector<Query> queries();
 
  bool verbose() {

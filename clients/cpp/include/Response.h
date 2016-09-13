@@ -6,6 +6,9 @@
 
 namespace resthub {
 
+/*!
+ * \brief Accesses a rest response
+ */
 class Response {
   Request* m_req;
 public:
@@ -17,23 +20,48 @@ public:
 
   Response& operator=(Response&& rhs);
 
+  /*!
+   * \brief True if request succeeded and 2XX http code.
+   * \return
+   */
   bool ok()
   {
     return m_req->ok();
   }
 
+  /*!
+   * \brief Request http code
+   * \return
+   */
   int http_code()
   {
     return m_req->http_code();
   }
 
+  /*!
+   * \brief Response in string, only exists if ok()
+   * \return
+   */
   string str();
+
+  /*!
+   * \brief Error in string, only exists if !ok()
+   * \return
+   */
   string error_str();
 
+  /*!
+   * \brief Parse response to int
+   * \return
+   */
   long to_int() {
     return std::stol(str());
   }
 
+  /*!
+   * \brief Parse response to float
+   * \return
+   */
   double to_float() {
     return std::stof(str());
   }

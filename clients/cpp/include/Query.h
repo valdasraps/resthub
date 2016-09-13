@@ -13,6 +13,9 @@ using std::string;
 
 class Resthub;
 
+/*!
+ * \brief Wraps a server SQL query
+ */
 class Query {
 
   friend class Resthub;
