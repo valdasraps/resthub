@@ -48,10 +48,20 @@ public:
 
  vector<Query> queries();
 
+ bool verbose() {
+   return m_verbose;
+ }
+
+ void verbose(bool verbose) {
+   m_verbose = verbose;
+ }
+
 private:
  // Data members
  void* m_curl_h;
  std::string m_server_url;
+
+ bool m_verbose = false;
 
  // Request tracking
  std::set<Request*> m_requests;

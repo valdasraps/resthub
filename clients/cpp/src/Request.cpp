@@ -17,6 +17,8 @@ void Request::link_resthub(Resthub* rh) {
   assert(m_resthub == 0);
   m_resthub = rh;
   m_resthub->add_req(this);
+
+  curl_easy_setopt(m_curl, CURLOPT_VERBOSE, m_resthub->verbose());
 }
 
 Request::Request(string url, map<string, string> params = {})
@@ -44,8 +46,6 @@ Request::Request(string url, map<string, string> params = {})
 
   curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, &Request::write_data);
   curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
-
-  curl_easy_setopt(m_curl, CURLOPT_VERBOSE, true);
 }
 
 Request::~Request()
@@ -82,7 +82,6 @@ void Request::header(string header, string value)
 
 size_t Request::write_data(void* buffer, size_t size, size_t nmemb, Request* req)
 {
-  //cout << "Writing " << size*nmemb << " bytes. " << endl;
   return req->m_data_in.sputn((const char*)buffer, size * nmemb);
 }
 
@@ -102,7 +101,10 @@ void Request::enable_output()
 void Request::perform()
 {
   m_state = RUNNING;
-  //cout << method_str() <<"ing " << m_url << endl;
+
+  if(m_resthub && m_resthub->verbose())
+    cerr << method_str() <<"ing " << m_url << endl;
+
   /// Cannot have chunked streams to resthub.
   curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, m_data_out.str().size());
   CURLError::check(curl_easy_perform(m_curl));
