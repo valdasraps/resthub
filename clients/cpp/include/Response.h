@@ -4,6 +4,9 @@
 
 #include "Request.h"
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 namespace resthub {
 
 /*!
@@ -64,6 +67,14 @@ public:
    */
   double to_float() {
     return std::stof(str());
+  }
+
+  /*!
+   * \brief Parse response to json
+   * \return
+   */
+  json to_json() {
+    return json::parse(str());
   }
 };
 
