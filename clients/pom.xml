@@ -13,5 +13,6 @@
         <module>jquery</module>
         <module>java</module>
         <module>python</module>
+        <module>cpp</module>
     </modules>
 </project>
