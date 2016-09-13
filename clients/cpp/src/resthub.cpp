@@ -30,16 +30,12 @@ Resthub::~Resthub()
 
 Response Resthub::info()
 {
-  Request* req = get("info");
-
-  return req;
+  return get("info");
 }
 
 Response Resthub::folders()
 {
-  Request* req = get("tables");
-
-  return req;
+  return get("tables");
 }
 
 Response Resthub::tables(string folder)
@@ -59,16 +55,12 @@ Response Resthub::tables(string folder)
 
 Response Resthub::table(string folder, string table)
 {
-  Request* req = get("table/"+folder+"/"+table);
-
-  return req;
+  return get("table/"+folder+"/"+table);
 }
 
 Response Resthub::table_cache(string folder, string table)
 {
-  Request* req = get("table/"+folder+"/"+table+"/cache");
-
-  return req;
+  return get("table/"+folder+"/"+table+"/cache");
 }
 
 Response Resthub::blacklist()
@@ -125,30 +117,34 @@ vector<Query> Resthub::queries()
   return queries;
 }
 
+void Resthub::add_req(Request* req)
+{
+  m_requests.insert(req);
+}
+
+void Resthub::del_req(Request* req)
+{
+  m_requests.erase(req);
+}
+
 Request* Resthub::get(string path, map<string, string> params)
 {
-  Request * req = new GetRequest(m_server_url + path);
-
-  requests.insert(req);
-
+  auto* req = new GetRequest(m_server_url + path);
+  req->link_resthub(this);
   return req;
 }
 
 Request* Resthub::post(string path, string data)
 {
-  Request * req = new PostRequest(m_server_url + path, data);
-
-  requests.insert(req);
-
+  auto* req = new PostRequest(m_server_url + path, data);
+  req->link_resthub(this);
   return req;
 }
 
 Request* Resthub::delete_(string path)
 {
-  Request * req = new DeleteRequest(m_server_url + path);
-
-  requests.insert(req);
-
+  auto* req = new DeleteRequest(m_server_url + path);
+  req->link_resthub(this);
   return req;
 }
 

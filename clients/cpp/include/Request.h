@@ -9,6 +9,8 @@
 using std::string;
 using std::map;
 
+class Resthub;
+
 class Request {
 
   enum State {
@@ -17,6 +19,7 @@ class Request {
 
   State m_state;
 protected:
+  Resthub* m_resthub = 0;
   void* m_curl;
 
   void* m_curl_header_list = 0;
@@ -27,8 +30,12 @@ protected:
 
   friend class Response;
   friend class Resthub;
+
+  void link_resthub(Resthub* rh);
+
 public:
   Request(string url, map<string, string> params);
+  Request(const Request&) = delete;
   ~Request();
 
   enum Method {

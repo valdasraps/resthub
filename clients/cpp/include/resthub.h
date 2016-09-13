@@ -51,9 +51,11 @@ private:
  void* m_curl_h;
  std::string m_server_url;
 
- // Classes
-
- std::set<Request*> requests;
+ // Request tracking
+ std::set<Request*> m_requests;
+ void add_req(Request* req);
+ void del_req(Request* req);
+ friend class Request;
 
  // Methods
  Request* get(string path, map<string, string> params = {});

@@ -12,6 +12,12 @@ using namespace std;
 #include <regex>
 #include <iostream>
 
+void Request::link_resthub(Resthub* rh) {
+  assert(m_resthub == 0);
+  m_resthub = rh;
+  m_resthub->add_req(this);
+}
+
 Request::Request(string url, map<string, string> params = {})
   :m_state(INIT)
 {
@@ -39,13 +45,15 @@ Request::Request(string url, map<string, string> params = {})
   curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
 
   curl_easy_setopt(m_curl, CURLOPT_VERBOSE, true);
-
 }
 
 Request::~Request()
 {
+  if(m_resthub)
+    m_resthub->del_req(this);
+
   curl_slist_free_all((curl_slist*)m_curl_header_list);
-  curl_easy_cleanup(m_curl);
+  curl_easy_cleanup(m_curl); 
 }
 
 Request::State Request::state()
