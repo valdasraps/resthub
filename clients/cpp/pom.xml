@@ -11,4 +11,82 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.cmake-maven-project</groupId>
+                <artifactId>cmake-maven-plugin</artifactId>
+                <version>3.4.1-b2</version>
+                <executions>
+                    <execution>
+                        <id>cmake-generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <sourcePath>
+                                ./<!-- The directory containing CMakeLists -->
+                            </sourcePath>
+                            <targetPath>
+                                ./build/ <!-- The directory write the project files to -->
+                            </targetPath>
+                            <generator>
+                                Unix Makefiles<!-- One of the generators defined at http://www.cmake.org/cmake/help/v2.8.10/cmake.html#section_Generators -->
+                            </generator>
+                            <environmentVariables>
+                                <key>value</key>
+                            </environmentVariables>
+                            <options>
+                                <!--
+                                  Optional: One or more options found at http://www.cmake.org/cmake/help/v2.8.10/cmake.html#section_Options
+                                  For example:
+                                -->
+                                <option>-DBUILD_THIRDPARTY:bool=on</option>
+                            </options>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <config>
+                                Debug|x64 <!-- Optional: the build configuration (e.g. "Release|x64") -->
+                            </config>
+                            <target>
+                                all <!-- Optional: the build "target" -->
+                            </target>
+                            <projectDirectory>
+                                ./build/ <!-- "targetPath" from the "generate" goal -->
+                            </projectDirectory>
+                            <environmentVariables>
+                                <key>value</key>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cmake-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <!-- "buildDirectory" is "targetPath" from the "generate" goal -->
+                            <buildDirectory>./build/</buildDirectory>
+                            <!-- Optional way to not fail the build on test failures -->
+                            <!-- <testFailureIgnore>true</testFailureIgnore> -->
+                            <!-- Optional way to skip just the ctest tests -->
+                            <!-- <ctest.skip.tests>true</ctest.skip.tests> -->
+                            <!-- Optional/standard way to skip all Maven tests -->
+                            <!-- <maven.test.skip>true</maven.test.skip> -->
+                            <!-- Optional way to configure number of threads tests should use -->
+                            <!-- <threadCount>2</threadCount> -->
+                            <!-- Optional dashboard configuration; used with CTestConfig.cmake -->
+                            <!-- <dashboard>Experimental</dashboard> -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
