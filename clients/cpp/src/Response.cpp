@@ -40,9 +40,12 @@ Response& Response::operator=(Response&& rhs)
   return *this;
 }
 
-bool Response::ok()
+string Response::error_str()
 {
-  return m_req->ok();
+  if(!ok()) {
+    return m_req->m_data_in.str();
+  }
+  return "";
 }
 
 string Response::str()
@@ -50,3 +53,9 @@ string Response::str()
   assert(ok());
   return m_req->m_data_in.str();
 }
+
+
+
+
+
+

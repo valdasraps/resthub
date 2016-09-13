@@ -2,6 +2,7 @@
 #include "resthub.h"
 using namespace resthub;
 
+#include <cassert>
 #include <iostream>
 using namespace std;
 
@@ -12,6 +13,9 @@ int main(int argc, char** argv) {
   Response r;
 
   r = resthub.info();
+
+#define PRINT(method_inv) \
+  cout << "resthub."#method_inv" response:\n";
 
 #define RUN_EX(method_inv) \
   cout << #method_inv" response:\n"; \
@@ -55,5 +59,12 @@ int main(int argc, char** argv) {
 
   RUN(blacklist());
   RUN(blacklist("gem_int2r"));
-  RUN(blacklist("gem_int2r", "GEM_VFAT_CHANNELS"));
+
+  // Expect 404
+  r = resthub.blacklist("gem_int2r", "GEM_VFAT_CHANNELS");
+  PRINT(blacklist("gem_int2r", "GEM_VFAT_CHANNELS"));
+  cout << r.error_str() << endl;
+  assert(r.http_code() == 404);
+
+
 }

@@ -17,9 +17,18 @@ public:
 
   Response& operator=(Response&& rhs);
 
-  bool ok();
+  bool ok()
+  {
+    return m_req->ok();
+  }
+
+  int http_code()
+  {
+    return m_req->http_code();
+  }
 
   string str();
+  string error_str();
 
   long to_int() {
     return std::stol(str());

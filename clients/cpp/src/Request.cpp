@@ -68,7 +68,15 @@ bool Request::ok()
     perform();
   }
 
-  return state() == DONE;
+  return state() == DONE && (m_http_code / 100) == 2;
+}
+
+int Request::http_code()
+{
+  // Run request, if not run yet.
+  ok();
+
+  return m_http_code;
 }
 
 void Request::header(string header, string value)
@@ -108,6 +116,7 @@ void Request::perform()
   /// Cannot have chunked streams to resthub.
   curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, m_data_out.str().size());
   CURLError::check(curl_easy_perform(m_curl));
+  curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &m_http_code);
   m_state = DONE;
 }
 

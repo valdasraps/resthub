@@ -14,6 +14,9 @@ using std::map;
 class Response;
 class Resthub;
 
+/*!
+  @brief Takes care of HTTP requests.
+ */
 class Request {
 
   enum State {
@@ -32,6 +35,8 @@ protected:
   string m_url;
   std::stringbuf m_data_in;
   std::stringbuf m_data_out;
+
+  long m_http_code = 0;
 
   friend class Response;
   friend class Resthub;
@@ -70,6 +75,7 @@ public:
 
   State state();
   bool ok();
+  int http_code();
   
   void header(string header, string value);
 
