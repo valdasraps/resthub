@@ -10,6 +10,11 @@ class Response {
 public:
   Response() : m_req(0) {}
   Response(Request* req);
+  Response(const Response&) = delete;
+  Response(Response&& rhs);
+  ~Response();
+
+  Response& operator=(Response&& rhs);
 
   bool ok();
 

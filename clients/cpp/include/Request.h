@@ -9,6 +9,7 @@
 using std::string;
 using std::map;
 
+class Response;
 class Resthub;
 
 class Request {
@@ -20,6 +21,8 @@ class Request {
   State m_state;
 protected:
   Resthub* m_resthub = 0;
+  Response* m_parent = 0;
+
   void* m_curl;
 
   void* m_curl_header_list = 0;
@@ -32,6 +35,14 @@ protected:
   friend class Resthub;
 
   void link_resthub(Resthub* rh);
+
+  void parent(Response* resp) {
+    m_parent = resp;
+  }
+
+  Response* parent() {
+    return m_parent;
+  }
 
 public:
   Request(string url, map<string, string> params);

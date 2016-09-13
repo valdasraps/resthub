@@ -22,8 +22,9 @@ Query::Query(Query&& rhs)
 
 Query::~Query()
 {
-  if(m_owner)
-    m_resthub->delete_("query/"+m_id);
+  if(m_owner) {
+    Response r = m_resthub->delete_("query/"+m_id);
+  }
 }
 
 Response Query::cache()

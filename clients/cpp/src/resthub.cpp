@@ -22,6 +22,12 @@ Resthub::Resthub(string server_url)
 
 Resthub::~Resthub()
 {
+  if(m_requests.size() > 0) {
+    cerr << "WARNING: Resthub requests unbalanced at end of Resthub lifetime." << endl;
+    for(Request* req : m_requests) {
+      delete req;
+    }
+  }
 
   assert(CURLM_OK == curl_multi_cleanup(m_curl_h));
 

@@ -56,5 +56,4 @@ int main(int argc, char** argv) {
   RUN(blacklist());
   RUN(blacklist("gem_int2r"));
   RUN(blacklist("gem_int2r", "GEM_VFAT_CHANNELS"));
-
 }
