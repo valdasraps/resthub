@@ -61,12 +61,10 @@ public abstract class PagedData extends ServerBaseResource {
         this.query = getQueryMd(! postMethod);
 
         this.perPage = getAttr(Integer.class, "perPage");
-        badRequestIfNot(perPage == null || perPage > 0, "Per page parameter must be > 0");
-        badRequestIfNot(perPage <= query.getRowsLimit(), "Per page parameter must be <= %d (query rowsLimit)", query.getRowsLimit());
+        badRequestIfNot(perPage == null || (perPage > 0 && perPage <= query.getRowsLimit()), "Per page parameter must be between 0 and %d", query.getRowsLimit());
 
         this.page = getAttr(Integer.class, "page");
         badRequestIfNot(page == null || page > 0, "Page number parameter must be > 0");
-        badRequestIfNot((page == null && perPage == null) || (page != null && perPage != null), "Page number and page parameters must be set or not unset together");
     }
     
     protected void addExpiresHeader(final CacheStats cacheStats) {       
