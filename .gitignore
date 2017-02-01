@@ -36,3 +36,4 @@
 /clients/python/target/
 /exec/target/
 /integrationTest/target/
+*.pyc

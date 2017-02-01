@@ -57,7 +57,7 @@ public class MdTable extends MdEntity {
     public static final int DEFAULT_CACHE_TIME = 120;
     public static final int DEFAULT_HIT_COUNT = 1;
     public static final int DEFAULT_TIME_OUT = 30;
-    public static final int MAX_ROWS_LIMIT = 1000;
+    public static final int MAX_ROWS_LIMIT = 10000;
     public static final int DEFAULT_ROWS_LIMIT = MAX_ROWS_LIMIT;
     
     @Basic

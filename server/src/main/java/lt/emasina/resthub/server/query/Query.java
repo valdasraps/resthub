@@ -81,6 +81,10 @@ public class Query {
     private final Set<TableId> tables = new HashSet<>();
     private final QueryStats stats = new QueryStats();
 
+    public Integer getRowsLimit() {
+        return 0;
+    }
+    
     @Inject
     public Query(@Assisted QueryId qid, ResourceFactory rf, TableBuilder tf) throws QueryException, Exception {
         this.qid = qid;
