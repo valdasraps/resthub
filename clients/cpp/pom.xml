@@ -65,26 +65,26 @@
                             </environmentVariables>
                         </configuration>
                     </execution>
-                    <execution>
+                    <!--execution>
                         <id>cmake-test</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <!-- "buildDirectory" is "targetPath" from the "generate" goal -->
+                            <!- - "buildDirectory" is "targetPath" from the "generate" goal - ->
                             <buildDirectory>./build/</buildDirectory>
-                            <!-- Optional way to not fail the build on test failures -->
-                            <!-- <testFailureIgnore>true</testFailureIgnore> -->
-                            <!-- Optional way to skip just the ctest tests -->
-                            <!-- <ctest.skip.tests>true</ctest.skip.tests> -->
-                            <!-- Optional/standard way to skip all Maven tests -->
-                            <!-- <maven.test.skip>true</maven.test.skip> -->
-                            <!-- Optional way to configure number of threads tests should use -->
-                            <!-- <threadCount>2</threadCount> -->
-                            <!-- Optional dashboard configuration; used with CTestConfig.cmake -->
-                            <!-- <dashboard>Experimental</dashboard> -->
+                            <!- - Optional way to not fail the build on test failures - ->
+                            <!- - <testFailureIgnore>true</testFailureIgnore> - ->
+                            <!- - Optional way to skip just the ctest tests - ->
+                            <!- - <ctest.skip.tests>true</ctest.skip.tests> - ->
+                            <!- - Optional/standard way to skip all Maven tests - ->
+                            <!- - <maven.test.skip>true</maven.test.skip> - ->
+                            <!- - Optional way to configure number of threads tests should use - ->
+                            <!- - <threadCount>2</threadCount> - ->
+                            <!- - Optional dashboard configuration; used with CTestConfig.cmake - ->
+                            <!- - <dashboard>Experimental</dashboard> - ->
                         </configuration>
-                    </execution>
+                    </execution-->
                 </executions>
             </plugin>
         </plugins>
