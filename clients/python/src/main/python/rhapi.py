@@ -9,6 +9,16 @@ Errors, fixes and suggestions to be sent to project
 website in GitHub: https://github.com/valdasraps/resthub
 """
 
+class RhApiRowCountError(Exception):
+    
+    def __init__(self, totalRows, fetchedRows):
+        self.totalRows = totalRows
+        self.fetchedRows = fetchedRows
+        
+    def __str__(self):
+        return 'Total rows count (%d) mismatch with fetched rows count (%d)' % (self.totalRows, self.fetchedRows)
+
+
 class RhApiRowLimitError(Exception):
     
     def __init__(self, count, rowsLimit):
@@ -206,6 +216,27 @@ class RhApi:
         """
         qid = self.qid(query)
         return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose, cols = cols)
+    
+    def json_all(self, query, params = None, verbose = False, cols = False):
+        """
+        Get all rows in JSON format (array of arrays)
+        """
+        
+        rows = []
+        
+        qid = self.qid(query)     
+        rowsLimit = self.query(qid, verbose = True)["rowsLimit"]
+        count = int(self.count(qid, params))
+        pages = int(count/rowsLimit) + 1
+        
+        for page in range(1, (pages + 1)):
+            data = self.data(qid, params, form="application/json", page = page, pagesize = rowsLimit, verbose = verbose, cols = cols)
+            rows.extend(data["data"])
+        
+        if count != len(rows):
+            raise RhApiRowCountError(count, len(rows))
+        
+        return rows
     
     def json2(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False):
         """
