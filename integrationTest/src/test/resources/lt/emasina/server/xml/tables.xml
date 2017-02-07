@@ -164,8 +164,8 @@
     </TABLE>
     <TABLE CACHE_TIME="20" HIT_COUNT="2" CONNECTION_NAME="default">
         <METADATA/>
-        <NAMESPACE>store</NAMESPACE>
-        <NAME>customers</NAME>
+        <NAMESPACE>STORE</NAMESPACE>
+        <NAME>Customers</NAME>
         <SQL>
             select
             CUS_ID as id,

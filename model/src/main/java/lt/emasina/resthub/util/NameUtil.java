@@ -55,6 +55,18 @@ public class NameUtil {
         return CNAME_PATTERN.matcher(name).matches();
     }
     
+    public static boolean isOraName(String name) {
+        if (name != null) {
+            for (char c: name.toCharArray()) {
+                if (!Character.isJavaIdentifierPart(c)) {
+                    return false;
+                }
+            }           
+            return true;
+        }
+        return false;
+    }
+    
     public static String getCName(String name) {
         if (isCName(name)) {
             return name;

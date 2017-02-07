@@ -49,9 +49,12 @@ public class XmlTableFactoryTest {
         // sql01.xml
         
         MdTable t = getTable("Lorem", "ipsum");
+        assertNull(t);
+        
+        t = getTable("lorem", "ipsum");
         
         assertNotNull(t);
-        assertEquals("Lorem", t.getNamespace());
+        assertEquals("lorem", t.getNamespace());
         assertEquals("ipsum", t.getName());
         assertEquals((Integer) 1, t.getHitCount());
         assertEquals((Integer) 0, t.getCacheTime());

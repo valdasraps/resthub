@@ -115,4 +115,26 @@ public class MdTable extends MdEntity {
     @XmlElement(name = "PARAMETER")
     private List<MdParameter> parameters = new ArrayList<>();
     
+    public String getNamespace() {
+        return normalizeName(namespace);
+    }
+    
+    public String getName() {
+        return normalizeName(name);
+    }
+
+    private String normalizeName(String nameCandidate) {
+        if (nameCandidate != null) {
+            
+            StringBuilder sb = new StringBuilder();
+            for (char c: nameCandidate.toLowerCase().toCharArray()) {
+                if (Character.isJavaIdentifierPart(c)) {
+                    sb.append(c);
+                }
+            }           
+            return sb.toString();
+        }
+        return null;
+    }
+    
 }

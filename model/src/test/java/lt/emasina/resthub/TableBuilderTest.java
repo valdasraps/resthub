@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import static junit.framework.Assert.assertEquals;
-import lt.emasina.resthub.ConnectionFactory;
 import lt.emasina.resthub.factory.TableBuilder;
 import lt.emasina.resthub.model.MdParameter;
 import oracle.jdbc.OracleConnection;

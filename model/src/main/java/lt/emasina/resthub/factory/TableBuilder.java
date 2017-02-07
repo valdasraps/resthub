@@ -112,8 +112,11 @@ public class TableBuilder implements Serializable {
                     }
                     
                     // Check repeating column names
+                    if (!NameUtil.isOraName(name)) {
+                        throw new QueryException("Complex column name defined! Please use alias for column '%s'", name);
+                    }
                     if (columnNames.contains(name)) {
-                        throw new QueryException("Non unique column names defined!");
+                        throw new QueryException("Non unique column names defined! Please use alias for columns '%s'", name);
                     }
                     columnNames.add(name);
                     
