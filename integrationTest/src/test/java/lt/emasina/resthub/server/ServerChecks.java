@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import static junit.framework.TestCase.assertEquals;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.DataResponse;
 import lt.emasina.resthub.model.QueryManager;

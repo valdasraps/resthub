@@ -5,9 +5,6 @@ import java.util.HashMap;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.server.ServerSetup;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 import static org.junit.Assert.assertEquals;
@@ -19,10 +16,22 @@ import static org.junit.Assert.fail;
 public class TestQuery extends TestRequest {
 
     private String id;
-    private String params;  
+    private String params;
+    private Integer perPage;
+    private Integer page;
 
     public void setParams(String params) {
         this.params = params;
+    }
+    
+    protected String getPathData() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/query/").append(id);
+        if (perPage != null && page != null) {
+            sb.append("/page/").append(perPage).append("/").append(page);
+        }
+        sb.append("/data");
+        return sb.toString();
     }
    
     @Override
@@ -90,7 +99,7 @@ public class TestQuery extends TestRequest {
         
     @Override
     public ClientResource get(MediaType type) throws IOException {    
-        String url = ServerSetup.HOST + "/query/" + this.id + "/data";       
+        String url = ServerSetup.HOST + getPathData();       
         if (this.params != null) url += this.params;
    
         ClientResource client = new ClientResource(url);
@@ -112,19 +121,35 @@ public class TestQuery extends TestRequest {
         
         private final TestQuery q = new TestQuery();
         
-        public Builder(String prefix, String sql, String params, HashMap headers) {
+        public Builder(String prefix, String sql) {
             q.setPrefix(prefix);
             q.setPath("/query");
             q.setEntity(sql);
+        }
+        
+        public Builder params(String params) {
             q.setParams(params);
+            return this;
+        }
+        
+        public Builder headers(HashMap headers) {
             q.setHeaders(headers);
+            return this;
+        }
+        
+        public Builder page(int perPage, int page) {
+            q.perPage = perPage;
+            q.page = page;
+            return this;
         }
         
         public TestQuery build() {
             try {
+                
                 ClientResource client = q.post();
-                q.id = client.getResponseEntity().getText();              
-                q.setPath("/query/" + q.id + "/data");
+                q.id = client.getResponseEntity().getText();
+                q.setPath(q.getPathData());
+                
             } catch (IOException ex) {
                 fail(ex.getMessage());
             }

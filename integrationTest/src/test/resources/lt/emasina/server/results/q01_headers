@@ -1,0 +1,11 @@
+#Headers
+#Tue Feb 07 10:21:58 EET 2017
+Access-Control-Allow-Origin=*
+Accept-Ranges=bytes
+Access-Control-Allow-Headers=Content-Type
+Content-Length=0
+Access-Control-Allow-Methods=POST, GET, OPTIONS
+X-Content-Types=application/json,application/json2,application/xml,text/xml,text/csv,text/plain
+Server=Restlet-Framework/2.3.7
+Date=Tue, 07 Feb 2017 08\:21\:58 GMT
+Allow=GET, OPTIONS, POST

@@ -16,8 +16,8 @@ import org.junit.runners.Suite.SuiteClasses;
     
     ServerTest.class,
 	
-	TunnelTest.class,
-	PythonClientTest.class
+    TunnelTest.class,
+    PythonClientTest.class
         
 })
 public class TestSuite {

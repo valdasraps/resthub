@@ -162,7 +162,7 @@
             </COLUMN>
         </COLUMNS>
     </TABLE>
-    <TABLE CACHE_TIME="20" HIT_COUNT="2" ROWS_LIMIT="1000" CONNECTION_NAME="default">
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" CONNECTION_NAME="default">
         <METADATA/>
         <NAMESPACE>store</NAMESPACE>
         <NAME>customers</NAME>

@@ -37,3 +37,4 @@
 /exec/target/
 /integrationTest/target/
 *.pyc
+/integrationTest/python/target/

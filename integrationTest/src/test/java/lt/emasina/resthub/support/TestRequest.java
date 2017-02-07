@@ -8,8 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lt.emasina.resthub.server.ServerSetup;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.engine.header.HeaderConstants;

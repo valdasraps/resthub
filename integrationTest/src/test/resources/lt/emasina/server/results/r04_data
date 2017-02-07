@@ -1,0 +1,3 @@
+#Query data
+#Tue Feb 07 10:21:58 EET 2017
+application/json={"columns"\:[{"name"\:"SAL_PRO_ID","type"\:"NUMBER"},{"name"\:"SAL_TIME","type"\:"DATE"},{"name"\:"SAL_CUS_ID","type"\:"NUMBER"},{"name"\:"SAL_COST","type"\:"NUMBER"},{"name"\:"SAL_UNITS","type"\:"NUMBER"},{"name"\:"SAL_ID","type"\:"NUMBER"}],"connection"\:"default"}
