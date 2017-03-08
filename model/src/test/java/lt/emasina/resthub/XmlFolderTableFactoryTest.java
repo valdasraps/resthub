@@ -35,9 +35,15 @@ public class XmlFolderTableFactoryTest {
     
     @Test
     public void simpleTest() throws Exception {
-        
+        /*
+        Deleting tables just in case.
+         */
+        deleteFile("sql03.xml");
+        deleteFile("sql02.xml");
+        deleteFile("sql01.xml");
+
         TableFactory tf = new XmlFolderTableFactory(dir.toString());
-        
+
         // First time, add OK file
         
         copyFile("sql01.xml");
@@ -109,7 +115,9 @@ public class XmlFolderTableFactoryTest {
         
         TestCase.assertEquals(1, tables.size());
         TestCase.assertFalse(tf.isRefresh());
-        
+
+        deleteFile("sql03.xml");
+
     }
     
 }
