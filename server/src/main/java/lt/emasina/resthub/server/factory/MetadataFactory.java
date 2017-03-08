@@ -115,7 +115,7 @@ public class MetadataFactory implements MetadataFactoryIf {
                 }
 
                 tables.load(tf, toload);
-                        
+
             }
 
             tf = tf.getNext();
@@ -212,6 +212,7 @@ public class MetadataFactory implements MetadataFactoryIf {
          * @return true if added, false if it already exists
          */
         public boolean addTable(TableFactory tf, TableId id, ServerTable st) {
+            // This table already exists in this batch - skip it
             if (this.whitelist.containsKey(id)) {
                 return false;
             }
@@ -269,14 +270,29 @@ public class MetadataFactory implements MetadataFactoryIf {
             if (toload.tfs.get(tf) != null) {
                 tfs.put(tf, toload.tfs.get(tf));
             } else {
+                // TF did not return any tables while refreshing
+                // so remove from current table list
                 tfs.remove(tf);
             }
-            
+
             if (tfs.containsKey(tf)) {
-                for (TableId id: tfs.get(tf)) {
-                    
-                    qf.removeQueries(id);
-                    
+                for (TableId id: tfs. get(tf)) {
+                    if (old != null) {
+                            for (TableId oldid: old) {
+                                if (oldid.equals(id) && tables.whitelist.containsKey(oldid)) {
+                                    ServerTable oldTable = tables.whitelist.get(oldid);
+                                    ServerTable st = toload.whitelist.get(oldid);
+                                    if (st.isSame(oldTable)) {
+                                        break;
+                                    } else {
+                                        qf.removeQueries(id);
+                                    }
+                                }
+                            }
+                    } else {
+                        qf.removeQueries(id);
+                    }
+
                     if (old != null && old.contains(id)) {
 
                         if (toload.whitelist.containsKey(id)) {
@@ -327,7 +343,7 @@ public class MetadataFactory implements MetadataFactoryIf {
                     if (!tfs.containsKey(tf) || !tfs.get(tf).contains(id)) {
 
                         qf.removeQueries(id);
-                        
+
                         if (this.whitelist.remove(id) != null) {
                             log.warn(String.format("Table removed from white list: %s", id));
                         } else {
