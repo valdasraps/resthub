@@ -146,4 +146,22 @@ public class ServerTable {
         return table.getCacheTime() != MdTable.SKIP_CACHE_TIME;
     }
 
+    /**
+     * Determine if this is the same based on data.
+     * @param stToCompare ServerTable to compare with.
+     * @return true if is the same, false - otherwise.
+     */
+    public boolean isSame(ServerTable stToCompare) {
+
+
+        MdTable newest = getTable();
+        MdTable old = stToCompare.getTable();
+
+        return newest.getColumns().equals(old.getColumns()) &&
+                newest.getMetadata().equals(old.getMetadata()) &&
+                newest.getName().equals(old.getName()) &&
+                newest.getNamespace().equals(old.getNamespace()) &&
+                newest.getParameters().equals(old.getParameters());
+
+    }
 }
