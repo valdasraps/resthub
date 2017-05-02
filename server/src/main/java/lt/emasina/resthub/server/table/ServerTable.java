@@ -148,11 +148,21 @@ public class ServerTable {
 
     /**
      * Determine if this is the same based on data.
-     * @param st ServerTable to compare with.
+     * @param stToCompare ServerTable to compare with.
      * @return true if is the same, false - otherwise.
      */
-    public boolean isSame(ServerTable st) {
-        return true;
+    public boolean isSame(ServerTable stToCompare) {
+
+
+        MdTable newest = getTable();
+        MdTable old = stToCompare.getTable();
+
+        return newest.getColumns().equals(old.getColumns()) &&
+                newest.getMetadata().equals(old.getMetadata()) &&
+                newest.getName().equals(old.getName()) &&
+                newest.getNamespace().equals(old.getNamespace()) &&
+                newest.getParameters().equals(old.getParameters());
+
     }
-    
+
 }
