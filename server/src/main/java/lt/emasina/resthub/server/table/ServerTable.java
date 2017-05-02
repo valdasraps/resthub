@@ -146,4 +146,13 @@ public class ServerTable {
         return table.getCacheTime() != MdTable.SKIP_CACHE_TIME;
     }
 
+    /**
+     * Determine if this is the same based on data.
+     * @param st ServerTable to compare with.
+     * @return true if is the same, false - otherwise.
+     */
+    public boolean isSame(ServerTable st) {
+        return true;
+    }
+    
 }

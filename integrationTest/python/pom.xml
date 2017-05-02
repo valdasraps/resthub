@@ -4,7 +4,7 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>clients</artifactId>
-        <version>0.6.13</version>
+        <version>0.6.14</version>
     </parent>
     <artifactId>python</artifactId>
     <packaging>jar</packaging>

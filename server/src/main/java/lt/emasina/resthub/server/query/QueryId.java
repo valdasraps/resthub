@@ -50,6 +50,7 @@ public class QueryId {
     
     private final String id;
     private final String md5;
+    private final String md5Raw;
     private final String sql;
     private final Select select;
     
@@ -60,7 +61,8 @@ public class QueryId {
             if (stmt instanceof Select) {
                 this.select = (Select) stmt;
                 this.sql = SQL_FORMATTER.format(this.select.toString());
-                this.md5 = DigestUtils.md5Hex(this.sql);
+                this.md5 = getMD5(this.sql);
+                this.md5Raw = getMD5(sql);
                 this.id = QueryFactory.nextUID();
             } else {
                 throw new QueryException("Only SELECT statements allowed!");
@@ -68,6 +70,10 @@ public class QueryId {
         } catch (JSQLParserException ex) {
             throw new QueryException(ex.getCause().getMessage());
         }
+    }
+    
+    public static String getMD5(String value) {
+        return DigestUtils.md5Hex(value);
     }
     
 }

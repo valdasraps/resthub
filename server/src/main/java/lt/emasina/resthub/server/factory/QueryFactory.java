@@ -73,18 +73,25 @@ public class QueryFactory {
     }
 
     public String createQuery(String sql) throws QueryException {
-        // Create id and search for existing query
+        
+        // 0: search for query by MD5 (fast-forward)
+        String id = queries.getId(QueryId.getMD5(sql));
+        if (id != null) {
+            return id;
+        }
+        
+        // 1: Not found. Create QID, normalize query and search again
         QueryId qid = rf.create(sql);
-        String id = queries.getId(qid.getMd5());
+        id = queries.getId(qid.getMd5());
         if (id != null) {
             return id;
         }
 
-        // Not found. Create new query and add to list
+        // 2: Not found. Create new query and add to list
         Query q = rf.create(qid);
         queries.add(q);
 
-        // Create query cache
+        // 3: Create query cache
         if (q.isCacheable()) {
             ccf.add(q);
         }

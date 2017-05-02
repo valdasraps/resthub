@@ -193,6 +193,7 @@ public class Query {
             ret.put("sql", sql);
             ret.put("cacheTime", cacheTime);
             ret.put("md5", qid.getMd5());
+            ret.put("md5Raw", qid.getMd5Raw());
             ret.put("id", qid.getId());
             ret.put("rowsLimit", rowsLimit);
             ret.put("hitCount", hitCount);

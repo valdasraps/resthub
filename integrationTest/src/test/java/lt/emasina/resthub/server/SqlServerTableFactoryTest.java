@@ -19,7 +19,7 @@ import org.restlet.data.MediaType;
 public class SqlServerTableFactoryTest extends ServerSetup {
 
     private final ServerChecks checks = new ServerChecks();
-    
+
     @Test
     public void refreshTests() throws Exception {
         JSONObject o;

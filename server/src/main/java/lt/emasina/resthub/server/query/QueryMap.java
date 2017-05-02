@@ -41,6 +41,7 @@ public class QueryMap {
         QueryId qid = q.getQid();
         queries.put(qid.getId(), q);
         ids.put(qid.getMd5(), qid.getId());
+        ids.put(qid.getMd5Raw(), qid.getId());
         lastAccess.put(qid.getId(), new Date());
     }
     
@@ -48,6 +49,7 @@ public class QueryMap {
         Query q = queries.remove(id);
         if (q != null) {
             ids.remove(q.getQid().getMd5());
+            ids.remove(q.getQid().getMd5Raw());
             lastAccess.remove(q.getQid().getId());
             return true;
         } else {
