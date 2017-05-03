@@ -4,7 +4,7 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>resthub</artifactId>
-        <version>0.6.14</version>
+        <version>0.6.15</version>
     </parent>
     <artifactId>clients</artifactId>
     <packaging>pom</packaging>
