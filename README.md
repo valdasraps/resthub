@@ -60,7 +60,7 @@ Flexible:
 | /tables/{namespace} | GET | List of namespace tables in JSON |
 | /table/{namespace}/{name} | GET | Table description in JSON |
 | /queries | GET | List of queries in JSON |
-| /query | POST | Create query from provided entity SQL and return automatically generated {id} |
+| /query | POST | Create query from provided entity SQL and return automatically generated {id}. Query can include parameters :name (strings) or :s__name for strings, :n__name for numbers and :d__name for dates |
 | /query/{id} | GET | Query description in JSON |
 | /query/{id} | DELETE | Remove query |
 | /query/{id}/data | GET | Get query data. Media type is by Accept header. For example: “Accept” : “application/xml” |
