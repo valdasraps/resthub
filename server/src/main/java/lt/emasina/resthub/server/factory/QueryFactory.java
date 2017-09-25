@@ -201,6 +201,8 @@ public class QueryFactory {
     private static final AtomicLong UID = new AtomicLong(new Date().getTime());
 
     public static String nextUID() {
-        return Long.toHexString(UID.incrementAndGet());
+        // Prefix "o" to remove conversion to number 1e99999 problem
+        // Based on Onuskis village in Lithunia
+        return "o".concat(Long.toHexString(UID.incrementAndGet()));
     }
 }
