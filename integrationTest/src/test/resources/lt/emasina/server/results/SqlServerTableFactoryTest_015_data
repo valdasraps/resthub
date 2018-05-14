@@ -1,0 +1,3 @@
+#Query data
+#Mon May 14 16:19:28 EEST 2018
+application/json={"columns"\:[{"name"\:"OWNER","type"\:"STRING"},{"name"\:"OBJECT_NAME","type"\:"STRING"},{"name"\:"DUMMY","type"\:"STRING"}],"connection"\:"default"}

@@ -14,5 +14,6 @@ SET TERMOUT OFF
 @product.sql
 @customer.sql
 @sales.sql
+@texts.sql
 
 QUIT

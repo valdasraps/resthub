@@ -59,7 +59,7 @@ public class Count extends ServerBaseResource {
     public void define() {
         getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.GET, Method.OPTIONS)));
         getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
-        addHeader("X-Content-Types", "text/plain");
+        addHeader(HEADER_CONTENT_TYPES, "text/plain");
     }
 
     @Get

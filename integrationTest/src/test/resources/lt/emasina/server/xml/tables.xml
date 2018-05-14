@@ -197,4 +197,14 @@
             </COLUMN>
         </COLUMNS>
     </TABLE>
+    <TABLE CACHE_TIME="20" HIT_COUNT="2" CONNECTION_NAME="default">
+        <METADATA/>
+        <NAMESPACE>STORE</NAMESPACE>
+        <NAME>Texts</NAME>
+        <SQL><![CDATA[
+            select *
+            from
+            texts
+        ]]></SQL>
+    </TABLE>
 </TABLES>

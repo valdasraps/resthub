@@ -78,6 +78,8 @@ public abstract class ServerBaseResource extends BaseResource {
             Query q = qf.getQuery(queryId);
             if (q == null && dieIfNotFound) {
                 throw new ClientErrorException(Status.CLIENT_ERROR_NOT_FOUND, "query [%s] not found.", queryId);
+            } else {
+                addHeader(HEADER_QUERY_ID, queryId);
             }
             return q;
         } else {

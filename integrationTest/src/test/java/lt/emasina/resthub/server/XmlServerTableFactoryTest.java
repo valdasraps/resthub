@@ -36,13 +36,13 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         copyFile("tables_1.xml");
         Thread.sleep(11000);
         
-        o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        o = getJSON(new TestRequest.Builder("/tables").build());
         TestCase.assertEquals(2, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         TestCase.assertEquals(1, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table1"));
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         TestCase.assertEquals(0, o.length());
         
         // Two tables from files (2nd file copied)
@@ -50,14 +50,14 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         copyFile("tables_2.xml");
         Thread.sleep(11000);
         
-        o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        o = getJSON(new TestRequest.Builder("/tables").build());
         TestCase.assertEquals(2, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         TestCase.assertEquals(2, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table1"));
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table2"));
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         TestCase.assertEquals(0, o.length());
         
         // One table from files (1st file removed)
@@ -65,13 +65,13 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         deleteFile("tables_1.xml");
         Thread.sleep(11000);
         
-        o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        o = getJSON(new TestRequest.Builder("/tables").build());
         TestCase.assertEquals(2, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         TestCase.assertEquals(1, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table2"));
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         TestCase.assertEquals(0, o.length());
         
         // Two tables from files (3rd file copied)
@@ -79,13 +79,13 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         copyFile("tables_3.xml");
         Thread.sleep(11000);
         
-        o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        o = getJSON(new TestRequest.Builder("/tables").build());
         TestCase.assertEquals(2, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         TestCase.assertEquals(1, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table2"));
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         TestCase.assertEquals(1, o.length());
         TestCase.assertEquals(1, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table3"));
@@ -95,25 +95,25 @@ public class XmlServerTableFactoryTest extends ServerSetup {
         deleteFile("tables_3.xml");
         Thread.sleep(11000);
         
-        o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        o = getJSON(new TestRequest.Builder("/tables").build());
         TestCase.assertEquals(2, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         TestCase.assertEquals(1, o.getJSONObject("folder").length());
         TestCase.assertNotNull(o.getJSONObject("folder").getString("table2"));
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         TestCase.assertEquals(0, o.length());
         
     }
     
     private void testEmpty() throws IOException, JSONException {
         
-        JSONObject o = getJSON(new TestRequest.Builder("r1","/tables").build());
+        JSONObject o = getJSON(new TestRequest.Builder("/tables").build());
         
         TestCase.assertEquals(1, o.length());
-        TestCase.assertEquals(5, o.getJSONObject("store").length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
         
-        o = getJSON(new TestRequest.Builder("r1","/blacklist").build());
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
         
         TestCase.assertEquals(0, o.length());
     }

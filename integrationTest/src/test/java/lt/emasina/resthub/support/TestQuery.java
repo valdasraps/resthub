@@ -121,8 +121,7 @@ public class TestQuery extends TestRequest {
         
         private final TestQuery q = new TestQuery();
         
-        public Builder(String prefix, String sql) {
-            q.setPrefix(prefix);
+        public Builder(String sql) {
             q.setPath("/query");
             q.setEntity(sql);
         }

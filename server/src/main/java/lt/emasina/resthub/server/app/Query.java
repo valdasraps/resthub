@@ -59,7 +59,7 @@ public class Query extends ServerBaseResource {
     public void define() {
         getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.DELETE, Method.GET, Method.OPTIONS, Method.POST)));
         getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
-        addHeader("X-Content-Types", "application/json");
+        addHeader(HEADER_CONTENT_TYPES, "application/json");
     }
     
     @Post("text")
@@ -68,6 +68,7 @@ public class Query extends ServerBaseResource {
         if (sql != null) {
             try {
                 String id = qf.createQuery(sql);
+                addHeader(HEADER_QUERY_ID, id);
                 getResponse().setEntity(new StringRepresentation(id));
             } catch (QueryException ex) {
                 throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());

@@ -54,6 +54,12 @@ class Files(object):
 
 class Rhapi_test_cases(unittest.TestCase):
     
+    def checkEqual(self, o1, o2):
+        if type(o1) == type(o2) and type(o1) == type([]):
+            return len(o1) == len(o2) and sorted(o1) == sorted(o2)
+        else:
+            return self.assertEquals(o1, o2)
+    
     #function for sort dict in dict
     def deep_sort(self, obj):
         if isinstance(obj, dict):
@@ -92,7 +98,7 @@ class Rhapi_test_cases(unittest.TestCase):
         #files.saveToFile(tables, RESOURCES_PATH+'test_tables.json')
         data_from_file = files.loadFromFile(RESOURCES_PATH+'test_tables.json', 'json')
         
-        self.assertEquals(data_from_file, tables)
+        self.checkEqual(data_from_file, tables)
         
     def test_table(self):
         table = api.table(folder = SCHEMA_NAME, table = TABLE)

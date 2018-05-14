@@ -7,7 +7,7 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>resthub</artifactId>
-        <version>0.6.15</version>
+        <version>0.6.17</version>
     </parent>
     
     <artifactId>integrationTest</artifactId>
@@ -16,9 +16,9 @@
     
     <properties>
         <!--test.server.url>oracle-cern.mif:1521/cerndev</test.server.url-->
-        <test.server.url>localhost:1521/xe</test.server.url>
+        <test.server.url>193.219.91.103:1521/xe</test.server.url>
         <test.server.user>resthub_test</test.server.user>
-        <test.server.passwd>test</test.server.passwd>
+        <test.server.passwd>tesT2018</test.server.passwd>
     </properties>
     
     <build>

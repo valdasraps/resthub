@@ -66,7 +66,7 @@ public class XMLConverter implements DataConverter {
     }
 
     @Override
-    public Representation convert(DataHandler handler, final Reference ref, CcData data) throws Exception {
+    public Representation convert(final DataHandler handler, final Reference ref, CcData data) throws Exception {
         Query query = handler.getQuery();
         DocumentBuilder db = DBF.newDocumentBuilder();
         final Document doc = db.newDocument();
@@ -107,10 +107,12 @@ public class XMLConverter implements DataConverter {
                         case STRING:
                             svalue = (String) value;
                             break;
-                        case BLOB:
-                            svalue = getLobReference(ref).toString();
-                            break;
                         case CLOB:
+                            if (handler.isInlineClobs()) {
+                                svalue = (String) value;
+                                break;
+                            }
+                        case BLOB:
                             svalue = getLobReference(ref).toString();
                             break;
                     }

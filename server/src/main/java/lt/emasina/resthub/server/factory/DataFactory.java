@@ -49,9 +49,7 @@ import lt.emasina.resthub.server.query.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
-import org.hibernate.type.BlobType;
 import org.hibernate.type.CalendarType;
-import org.hibernate.type.ClobType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.TextType;
 import org.hibernate.type.WrapperBinaryType;
@@ -75,10 +73,10 @@ public class DataFactory {
         for (MdColumn c: q.getColumns()) {
             switch (c.getType()) {
                 case BLOB:
-                    query.addScalar(c.getName(), new BlobType());
+                    query.addScalar(c.getName(), new WrapperBinaryType());
                     break;
                 case CLOB:
-                    query.addScalar(c.getName(), new ClobType());
+                    query.addScalar(c.getName(), new TextType());
                     break;
                 case DATE:
                     query.addScalar(c.getName(), new CalendarType());

@@ -79,7 +79,7 @@ public class Lob extends PagedData {
     public void define() {
         getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.GET, Method.OPTIONS)));
         getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
-        addHeader("X-Content-Types", this.handler.getMediaType().toString());
+        addHeader(HEADER_CONTENT_TYPES, this.handler.getMediaType().toString());
     }
     
     @Get

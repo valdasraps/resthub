@@ -77,7 +77,7 @@ class RhApi:
                 print arg, 
             print
 
-    def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False):
+    def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False, inline_clobs = False):
         """
         General API call (do not use it directly!)
         """
@@ -85,6 +85,7 @@ class RhApi:
         if type(params) != dict: params = {}
         if verbose: params["_verbose"] = True
         if cols: params["_cols"] = True
+        if inline_clobs: params["_inclob"] = True
 
         #
         # Constructing request path
@@ -175,7 +176,7 @@ class RhApi:
         """
         return int(self.get(["query", qid, "count"], params = params, verbose = verbose))
 
-    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False, cols = False):
+    def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False, cols = False, inline_clobs = False):
         """
         Get data rows
         """
@@ -194,30 +195,30 @@ class RhApi:
                 ps.extend(["page", pagesize, page]);
                 
         ps.append("data")
-        return self.get(ps, None, { "Accept": form }, params, verbose = verbose, cols = cols)
+        return self.get(ps, None, { "Accept": form }, params, verbose = verbose, cols = cols, inline_clobs = inline_clobs)
 
-    def csv(self, query, params = None, pagesize = None, page = None, verbose = False):
+    def csv(self, query, params = None, pagesize = None, page = None, verbose = False, inline_clobs = False):
         """
         Get rows in CSV format 
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'text/csv', pagesize, page, verbose = verbose)
+        return self.data(qid, params, 'text/csv', pagesize, page, verbose = verbose, inline_clobs = inline_clobs)
 
-    def xml(self, query, params = None, pagesize = None, page = None, verbose = False):
+    def xml(self, query, params = None, pagesize = None, page = None, verbose = False, inline_clobs = False):
         """
         Get rows in XML format 
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'text/xml', pagesize, page, verbose = verbose)
+        return self.data(qid, params, 'text/xml', pagesize, page, verbose = verbose, inline_clobs = inline_clobs)
 
-    def json(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False):
+    def json(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False, inline_clobs = False):
         """
         Get rows in JSON format (array of arrays)
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose, cols = cols)
+        return self.data(qid, params, 'application/json', pagesize, page, verbose = verbose, cols = cols, inline_clobs = inline_clobs)
     
-    def json_all(self, query, params = None, verbose = False, cols = False):
+    def json_all(self, query, params = None, verbose = False, cols = False, inline_clobs = False):
         """
         Get all rows in JSON format (array of arrays)
         """
@@ -230,7 +231,7 @@ class RhApi:
         pages = int(count/rowsLimit) + 1
         
         for page in range(1, (pages + 1)):
-            data = self.data(qid, params, form="application/json", page = page, pagesize = rowsLimit, verbose = verbose, cols = cols)
+            data = self.data(qid, params, form="application/json", page = page, pagesize = rowsLimit, verbose = verbose, cols = cols, inline_clobs = inline_clobs)
             rows.extend(data["data"])
         
         if count != len(rows):
@@ -238,12 +239,12 @@ class RhApi:
         
         return rows
     
-    def json2(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False):
+    def json2(self, query, params = None, pagesize = None, page = None, verbose = False, cols = False, inline_clobs = False):
         """
         Get rows in JSON2 format (array or objects)
         """
         qid = self.qid(query)
-        return self.data(qid, params, 'application/json2', pagesize, page, verbose = verbose, cols = cols)
+        return self.data(qid, params, 'application/json2', pagesize, page, verbose = verbose, cols = cols, inline_clobs = inline_clobs)
 
 from optparse import OptionParser
 import pprint

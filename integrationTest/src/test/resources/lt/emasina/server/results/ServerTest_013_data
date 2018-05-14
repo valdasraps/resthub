@@ -1,0 +1,3 @@
+#Query data
+#Mon May 14 16:19:41 EEST 2018
+application/json={"tableFactory"\:"XmlResourceTableFactory","cache"\:"http\://localhost\:8112/table/store/texts/cache","hitCount"\:2,"columns"\:[{"name"\:"ID","type"\:"NUMBER"},{"name"\:"DESCR","type"\:"CLOB"},{"name"\:"NAME","type"\:"STRING"}],"connection"\:"default","id"\:"store.texts","rowsLimit"\:10000,"sql"\:"\\n            select *\\n            from\\n            texts\\n        ","cacheTime"\:20}

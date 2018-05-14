@@ -60,7 +60,7 @@ public class CSVConverter implements DataConverter {
     }
     
     @Override
-    public Representation convert(DataHandler handler, final Reference ref, CcData data) throws Exception {
+    public Representation convert(final DataHandler handler, final Reference ref, CcData data) throws Exception {
         final StringBuilder sb = new StringBuilder();
         Query query = handler.getQuery();
         
@@ -93,8 +93,12 @@ public class CSVConverter implements DataConverter {
                         case STRING:
                             sb.append(escapeStr((String) value)); 
                             break;
-                        case BLOB:
                         case CLOB:
+                            if (handler.isInlineClobs()) {
+                                sb.append(escapeStr((String) value));
+                                break;
+                            }
+                        case BLOB:
                             sb.append("[file]"); 
                             break;
                         default:

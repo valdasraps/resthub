@@ -50,7 +50,7 @@ public class BlacklistTables extends ServerBaseResource {
     public void define() {
         getResponse().setAccessControlAllowMethods(new HashSet<>(Arrays.asList(Method.DELETE, Method.GET, Method.OPTIONS)));
         getResponse().setAccessControlAllowHeaders(Collections.singleton("Content-Type"));
-        addHeader("X-Content-Types", "application/json");
+        addHeader(HEADER_CONTENT_TYPES, "application/json");
     }
     
     @Get

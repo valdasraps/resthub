@@ -1,0 +1,12 @@
+#Headers
+#Mon May 14 16:19:46 EEST 2018
+X-Query-Id=o1635ecbf4e6
+Access-Control-Allow-Origin=*
+Accept-Ranges=bytes
+Access-Control-Allow-Headers=Content-Type
+Content-Length=0
+Access-Control-Allow-Methods=POST, GET, OPTIONS
+X-Content-Types=application/json,application/json2,application/xml,text/xml,text/csv,text/plain
+Server=Restlet-Framework/2.3.7
+Date=Mon, 14 May 2018 13\:19\:46 GMT
+Allow=GET, OPTIONS, POST

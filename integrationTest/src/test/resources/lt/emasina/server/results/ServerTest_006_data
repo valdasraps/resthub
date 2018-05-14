@@ -1,0 +1,3 @@
+#Query data
+#Mon May 14 16:19:41 EEST 2018
+application/json={"columns"\:[{"name"\:"ID","type"\:"NUMBER"},{"name"\:"BRAND","type"\:"STRING"},{"name"\:"NAME","type"\:"STRING"}],"connection"\:"default"}

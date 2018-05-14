@@ -20,10 +20,35 @@ import static org.junit.Assert.assertTrue;
 @Setter(AccessLevel.PROTECTED)
 public class TestRequest {
 
-    private String prefix;
+    private static final Map<String,Integer> COUNTERS = new HashMap<>();
+
+    private String className;
+    private Integer prefix;
     private String path;
     private String entity;
     private HashMap headers;
+
+    public TestRequest() {
+        
+        StackTraceElement[] stack = new Exception().getStackTrace();
+        StackTraceElement el = stack[1];
+        for (int i = 2; i < stack.length; i++) {
+            el = stack[i];
+            if (!el.getClassName().contains(".support.")) break;
+        }
+        
+        System.out.println("Request for " + el);
+        
+        this.className = el.getClassName().replaceFirst("^.*\\.", "");
+        
+        synchronized (COUNTERS) {
+            if (!COUNTERS.containsKey(this.className)) {
+                COUNTERS.put(this.className, 1);
+            }
+            this.prefix = COUNTERS.get(className);
+            COUNTERS.put(this.className, this.prefix + 1);
+        }
+    }
     
     public String getUrl() {
         return ServerSetup.HOST + path;
@@ -91,6 +116,10 @@ public class TestRequest {
         return null;
     }
     
+    public String getFilename(String suffix) {
+        return String.format("%s_%03d_%s", className, prefix, suffix);
+    }
+    
     public void addHeaders(ClientResource client) {
         Series<Header> reqHeaders = (Series<Header>)
         client.getRequestAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
@@ -112,11 +141,6 @@ public class TestRequest {
         private final TestRequest req = new TestRequest();
         
         public Builder(String path) {
-            req.path = path;
-        }
-        
-        public Builder(String prefix, String path) {
-            req.prefix = prefix;
             req.path = path;
         }
         

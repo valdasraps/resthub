@@ -73,11 +73,13 @@ public class Data extends PagedData {
     }
     
     private Boolean printColumns;
+    private Boolean inlineClobs;
 
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();       
         this.printColumns = isParam("_cols");
+        this.inlineClobs = isParam("_inclob");
     }
     
     @Options
@@ -88,7 +90,7 @@ public class Data extends PagedData {
         for (MediaType mt: SUPPORTED_TYPES) {
             sb.append(sb.length() > 0 ? "," : "").append(mt);
         }
-        addHeader("X-Content-Types", sb.toString());
+        addHeader(HEADER_CONTENT_TYPES, sb.toString());
     }
     
     @Post("text")
@@ -106,6 +108,7 @@ public class Data extends PagedData {
                     
                     url = url.replaceFirst("/query/" + oldId + "/", "/query/" + id + "/");
                     
+                    addHeader(HEADER_QUERY_ID, id);
                     getResponse().redirectTemporary(url);
                 } catch (QueryException ex) {
                     throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
@@ -130,6 +133,7 @@ public class Data extends PagedData {
         handler.setPerPage(perPage);
         handler.setPage(page);
         handler.setPrintColumns(printColumns);
+        handler.setInlineClobs(inlineClobs);
         
         CacheStats stats = handler.getCacheStats();
         

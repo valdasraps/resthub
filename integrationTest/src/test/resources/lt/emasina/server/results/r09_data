@@ -1,3 +1,0 @@
-#Query data
-#Tue Feb 07 10:21:58 EET 2017
-application/json={"columns"\:[{"name"\:"ID","type"\:"NUMBER"},{"name"\:"NAME","type"\:"STRING"},{"name"\:"CITY","type"\:"STRING"},{"name"\:"COUNTRY","type"\:"STRING"}],"connection"\:"default"}

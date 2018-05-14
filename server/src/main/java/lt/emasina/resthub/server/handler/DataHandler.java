@@ -44,6 +44,10 @@ public class DataHandler extends PagedHandler<CcData, DataExporter> {
     @Getter
     @Setter
     private boolean printColumns;
+
+    @Getter
+    @Setter
+    private boolean inlineClobs;
     
     @Inject
     public DataHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {

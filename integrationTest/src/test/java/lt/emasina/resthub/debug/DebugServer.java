@@ -15,34 +15,30 @@ import org.restlet.Component;
 import org.restlet.data.Protocol;
 
 public class DebugServer {
-    
+
     // Setup these constants before running!
-    
-	private static final String URL = "jdbc:oracle:thin:@oracle-cern.mif:1521:cerndev";
-	
-	private static final String USER = "RESTHUB_TEST";
-    private static final String PASSWD = "test";
-    
+    private static final String URL = "jdbc:oracle:thin:@oracle-mif:1521/xe";
+
+    private static final String USER = "RESTHUB_TEST";
+    private static final String PASSWD = "tesT2018";
+
     private static final String NAMESPACE = "RESTHUB_TEST";
     private static final String NAME = "CUSTOMER";
-    private static final String SQL = "select count(1) from CUSTOMER";    
-    
+    private static final String SQL = "select count(1) as c from CUSTOMER";
+
     //private static final String URL = "jdbc:oracle:thin:@cmsr_lb";
-	//private static final String USER = "cms_dqm_run_registry_off_r";
+    //private static final String USER = "cms_dqm_run_registry_off_r";
     //private static final String PASSWD = "";
-    
     //private static final String NAMESPACE = "rr_global";
     //private static final String NAME = "runs";
     //private static final String SQL = "select * from RR3_RUS_ROW_GLOBAL where RR3_VER_PKG.GOTO_TAG_R('LATEST') = 1";
-    
     // Thats it!
-    
     private static final String CONNECTION_NAME = "test";
-    
+
     private final Component comp;
-        
+
     public DebugServer() throws Exception {
-        
+
         ServerApp app = new ServerApp(new ConnectionFactory() {
 
             @Override
@@ -70,10 +66,10 @@ public class DebugServer {
                 return PASSWD;
             }
         },
-        new TableFactory() {
+                new TableFactory() {
 
             private boolean refresh = true;
-            
+
             @Override
             public boolean isRefresh() {
                 if (refresh) {
@@ -86,30 +82,31 @@ public class DebugServer {
             @Override
             public List<MdTable> getTables() throws Exception {
                 MdTable t = new MdTable();
-                
+
                 t.setNamespace(NAMESPACE);
                 t.setName(NAME);
                 t.setConnectionName(CONNECTION_NAME);
                 t.setSql(SQL);
-                
+
                 return Collections.singletonList(t);
             }
 
             @Override
-            public void close() throws Exception { }
-            
-        }, 
-        new ServerAppConfig());
+            public void close() throws Exception {
+            }
+
+        },
+                new ServerAppConfig());
         comp = new Component();
         comp.getServers().add(Protocol.HTTP, 8112);
         comp.getDefaultHost().attach(app);
         comp.start();
     }
-    
+
     public static void main(String[] args) throws Exception {
         Class.forName("oracle.jdbc.OracleDriver");
         System.setProperty("oracle.net.tns_admin", "/etc");
         DebugServer debugServer = new DebugServer();
     }
-    
+
 }

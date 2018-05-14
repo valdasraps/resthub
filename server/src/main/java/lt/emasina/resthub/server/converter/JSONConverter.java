@@ -47,13 +47,17 @@ public class JSONConverter extends JSONConverterBase {
             }
 
             @Override
-            public void visitCol() {
+            public void visitCol() throws Exception {
                 switch (column.getType()) {
                     case DATE:
                         Calendar cal = (Calendar) value;
                         o.put(value != null ? DATE_FORMAT.format(cal.getTime()) : null);
                         break;
                     case CLOB:
+                        if (handler.isInlineClobs()) {
+                            o.put((String) value);
+                            break;
+                        }
                     case BLOB:
                         o.put(getLobReference(ref));
                         break;

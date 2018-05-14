@@ -57,6 +57,9 @@ import org.restlet.data.Header;
  */
 public abstract class BaseResource extends ServerResource {
     
+    public static final String HEADER_CONTENT_TYPES = "X-Content-Types";
+    public static final String HEADER_QUERY_ID = "X-Query-Id";
+        
     @Inject
     private static volatile ResourceInjector memberInjector;
     

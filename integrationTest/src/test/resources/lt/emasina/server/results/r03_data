@@ -1,3 +1,0 @@
-#Query data
-#Tue Feb 07 10:21:58 EET 2017
-application/json={"metadata"\:{"description"\:"Customer information"},"columns"\:[{"name"\:"ID","type"\:"NUMBER"},{"metadata"\:{"description"\:"Customer full name"},"name"\:"NAME","type"\:"STRING"},{"name"\:"CITY","type"\:"STRING"},{"name"\:"COUNTRY","type"\:"STRING"}],"connection"\:"default","parameters"\:[{"metadata"\:{"description"\:"Customer unique identifier. If not provided - all customers are returned"},"array"\:false,"name"\:"id","type"\:"STRING"}]}

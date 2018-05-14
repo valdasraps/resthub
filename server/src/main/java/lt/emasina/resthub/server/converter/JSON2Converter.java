@@ -57,6 +57,10 @@ public class JSON2Converter extends JSONConverterBase {
                         o.put(name, value != null ? DATE_FORMAT.format(cal.getTime()) : null);
                         break;
                     case CLOB:
+                        if (handler.isInlineClobs()) {
+                            o.put(name, value);
+                            break;
+                        }
                     case BLOB:
                         o.put(name, getLobReference(ref));
                         break;

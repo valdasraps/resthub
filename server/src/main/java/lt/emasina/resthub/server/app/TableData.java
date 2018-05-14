@@ -52,7 +52,7 @@ public class TableData extends ServerBaseResource {
         for (MediaType mt: Data.SUPPORTED_TYPES) {
             sb.append(sb.length() > 0 ? "," : "").append(mt);
         }
-        addHeader("X-Content-Types", sb.toString());
+        addHeader(HEADER_CONTENT_TYPES, sb.toString());
     }
     
     @Get
@@ -60,9 +60,9 @@ public class TableData extends ServerBaseResource {
         MdTable t = tmd.getTable();
         String sql = String.format(SQL, t.getNamespace(), t.getName());
         String id = qf.createQuery(sql);
-        String path = getReference().getPath().replaceFirst("/table/" + t.getNamespace() + "/" + t.getName() + "/", 
-                                                            "/query/" + id + "/");
+        String path = "/query/" + id + "/data";
         URL ref = cfg.getReference(getHostRef(), getReference().getQuery(), path);
+        addHeader(HEADER_QUERY_ID, id);
         getResponse().redirectTemporary(ref.toString());
     }
     

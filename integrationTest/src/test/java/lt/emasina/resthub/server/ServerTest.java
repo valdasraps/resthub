@@ -28,53 +28,57 @@ public class ServerTest extends ServerSetup {
         
         // Check Requests
 
-        checks.check(new TestRequest.Builder("i00","/info").build());
-        checks.check(new TestRequest.Builder("r01","/queries").build(), Boolean.TRUE);
-        checks.check(new TestRequest.Builder("r02","/tables").build());
+        checks.check(new TestRequest.Builder("/info").build());
+        checks.check(new TestRequest.Builder("/queries").build(), Boolean.TRUE);
+        checks.check(new TestRequest.Builder("/tables").build());
         
-        checks.check(new TestRequest.Builder("r03","/table/store/customer").build());
-        checks.check(new TestRequest.Builder("r04","/table/store/sales").build());
-        checks.check(new TestRequest.Builder("r05","/table/store/products").build());
-        checks.check(new TestRequest.Builder("r09","/table/store/customers").build());
+        checks.check(new TestRequest.Builder("/table/store/customer").build());
+        checks.check(new TestRequest.Builder("/table/store/sales").build());
+        checks.check(new TestRequest.Builder("/table/store/products").build());
+        checks.check(new TestRequest.Builder("/table/store/customers").build());
+        checks.check(new TestRequest.Builder("/table/store/texts").build());
         
-        checks.check(new TestRequest.Builder("r06","/table/store/customer?_verbose").build());
-        checks.check(new TestRequest.Builder("r07","/table/store/sales?_verbose").build());
-        checks.check(new TestRequest.Builder("r08","/table/store/products?_verbose").build());
-        checks.check(new TestRequest.Builder("r10","/table/store/customers?_verbose").build());
+        checks.check(new TestRequest.Builder("/table/store/customer?_verbose").build());
+        checks.check(new TestRequest.Builder("/table/store/sales?_verbose").build());
+        checks.check(new TestRequest.Builder("/table/store/products?_verbose").build());
+        checks.check(new TestRequest.Builder("/table/store/customers?_verbose").build());
+        checks.check(new TestRequest.Builder("/table/store/texts?_verbose").build());
 
-        checks.check(new TestRequest.Builder("r11","/table/store/customer/data").build());
-        checks.check(new TestRequest.Builder("r12","/table/store/sales/data").build());
-        checks.check(new TestRequest.Builder("r13","/table/store/products/data").build());
-        checks.check(new TestRequest.Builder("r14","/table/store/customers/data").build());
+        checks.check(new TestRequest.Builder("/table/store/customer/data").build());
+        checks.check(new TestRequest.Builder("/table/store/sales/data").build());
+        checks.check(new TestRequest.Builder("/table/store/products/data").build());
+        checks.check(new TestRequest.Builder("/table/store/customers/data").build());
+        checks.check(new TestRequest.Builder("/table/store/texts/data").build());
+        checks.check(new TestRequest.Builder("/table/store/texts/data?_inclob").build());
         
         // Check Queries
-        checks.check(new TestQuery.Builder("q01", "SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;")
+        checks.check(new TestQuery.Builder("SELECT * FROM (SELECT * FROM store.products c) a ORDER BY a.ID asc;")
                 .build());
-        checks.check(new TestQuery.Builder("q02", "SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;")
+        checks.check(new TestQuery.Builder("SELECT * FROM (SELECT c.ID,c.BRAND FROM store.products c WHERE c.ID > 100 ORDER BY c.BRAND desc) a ORDER BY a.ID asc;")
                 .params("?p1=1000")
                 .build());
-        checks.check(new TestQuery.Builder("q03", "SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a")
+        checks.check(new TestQuery.Builder("SELECT * FROM (SELECT * FROM store.products c WHERE c.BRAND = :brand) a")
                 .params("?brand=Bravo")
                 .headers(new HashMap<String, String>() {{ put("Range", "rows=0-9"); }})
                 .build());
-        checks.check(new TestQuery.Builder("q04", "SELECT * FROM store.sales a")
+        checks.check(new TestQuery.Builder("SELECT * FROM store.sales a")
                 .build());
-        checks.check(new TestQuery.Builder("q05", "SELECT * FROM store.products p ORDER BY p.id desc")
+        checks.check(new TestQuery.Builder("SELECT * FROM store.products p ORDER BY p.id desc")
                 .params("?_cols")
                 .build());
-        checks.check(new TestQuery.Builder("q06", "SELECT * FROM store.products c")
+        checks.check(new TestQuery.Builder("SELECT * FROM store.products c")
                 .build());
-        checks.check(new TestQuery.Builder("q06_10_1", "SELECT * FROM store.products c")
+        checks.check(new TestQuery.Builder("SELECT * FROM store.products c")
                 .page(10, 1)
                 .build());
-        checks.check(new TestQuery.Builder("q06_10_5", "SELECT * FROM store.products c")
+        checks.check(new TestQuery.Builder("SELECT * FROM store.products c")
                 .page(10, 5)
                 .build());
         
         // Check page size larger than rowsLimit
         try {
             
-            new TestQuery.Builder("q06_1005_1", "SELECT * FROM store.products c")
+            new TestQuery.Builder("SELECT * FROM store.products c")
                     .page(1005, 1)
                     .build().get();
             

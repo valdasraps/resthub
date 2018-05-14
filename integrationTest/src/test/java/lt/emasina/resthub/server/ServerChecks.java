@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import junit.framework.TestCase;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.DataResponse;
 import lt.emasina.resthub.model.QueryManager;
@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -35,24 +34,17 @@ public class ServerChecks {
     
     public void check(QueryManager qm) throws IOException, JSONException {
         
-        log.debug("Cheking query headers");
         Map headers = qm.options();
-        
-        // Checking headers file
-        InputStream inputStream = getResultStream(HEADER_FILE);
-        
-        if (inputStream == null) {
-            headersToFile(headers, HEADER_FILE);
-        } else {
-            compareHeaders(headers, inputStream);
-        }
+        compareHeaders(headers, HEADER_FILE);
 
-        log.debug("Cheking query data");
-        inputStream = getResultStream(DATA_FILE);
-        boolean loaded = inputStream != null;
+        boolean loaded;
         Properties prop = new Properties();
-        if (loaded) {
-            prop.load(inputStream);
+        
+        try (InputStream in = getResultStream(DATA_FILE)) {
+            loaded = in != null;
+            if (loaded) {
+                prop.load(in);
+            }
         }
         
         // Getting available content types 
@@ -85,35 +77,34 @@ public class ServerChecks {
     
     public void check(TestRequest query, Boolean skipData) throws IOException, URISyntaxException, org.json.JSONException {
                 
+        // Checking options
+        
         ClientResource client = query.options();
 
-        String headerFile = query.getPrefix() + "_headers";
-        Series headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
-        
-        // Checking headers
-        
-        InputStream inputStream = getResultStream(headerFile);
-        if (inputStream == null) {
-            headersToFile(headers, headerFile);
-        } else {
-            compareHeaders(headers, inputStream);
-        }
+        Map<String,String> headers = getHeaders(client);
+        compareHeaders(headers, query.getFilename("options"));
         
         if (skipData) return;
-             
-        // Checking data
         
         Properties prop = new Properties();
-        String dataFile = query.getPrefix() + "_data";
-        inputStream = getResultStream(dataFile);
-        boolean loaded = inputStream != null;
-        if (loaded) {
-            prop.load(inputStream);
+        boolean loaded;
+        String[] contentTypes = headers.get("X-Content-Types").split(",");
+        ArrayList<String> mimeTypes = new ArrayList<>();   
+        
+        // Loading previous results
+        
+        String dataFile = query.getFilename("data");
+        try (InputStream inputStream = getResultStream(dataFile)) {
+            loaded = inputStream != null;
+            if (loaded) {
+                prop.load(inputStream);
+            }
         }
 
-        // Check query count 
+        // Check query count
         client = query.count();
         if (client != null) {
+            compareHeaders(getHeaders(client), query.getFilename("count_headers"));
             String count = client.getResponseEntity().getText();
             if (!loaded) {
                 prop.setProperty("count", count);
@@ -126,9 +117,6 @@ public class ServerChecks {
         
         query.deleteCache(); 
         
-        String[] contentTypes = headers.getValues("X-Content-Types").split(",");
-        ArrayList<String> mimeTypes = new ArrayList<>();   
-        
         // Check each contentType
         for (String contentType : contentTypes) {
             
@@ -136,9 +124,16 @@ public class ServerChecks {
             client = query.get(MediaType.valueOf(contentType));
             log.info(String.format("GET took: %d ms @%d", System.currentTimeMillis() - t, System.currentTimeMillis()));
             
+            compareHeaders(getHeaders(client), query.getFilename("data_headers_" + contentType.replaceAll("/", "")));
+            
             Representation get = client.getResponseEntity();
             String data = get.getText();
             get.exhaust();
+            
+            String qid = getHeaders(client).get("X-Query-Id");
+            if (qid != null) {
+                data = data.replaceAll(qid, "QUERYID");
+            }
 
             if (!loaded) {
                 prop.setProperty(contentType, data);
@@ -148,9 +143,7 @@ public class ServerChecks {
                 compareData(get.getMediaType().toString(), prop.getProperty(contentType), data);
                 
                 // Get unique content types
-                headers = (Series) client.getResponse().getAttributes().get("org.restlet.http.headers");
-                String type = headers.getValues("Content-Type");
-
+                String type = getHeaders(client).get("Content-Type");
                 if(!mimeTypes.contains(type)) {
                     mimeTypes.add(type);
                 }              
@@ -203,45 +196,36 @@ public class ServerChecks {
         }
     }
     
-    private void headersToFile(Series headers, String fileName) throws IOException {
-        Map map = new HashMap();
-        for (Object header1 : headers) {
-            Header header = (Header) header1;
-            map.put(header.getName(), header.getValue());
-        }
-        headersToFile(map, fileName);
-    }
-    
-    private void headersToFile(Map headers, String fileName) throws IOException {
+    private void headersToFile(Map<String,String> headers, String fileName) throws IOException {
         Properties prop = new Properties();
-        for (Object key: headers.keySet()) {
-            String name = (String) key;
-            String value = (String) headers.get(key);
-            prop.setProperty(name, value);
+        for (String name: headers.keySet()) {
+            prop.setProperty(name, headers.get(name));
         }
         prop.store(new FileOutputStream(getResultFile(fileName)), "Headers");
     }
     
-    private void compareHeaders(Series headers, InputStream inputStream) throws IOException {
-        Map map = new HashMap();
-        for (Object header1 : headers) {
-            Header header = (Header) header1;
-            map.put(header.getName(), header.getValue());
-        }
-        compareHeaders(map, inputStream);
-    }
-    
-    private void compareHeaders(Map headers, InputStream inputStream) throws IOException {
-        Properties prop = new Properties();
-        prop.load(inputStream);
-        for (Object key: headers.keySet()) {
-            String name = (String) key;
-            String current_value = (String) headers.get(key);
-            String test_value = prop.getProperty(name);
-            if (!Arrays.asList(EXCLUDE_HEADERS).contains(name)) {
-                assertEquals(String.format("[%s] header value", name), test_value, current_value);
+    private void compareHeaders(Map<String,String> headers, String filename) throws IOException {
+        try (InputStream in = getResultStream(filename)) {
+            if (in == null) {
+                headersToFile(headers, filename);
+            } else {
+                Properties prop = new Properties();
+                prop.load(in);
+                for (String name: headers.keySet()) {
+                    String current_value = headers.get(name);
+                    String test_value = prop.getProperty(name);
+                    if (Arrays.asList(EXCLUDE_HEADERS).contains(name)) {
+                        TestCase.assertTrue(String.format("[%s] header existence", name), test_value != null);
+                    } else {
+                        assertEquals(String.format("[%s] header value", name), test_value, current_value);
+                    }
+                }
             }
         }
     }
        
+    private static Map<String,String> getHeaders(ClientResource client) {
+        return ((Series) client.getResponse().getAttributes().get("org.restlet.http.headers")).getValuesMap();
+    }
+    
 }

@@ -18,7 +18,7 @@ import org.junit.Ignore;
 public class ServerSetup {
 
     public static final String HOST = "http://localhost:8112";
-    protected static final String[] EXCLUDE_HEADERS = {"Date", "Expires", "Accept-Ranges", "Allow"};
+    protected static final String[] EXCLUDE_HEADERS = {"Date", "Expires", "Accept-Ranges", "Allow", "X-Query-Id"};
     
     protected static final ServerWorker WORKER = new ServerWorker();
     

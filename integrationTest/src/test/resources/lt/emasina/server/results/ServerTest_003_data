@@ -1,0 +1,3 @@
+#Query data
+#Mon May 14 16:19:41 EEST 2018
+application/json={"store"\:{"customer"\:"http\://localhost\:8112/table/store/customer","customers"\:"http\://localhost\:8112/table/store/customers","products"\:"http\://localhost\:8112/table/store/products","sales"\:"http\://localhost\:8112/table/store/sales","single_product"\:"http\://localhost\:8112/table/store/single_product","texts"\:"http\://localhost\:8112/table/store/texts"}}
