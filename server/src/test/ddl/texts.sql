@@ -26,7 +26,7 @@ Insert into TEXTS (ID,NAME,DESCR) values (4,'xml','<widget>
         <vOffset>100</vOffset>
         <alignment>center</alignment>
         <onMouseUp>
-            sun1.opacity = (sun1.opacity / 100) * 90;
+            sun1.opacity = (sun1.opacity / 100) * 90
         </onMouseUp>
     </text>
 </widget>');
