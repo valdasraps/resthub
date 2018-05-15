@@ -16,6 +16,7 @@ SET TERMOUT OFF
 @sales.sql
 
 SET TERMOUT ON
+SET SQLBLANKLINES ON
 
 @texts.sql
 
