@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,9 +20,11 @@ import lt.emasina.resthub.ConnectionFactory;
 import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.factory.XmlFolderTableFactory;
 import lt.emasina.resthub.factory.XmlResourceTableFactory;
+import lt.emasina.resthub.model.MdTable;
 import lt.emasina.resthub.support.TestConnectionFactory;
 import lt.emasina.resthub.support.TestSqlTableFactory;
 import lt.emasina.resthub.support.TcpTunnel;
+import oracle.jdbc.OracleConnection;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
@@ -105,6 +108,9 @@ public class ServerWorker {
     }
     
     public void startServer() throws Exception {
+        
+        // Cleaning up folder
+        
         if (Files.exists(FOLDER)) {
             Files.walkFileTree(FOLDER, new SimpleFileVisitor<Path>() {
 
@@ -123,15 +129,30 @@ public class ServerWorker {
             });
         }
         
-        ServerAppConfig cfg = new ServerAppConfig();
-        cfg.setUpdateInterval(10);
-        cfg.setServiceVersion("1.11.11");
+        // Setup ConnectionFactory
         
         if (tunnelExecutor != null) {
             cf = new TestConnectionFactory(tunnel_url, username, password);
         } else {
             cf = new TestConnectionFactory(url, username, password);
         }
+        
+        // Cleaning up views
+        
+        try (OracleConnection con = getCf().getConnection("default")) {
+            
+            TestSqlTableFactory tf = new TestSqlTableFactory();
+            tf.init(getCf());
+            try (Statement st = con.createStatement()) {
+                for (MdTable t: tf.getTables()) {
+                    st.execute("DROP VIEW ".concat(t.getName().concat("_SQLTEST")));
+                }
+            }
+        }
+        
+        ServerAppConfig cfg = new ServerAppConfig();
+        cfg.setUpdateInterval(10);
+        cfg.setServiceVersion("1.11.11");
         
         ServerApp app = new ServerApp(cf, 
             new TableFactory.Builder()

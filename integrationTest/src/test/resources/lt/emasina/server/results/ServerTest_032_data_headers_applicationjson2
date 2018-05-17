@@ -1,0 +1,10 @@
+#Headers
+#Thu May 17 13:44:52 EEST 2018
+Date=Thu, 17 May 2018 10\:44\:52 GMT
+Transfer-Encoding=chunked
+Access-Control-Allow-Origin=*
+Server=Restlet-Framework/2.3.7
+Connection=keep-alive
+Accept-Ranges=bytes
+Content-Type=application/json; charset\=UTF-8
+X-Query-Id=o1636db3a9ec

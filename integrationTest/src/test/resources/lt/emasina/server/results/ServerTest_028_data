@@ -1,0 +1,9 @@
+#Query data
+#Thu May 17 13:17:56 EEST 2018
+text/xml=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><data><row><ID>1</ID><DESCR>http\://localhost\:8112/query/QUERYID/0/1/lob</DESCR><NAME>simple</NAME></row></data>
+application/xml=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><data><row><ID>1</ID><DESCR>http\://localhost\:8112/query/QUERYID/0/1/lob</DESCR><NAME>simple</NAME></row></data>
+text/plain=ID,DESCR,NAME\n1,[file],simple\n
+count=1
+text/csv=ID,DESCR,NAME\n1,[file],simple\n
+application/json2={"data"\:[{"descr"\:"http\://localhost\:8112/query/QUERYID/0/1/lob","name"\:"simple","id"\:1}]}
+application/json={"data"\:[[1,"http\://localhost\:8112/query/QUERYID/0/1/lob","simple"]]}

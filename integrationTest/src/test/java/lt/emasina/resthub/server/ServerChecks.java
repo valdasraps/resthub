@@ -156,10 +156,8 @@ public class ServerChecks {
         if (client != null) {
             String data = client.getResponseEntity().getText();
             JSONObject jsonObj = new JSONObject(data);
-            log.debug("Comparing cache:" + jsonObj);
-            int test_value = Integer.parseInt(jsonObj.getString("size"));
-                    
-            assertEquals((int) 1, test_value);
+            log.debug("Comparing cache:" + jsonObj);                    
+            assertEquals((int) 1, jsonObj.getInt("size"));
         }
 
         // Delete query

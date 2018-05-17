@@ -1,0 +1,9 @@
+#Query data
+#Thu May 17 13:44:52 EEST 2018
+text/xml=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><data><row><ID>1</ID><DESCR>This is some short description</DESCR><NAME>simple</NAME></row></data>
+application/xml=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><data><row><ID>1</ID><DESCR>This is some short description</DESCR><NAME>simple</NAME></row></data>
+text/plain=ID,DESCR,NAME\n1,"This is some short description",simple\n
+count=1
+text/csv=ID,DESCR,NAME\n1,"This is some short description",simple\n
+application/json2={"data"\:[{"descr"\:"This is some short description","name"\:"simple","id"\:1}]}
+application/json={"data"\:[[1,"This is some short description","simple"]]}

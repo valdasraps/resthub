@@ -1,9 +1,11 @@
-package lt.emasina.resthub.server;
+package lt.emasina.resthub.test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import junit.framework.TestCase;
 import lombok.extern.log4j.Log4j;
+import lt.emasina.resthub.server.ServerSetup;
+import lt.emasina.resthub.server.ServerWorker;
 import lt.emasina.resthub.support.TestRequest;
 import org.json.JSONException;
 import org.json.JSONObject;

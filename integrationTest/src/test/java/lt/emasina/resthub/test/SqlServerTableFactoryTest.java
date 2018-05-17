@@ -1,17 +1,24 @@
-package lt.emasina.resthub.server;
+package lt.emasina.resthub.test;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Statement;
 import junit.framework.TestCase;
 import lombok.extern.log4j.Log4j;
-import lt.emasina.resthub.support.SqlServerTableFactoryBase;
+import lt.emasina.resthub.server.ServerChecks;
+import lt.emasina.resthub.server.ServerSetup;
 import lt.emasina.resthub.support.TestRequest;
+import oracle.jdbc.OracleConnection;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.restlet.data.MediaType;
 
 @Log4j
 @RunWith(JUnit4.class)
-public class SqlServerTableFactoryTest extends SqlServerTableFactoryBase {
+public class SqlServerTableFactoryTest extends ServerSetup {
 
     private final ServerChecks checks = new ServerChecks();
 
@@ -89,6 +96,30 @@ public class SqlServerTableFactoryTest extends SqlServerTableFactoryBase {
 
         testEmpty();
         
+    }
+    
+    protected void execDdl(String ddl) throws SQLException {
+        try (OracleConnection con = WORKER.getCf().getConnection("default")) {
+            try (Statement st = con.createStatement()) {
+                st.execute(ddl);
+            }
+        }
+    }
+    
+    protected void testEmpty() throws IOException, JSONException {
+        
+        JSONObject o = getJSON(new TestRequest.Builder("/tables").build());
+
+        TestCase.assertEquals(1, o.length());
+        TestCase.assertEquals(6, o.getJSONObject("store").length());
+        
+        o = getJSON(new TestRequest.Builder("/blacklist").build());
+        
+        TestCase.assertEquals(0, o.length());
+    }
+    
+    protected JSONObject getJSON(TestRequest tr) throws IOException, JSONException {
+        return new JSONObject(tr.get(MediaType.APPLICATION_JSON).getResponseEntity().getText());
     }
 
 }

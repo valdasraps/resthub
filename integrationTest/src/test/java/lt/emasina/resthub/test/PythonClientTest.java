@@ -1,4 +1,4 @@
-package lt.emasina.resthub;
+package lt.emasina.resthub.test;
 
 import lt.emasina.resthub.server.ServerSetup;
 

@@ -1,4 +1,4 @@
-package lt.emasina.resthub.server;
+package lt.emasina.resthub.test;
 
 import lt.emasina.resthub.support.TestRequest;
 import lt.emasina.resthub.support.TestQuery;
@@ -8,6 +8,8 @@ import java.util.HashMap;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.client.RestHubServer;
 import lt.emasina.resthub.model.QueryManager;
+import lt.emasina.resthub.server.ServerChecks;
+import lt.emasina.resthub.server.ServerSetup;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +18,8 @@ import org.restlet.resource.ResourceException;
 import org.w3c.dom.Text;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
+import org.json.JSONObject;
+import org.restlet.data.MediaType;
 
 @Log4j
 @RunWith(JUnit4.class)
@@ -75,6 +79,34 @@ public class ServerTest extends ServerSetup {
                 .page(10, 5)
                 .build());
         
+        // Checking LOBs
+        {
+            String sql = "SELECT * FROM store.texts t WHERE t.id = 1";
+            
+            // Checking request
+            checks.check(new TestQuery.Builder(sql).build());
+            
+            // Retrieving data URL, then data
+            TestQuery q = new TestQuery.Builder(sql).build();
+            JSONObject o = new JSONObject(q.get(new MediaType("application/json2")).getResponseEntity().getText());
+            // {"data":[{"descr":"http://localhost:8112/query/o1636da089b3/0/1/lob","name":"simple","id":1}]}
+            String lobUrl = o.getJSONArray("data").getJSONObject(0).getString("descr").replaceFirst("^.*:[0-9]+/", "/");
+            TestRequest r = new TestRequest.Builder(lobUrl).build();
+            checks.check(r, true);
+            r = new TestRequest.Builder(lobUrl).build();
+            String data = r.get().getResponseEntity().getText();
+            
+            // Retrieving data in a single call
+            checks.check(new TestQuery.Builder(sql).params("?_inclob").build());
+            
+            q = new TestQuery.Builder(sql).params("?_inclob").build();
+            o = new JSONObject(q.get(new MediaType("application/json2")).getResponseEntity().getText());
+            // {"data":[{"descr":"This is some short description","name":"simple","id":1}]}
+            
+            assertEquals(data, o.getJSONArray("data").getJSONObject(0).getString("descr"));
+            
+        }
+        
         // Check page size larger than rowsLimit
         try {
             
@@ -82,7 +114,7 @@ public class ServerTest extends ServerSetup {
                     .page(1005, 1)
                     .build().get();
             
-        } catch (Exception ex) {
+        } catch (ResourceException ex) {
             assertEquals("Bad Request (400) - The request could not be understood by the server due to malformed syntax", ex.getMessage());
         }
     }
@@ -115,7 +147,7 @@ public class ServerTest extends ServerSetup {
         try {
             qm.refresh();
             fail("Should have failed due to same columns...");
-        } catch (Exception ex) {
+        } catch (ResourceException ex) {
             Assert.assertSame(ResourceException.class, ex.getClass());
             ResourceException rex = (ResourceException) ex;
             assertEquals(400, rex.getStatus().getCode());
