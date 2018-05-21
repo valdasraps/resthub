@@ -267,6 +267,7 @@ class CLIClient:
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
         self.parser.add_option("-g", "--page",     dest = "page",     help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
         self.parser.add_option("-l", "--cols",     dest = "cols",     help = "add column metadata if possible. Default: false", action = "store_true", default = False)
+        self.parser.add_option("-b", "--inclob",   dest = "inclob",   help = "inline clobs directly into the output. Default: false (send as links)", action = "store_true", default = False)
         self.parser.add_option("-i", "--info",     dest = "info",     help = "print server version information", action = "store_true", default = False)
         self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
         self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA", action = "store_true", default = False)
@@ -415,13 +416,13 @@ class CLIClient:
                         
                         if options.format == 'csv':
                             try:
-                                print api.csv(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                print api.csv(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.csv(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
+                                        res = api.csv(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         if page == 1:
                                             print res,
                                         else:
@@ -431,14 +432,14 @@ class CLIClient:
 
                         if options.format == 'xml':
                             try:
-                                print api.xml(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose)
+                                print api.xml(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     print '<?xml version="1.0" encoding="UTF-8" standalone="no"?><data>', 
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.xml(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
+                                        res = api.xml(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         root = minidom.parseString(res).documentElement
                                         for row in root.getElementsByTagName('row'):
                                             print row.toxml(),
@@ -449,20 +450,16 @@ class CLIClient:
                         if options.format in ['json','json2']:
                             try:
                                 if options.format == 'json':
-                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
-                                    #print_json = api.json(arg, params=params, pagesize=options.size, page=options.page, verbose=options.verbose, cols=options.cols)
-                                    #print (json.dumps(print_json, sort_keys=True, indent=4, separators=(',', ': ')))
+                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob)
                                 else:
-                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols)
-                                    #print_json = api.json(arg, params=params, pagesize=options.size, page=options.page, verbose=options.verbose, cols=options.cols)
-                                    #print (json.dumps(print_json, sort_keys=True, indent=4, separators=(',', ': ')))
+                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob)
                             except RhApiRowLimitError, e:
                                 if options.all:
                                     page = 0
                                     print '{"data": [', 
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose)
+                                        res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         comma = ','
                                         if page == 1: comma = ''
                                         for d in res['data']:
