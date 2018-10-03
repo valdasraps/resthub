@@ -77,7 +77,7 @@ class RhApi:
                 print arg, 
             print
 
-    def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False, inline_clobs = False):
+    def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False, inline_clobs = False, method = None):
         """
         General API call (do not use it directly!)
         """
@@ -108,6 +108,12 @@ class RhApi:
         if headers != None:
             for h in headers.keys():
                 req.add_header(h, headers[h])
+        
+        if method is not None:
+            req.get_method = lambda: method
+        else:
+            # Doing default GET/POST method
+            pass
 
         resp = urllib2.urlopen(req)
 
@@ -163,12 +169,17 @@ class RhApi:
         """
         return self.get(["query"], query)
 
-
     def query(self, qid, verbose = False):
         """
         Return qid metadata (assuming it exists..)
         """
         return self.get(["query", qid], verbose = verbose)
+
+    def clean(self, qid, verbose = False):
+        """
+        Remove cache for query (assuming it exists..)
+        """
+        return self.get(["query", qid, "cache"], verbose = verbose, method = 'DELETE')
 
     def count(self, qid, params = None, verbose = False):
         """
@@ -250,7 +261,7 @@ from optparse import OptionParser
 import pprint
 
 USAGE = 'usage: %prog [-v] [-u URL] [ FOLDER | FOLDER.TABLE | QUERY ]'
-DEFAULT_URL = "http://vocms00169:2113"
+DEFAULT_URL = "http://vocms00170:2113"
 DEFAULT_FORMAT = "csv"
 FORMATS = [ "csv", "xml", "json", "json2" ]
 
@@ -271,6 +282,7 @@ class CLIClient:
         self.parser.add_option("-i", "--info",     dest = "info",     help = "print server version information", action = "store_true", default = False)
         self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
         self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA", action = "store_true", default = False)
+        self.parser.add_option("-n", "--clean",    dest = "clean",    help = "clean cache before executing query (new results)", action = "store_true", default = False)
         self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
 
     def pprint(self, data):
@@ -394,6 +406,9 @@ class CLIClient:
                         if m:
                             params[m.group(1)] = m.group(2)
                             
+                if options.clean:
+                    api.clean(api.qid(arg), verbose = options.verbose)
+
                 if options.count:
                     
                     print api.count(api.qid(arg), params = params, verbose = options.verbose)
