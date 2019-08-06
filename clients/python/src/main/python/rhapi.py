@@ -123,12 +123,7 @@ class RhApi:
         else:
             raise NameError('Unknown HTTP method: ' + method)
 
-        has_getcode = "status_code" in dir(resp)
-        if self.debug: 
-            if has_getcode:
-                self.dprint("Response", resp.status_code, " ".join(str(resp.headers.get('content-type')).split("\r\n")))
-            else:
-                self.dprint("Response", " ".join(str(resp.headers.get('content-type')).split("\r\n")))
+        self.dprint("Response", resp.status_code, " ".join(str(resp.headers.get('content-type')).split("\r\n")))
 
         if resp.status_code == requests.codes.ok:
             rdata = resp.text
@@ -140,6 +135,8 @@ class RhApi:
                     return rdata
             else:
                 return rdata
+        else:
+            raise Exception('Response (' + str(resp.status_code) + '): ' + resp.text)
 
     def info(self, verbose = False):
         """
@@ -499,7 +496,7 @@ class CLIClient:
             print "ERROR: %s\nDetails: %s, consider --all option" % (type(e).__name__, e)
 
         except requests.exceptions.RequestException, e:
-	    reason = e.reason if hasattr(e, 'reason') else '%d %s' % (e.code, e.msg)
+	    reason = e.reason if hasattr(e, 'reason') else '%s' % e
 	    print "ERROR: %s\nDetails: %s" % (reason, e)
             
         except Exception, e:
