@@ -38,3 +38,5 @@
 /integrationTest/target/
 *.pyc
 /integrationTest/python/target/
+.session.cache
+geckodriver.log
