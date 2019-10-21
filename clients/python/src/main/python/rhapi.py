@@ -1,14 +1,20 @@
+from __future__ import print_function
+
 import requests
 import re
 import json
 import sys
 from requests.utils import requote_uri
 import xml.dom.minidom as minidom
+import importlib
 """
 Python object that enables connection to RestHub API.
 Errors, fixes and suggestions to be sent to project 
 website in GitHub: https://github.com/valdasraps/resthub
 """
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class RhApiRowCountError(Exception):
     
@@ -54,11 +60,12 @@ class RhApi:
     RestHub API object
     """
 
-    def __init__(self, url, debug = False):
+    def __init__(self, url, debug = False, cprov = None):
         """
         Construct API object.
         url: URL to RestHub endpoint, i.e. http://localhost:8080/api
         debug: should debug messages be printed out? Verbose!
+        cprov: cookie provider string in form module:method
         """
         if re.match("/$", url) is None:
             url = url + "/"
@@ -66,15 +73,22 @@ class RhApi:
         self.debug = debug
         self.dprint("url = ", self.url)
 
+        self.cookies = None
+        if cprov is not None and re.search("^https", url):
+            mod_name, fun_name = cprov.split(":")
+            m = importlib.import_module(mod_name)
+            f = getattr(m, fun_name)
+            self.cookies = f(url)
+
     def dprint(self, *args):
         """
         Print debug information
         """
         if self.debug: 
-            print "RhApi:",
+            print("RhApi:", end = '')
             for arg in args:
-                print arg, 
-            print
+                print(arg, end = '')
+            print()
 
     def get(self, parts, data = None, headers = None, params = None, verbose = False, cols = False, inline_clobs = False, method = None):
         """
@@ -111,15 +125,9 @@ class RhApi:
         else:
             method = method.lower()
 
-        # Check https and gab cookies if needed
-
-        cookies = None
-        if re.search("^https", callurl):
-            cookies = krb_sign_on(callurl)
-
         action = getattr(requests, method, None)
         if action:
-            resp = action(headers = headers, url = callurl, data = data, cookies = cookies)
+            resp = action(headers = headers, url = callurl, data = data, cookies = self.cookies, verify = False)
         else:
             raise NameError('Unknown HTTP method: ' + method)
 
@@ -130,7 +138,7 @@ class RhApi:
             if re.search("json", resp.headers.get('content-type')):
                 try:
                     return json.loads(rdata)
-                except TypeError, e:
+                except TypeError as e:
                     self.dprint(e)
                     return rdata
             else:
@@ -148,7 +156,7 @@ class RhApi:
         """
         Get list of folders
         """
-        return self.get(["tables"], verbose = verbose).keys()
+        return list(self.get(["tables"], verbose = verbose).keys())
 
     def tables(self, folder, verbose = False):
         """
@@ -276,6 +284,7 @@ class CLIClient:
         self.parser = OptionParser(USAGE)
         self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output", action = "store_true", default = False)
         self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL", metavar = "URL", default=DEFAULT_URL)
+        self.parser.add_option("-o", "--cprov",    dest = "cprov",    help = "cookie provider module:function", metavar = "cprov", default=None)
         self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT")
         self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
@@ -363,7 +372,7 @@ class CLIClient:
 
             (options, args) = self.parser.parse_args()
 
-            api = RhApi(options.url, debug = options.verbose)
+            api = RhApi(options.url, debug = options.verbose, cprov = options.cprov)
 
             # Info
             if options.info:
@@ -414,12 +423,12 @@ class CLIClient:
 
                 if options.count:
                     
-                    print api.count(api.qid(arg), params = params, verbose = options.verbose)
+                    print(api.count(api.qid(arg), params = params, verbose = options.verbose))
                     
                 elif options.metadata:
                     
                     qid = api.qid(arg)
-                    print self.pprint(api.query(qid, verbose = options.verbose))
+                    print(self.pprint(api.query(qid, verbose = options.verbose)))
                         
                 else:
                     
@@ -434,56 +443,56 @@ class CLIClient:
                         
                         if options.format == 'csv':
                             try:
-                                print api.csv(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob)
-                            except RhApiRowLimitError, e:
+                                print(api.csv(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob))
+                            except RhApiRowLimitError as e:
                                 if options.all:
                                     page = 0
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
                                         res = api.csv(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         if page == 1:
-                                            print res,
+                                            print(res, end = '')
                                         else:
-                                            print '\n'.join(res.split('\n')[1:]),
+                                            print('\n'.join(res.split('\n')[1:]), end = '')
                                 else:
                                     raise e
 
                         if options.format == 'xml':
                             try:
-                                print api.xml(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob)
-                            except RhApiRowLimitError, e:
+                                print(api.xml(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, inline_clobs = options.inclob))
+                            except RhApiRowLimitError as e:
                                 if options.all:
                                     page = 0
-                                    print '<?xml version="1.0" encoding="UTF-8" standalone="no"?><data>', 
+                                    print('<?xml version="1.0" encoding="UTF-8" standalone="no"?><data>', end = '')
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
                                         res = api.xml(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         root = minidom.parseString(res).documentElement
                                         for row in root.getElementsByTagName('row'):
-                                            print row.toxml(),
-                                    print '</data>'
+                                            print(row.toxml(), end = '')
+                                    print('</data>')
                                 else:
                                     raise e
 
                         if options.format in ['json','json2']:
                             try:
                                 if options.format == 'json':
-                                    print api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob)
+                                    print(api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob))
                                 else:
-                                    print api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob)
-                            except RhApiRowLimitError, e:
+                                    print(api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob))
+                            except RhApiRowLimitError as e:
                                 if options.all:
                                     page = 0
-                                    print '{"data": [', 
+                                    print('{"data": [', end = '')
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
                                         res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
                                         comma = ','
                                         if page == 1: comma = ''
                                         for d in res['data']:
-                                            print comma, d,
+                                            print(comma, d, end = '')
                                             comma = ','
-                                    print "]}"
+                                    print("]}")
                                 else:
                                     raise e
                         
@@ -491,201 +500,20 @@ class CLIClient:
 
             self.parser.error('Command %s not understood' % arg)
 
-        except RhApiRowLimitError, e:
+        except RhApiRowLimitError as e:
             
-            print "ERROR: %s\nDetails: %s, consider --all option" % (type(e).__name__, e)
+            print("ERROR: %s\nDetails: %s, consider --all option" % (type(e).__name__, e))
 
-        except requests.exceptions.RequestException, e:
-	    reason = e.reason if hasattr(e, 'reason') else '%s' % e
-	    print "ERROR: %s\nDetails: %s" % (reason, e)
+        except requests.exceptions.RequestException as e:
+            reason = e.reason if hasattr(e, 'reason') else '%s' % e
+            print("ERROR: %s\nDetails: %s" % (reason, e))
             
-        except Exception, e:
+        except Exception as e:
             
-            print "ERROR: %s\nDetails: %s" % (type(e).__name__, e)
-
-##
-##  Pasting in code from https://pypi.org/project/python-cern-sso-krb/
-##
-
-# Copyright (C) 2017, CERN
-# This software is distributed under the terms of the GNU General Public
-# Licence version 3 (GPL Version 3), copied verbatim in the file "LICENSE".
-# In applying this license, CERN does not waive the privileges and immunities
-# granted to it by virtue of its status as Intergovernmental Organization
-# or submit itself to any jurisdiction.
-
-from six.moves.urllib.parse import urlparse, urljoin
-
-import logging
-import xml.etree.ElementTree as ET
-
-import requests
-from requests_kerberos import HTTPKerberosAuth, OPTIONAL
-
-try:  # Python 2.7+
-    from logging import NullHandler
-except ImportError:
-    # Hello, you are using a 10 year old software. :(
-    class NullHandler(logging.Handler):
-        def emit(self, record):
-            pass
-
-
-log = logging.getLogger(__name__)
-log.addHandler(NullHandler())
-
-DEFAULT_TIMEOUT_SECONDS = 10
-
-
-def _init_session(s, url, cookiejar, auth_url_fragment):
-    """
-    Internal helper function: initialise the sesion by trying to access
-    a given URL, setting up cookies etc.
-
-
-    :param: auth_url_fragment: a URL fragment which will be joined to
-    the base URL after the redirect, before the parameters. Examples are
-    auth/integrated/ (kerberos) and auth/sslclient/ (SSL)
-    """
-
-    if cookiejar is not None:
-        log.debug("Using provided cookiejar")
-        s.cookies = cookiejar
-
-    # Try getting the URL we really want, and get redirected to SSO
-    log.info("Fetching URL: %s" % url)
-    r1 = s.get(url, timeout=DEFAULT_TIMEOUT_SECONDS)
-
-    # Parse out the session keys from the GET arguments:
-    redirect_url = urlparse(r1.url)
-    log.debug("Was redirected to SSO URL: %s" % str(redirect_url))
-
-    # ...and inject them into the Kerberos authentication URL
-    final_auth_url = "{auth_url}?{parameters}".format(
-        auth_url=urljoin(r1.url, auth_url_fragment),
-        parameters=redirect_url.query)
-
-    return final_auth_url
-
-
-def _finalise_login(s, auth_results):
-    """
-    Perform the final POST authentication steps to fully authenticate
-    the session, saving any cookies in s' cookie jar.
-    """
-
-    r2 = auth_results
-
-    # Did it work? Raise Exception otherwise.
-    r2.raise_for_status()
-
-    # Get the contents
-    try:
-        tree = ET.fromstring(r2.content)
-    except ET.ParseError as e:
-        log.error("Could not parse response from server!")
-        log.error("The contents returned was:\n{}".format(r2.content))
-        raise e
-
-    action = tree.findall("body/form")[0].get('action')
-
-    # Unpack the hidden form data fields
-    form_data = dict((
-        (elm.get('name'), elm.get('value'))
-        for elm in tree.findall("body/form/input")))
-
-    # ...and submit the form (WHY IS THIS STEP EVEN HERE!?)
-    log.debug("Performing final authentication POST to %s" % action)
-    r3 = s.post(url=action, data=form_data, timeout=DEFAULT_TIMEOUT_SECONDS)
-
-    # Did _that_ work?
-    r3.raise_for_status()
-
-    # The session cookie jar should now contain the necessary cookies.
-    log.debug("Cookie jar now contains: %s" % str(s.cookies))
-
-    return s.cookies
-
-
-def krb_sign_on(url, cookiejar=None):
-    """
-    Perform Kerberos-backed single-sign on against a provided
-    (protected) URL.
-
-    It is assumed that the current session has a working Kerberos
-    ticket.
-
-    Returns a Requests `CookieJar`, which can be accessed as a
-    dictionary, but most importantly passed directly into a request or
-    session via the `cookies` keyword argument.
-
-    If a cookiejar-like object (such as a dictionary) is passed as the
-    cookiejar keword argument, this is passed on to the Session.
-    """
-
-    kerberos_auth = HTTPKerberosAuth(mutual_authentication=OPTIONAL)
-
-    with requests.Session() as s:
-
-        krb_auth_url = _init_session(s=s, url=url, cookiejar=cookiejar,
-                                     auth_url_fragment=u"auth/integrated/")
-
-        # Perform actual Kerberos authentication
-        log.info("Performing Kerberos authentication against %s"
-                 % krb_auth_url)
-
-        r2 = s.get(krb_auth_url, auth=kerberos_auth,
-                   timeout=DEFAULT_TIMEOUT_SECONDS)
-
-        return _finalise_login(s, auth_results=r2)
-
-
-def cert_sign_on(url, cert_file, key_file, cookiejar={}):
-    """
-    Perform Single-Sign On with a robot/user certificate specified by
-    cert_file and key_file agains the target url. Note that the key
-    needs to be passwordless. cookiejar, if provided, will be used to
-    store cookies, and can be a Requests CookieJar, or a
-    MozillaCookieJar. Or even a dict.
-
-    Cookies will be returned on completion, but cookiejar will also be
-    modified in-place.
-
-    If you have a PKCS12 (.p12) file, you need to convert it. These
-    steps will not work for passwordless keys.
-
-    `openssl pkcs12 -clcerts -nokeys -in myCert.p12 -out ~/private/myCert.pem`
-
-    `openssl pkcs12 -nocerts -in myCert.p12 -out ~/private/myCert.tmp.key`
-
-    `openssl rsa -in ~/private/myCert.tmp.key -out ~/private/myCert.key`
-
-    Note that the resulting key file is *unencrypted*!
-
-    """
-
-    with requests.Session() as s:
-
-        # Set up the certificates (this needs to be done _before_ any
-        # connection is opened!)
-        s.cert = (cert_file, key_file)
-
-        cert_auth_url = _init_session(s=s, url=url, cookiejar=cookiejar,
-                                      auth_url_fragment=u"auth/sslclient/")
-
-        log.info("Performing SSL Cert authentication against %s"
-                 % cert_auth_url)
-
-        r2 = s.get(cert_auth_url, cookies=cookiejar, verify=False,
-                   timeout=DEFAULT_TIMEOUT_SECONDS)
-
-        return _finalise_login(s, auth_results=r2)
-
-##
-##  End of pasting in code from https://pypi.org/project/python-cern-sso-krb/
-##
+            print("ERROR: %s\nDetails: %s" % (type(e).__name__, e))
 
 if __name__ == '__main__':
 
     cli = CLIClient()
     sys.exit(cli.run())
+
