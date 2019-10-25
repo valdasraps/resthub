@@ -143,6 +143,8 @@ class RhApi:
                     return rdata
             else:
                 return rdata
+        elif resp.status_code < 300:
+            return None
         else:
             raise Exception('Response (' + str(resp.status_code) + '): ' + resp.text)
 
@@ -511,6 +513,8 @@ class CLIClient:
         except Exception as e:
             
             print("ERROR: %s\nDetails: %s" % (type(e).__name__, e))
+            import traceback
+            traceback.print_exc()
 
 if __name__ == '__main__':
 
