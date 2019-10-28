@@ -60,12 +60,12 @@ class RhApi:
     RestHub API object
     """
 
-    def __init__(self, url, debug = False, cprov = None):
+    def __init__(self, url, debug = False, sso = False):
         """
         Construct API object.
         url: URL to RestHub endpoint, i.e. http://localhost:8080/api
         debug: should debug messages be printed out? Verbose!
-        cprov: cookie provider string in form module:method
+        sso: use cookie provider from SSO_COOKIE_PROVIDER string
         """
         if re.match("/$", url) is None:
             url = url + "/"
@@ -73,12 +73,27 @@ class RhApi:
         self.debug = debug
         self.dprint("url = ", self.url)
 
-        self.cookies = None
-        if cprov is not None and re.search("^https", url):
-            mod_name, fun_name = cprov.split(":")
+        self.cprov = None
+        if sso and re.search("^https", url):
+            mod_name, fun_name = SSO_COOKIE_PROVIDER.split(":")
             m = importlib.import_module(mod_name)
-            f = getattr(m, fun_name)
-            self.cookies = f(url)
+            self.cprov = getattr(m, fun_name)
+
+    def _action(self, action, url, headers, data):
+        force_level = 0
+        while True:
+
+            cookies = None
+            if self.cprov is not None:
+                cookies = self.cprov(self.url, force_level = force_level)
+
+            r = action(url = url, headers = headers, data = data, cookies = cookies, verify = False)
+
+            if r.status_code == 200 and r.url.startswith(SSO_LOGIN_URL) and force_level < 2:
+                force_level = force_level + 1
+                continue
+
+            return r
 
     def dprint(self, *args):
         """
@@ -127,7 +142,7 @@ class RhApi:
 
         action = getattr(requests, method, None)
         if action:
-            resp = action(headers = headers, url = callurl, data = data, cookies = self.cookies, verify = False)
+            resp = self._action(action, headers = headers, url = callurl, data = data)
         else:
             raise NameError('Unknown HTTP method: ' + method)
 
@@ -277,6 +292,8 @@ USAGE = 'usage: %prog [-v] [-u URL] [ FOLDER | FOLDER.TABLE | QUERY ]'
 DEFAULT_URL = "http://vocms00170:2113"
 DEFAULT_FORMAT = "csv"
 FORMATS = [ "csv", "xml", "json", "json2" ]
+SSO_COOKIE_PROVIDER = "cern_sso_api:cern_sso_cookies"
+SSO_LOGIN_URL = "https://login.cern.ch/"
 
 class CLIClient:
     
@@ -286,7 +303,7 @@ class CLIClient:
         self.parser = OptionParser(USAGE)
         self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output", action = "store_true", default = False)
         self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL", metavar = "URL", default=DEFAULT_URL)
-        self.parser.add_option("-o", "--cprov",    dest = "cprov",    help = "cookie provider module:function", metavar = "cprov", default=None)
+        self.parser.add_option("-o", "--sso",      dest = "sso",      help = "use cookie provider from cern_sso_api module", metavar = "sso", action = "store_true", default=False)
         self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT")
         self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
@@ -374,7 +391,7 @@ class CLIClient:
 
             (options, args) = self.parser.parse_args()
 
-            api = RhApi(options.url, debug = options.verbose, cprov = options.cprov)
+            api = RhApi(options.url, debug = options.verbose, sso = options.sso)
 
             # Info
             if options.info:
