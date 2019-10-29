@@ -89,9 +89,15 @@ class RhApi:
 
             r = action(url = url, headers = headers, data = data, cookies = cookies, verify = False)
 
-            if r.status_code == 200 and r.url.startswith(SSO_LOGIN_URL) and force_level < 2:
-                force_level = force_level + 1
-                continue
+            if r.status_code == 200 and r.url.startswith(SSO_LOGIN_URL):
+                if force_level < 2:
+                    force_level = force_level + 1
+                    continue
+                else:
+                    if self.cprov is None:
+                        raise Exception('Resource is secured by SSO. Please try --sso')
+                    else:
+                        raise Exception('Error while logging to HTTPS/SSO')
 
             return r
 
