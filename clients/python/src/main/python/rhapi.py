@@ -297,7 +297,8 @@ import pprint
 USAGE = 'usage: %prog [-v] [-u URL] [ FOLDER | FOLDER.TABLE | QUERY ]'
 DEFAULT_URL = "http://vocms00170:2113"
 DEFAULT_FORMAT = "csv"
-FORMATS = [ "csv", "xml", "json", "json2" ]
+DEFAULT_ROOT_FILE = "data.root"
+FORMATS = [ "csv", "xml", "json", "json2", "root" ]
 SSO_COOKIE_PROVIDER = "cern_sso_api:cern_sso_cookies"
 SSO_LOGIN_URL = "https://login.cern.ch/"
 
@@ -307,20 +308,21 @@ class CLIClient:
         
         self.pp = pprint.PrettyPrinter(indent=4)
         self.parser = OptionParser(USAGE)
-        self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output", action = "store_true", default = False)
-        self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL", metavar = "URL", default=DEFAULT_URL)
-        self.parser.add_option("-o", "--sso",      dest = "sso",      help = "use cookie provider from cern_sso_api module", metavar = "sso", action = "store_true", default=False)
-        self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s)" % ",".join(FORMATS), metavar = "FORMAT")
+        self.parser.add_option("-v", "--verbose",  dest = "verbose",  help = "verbose output. Default: %s" % False, action = "store_true", default = False)
+        self.parser.add_option("-u", "--url",      dest = "url",      help = "service URL. Default: %s" % DEFAULT_URL, metavar = "URL", default=DEFAULT_URL)
+        self.parser.add_option("-o", "--sso",      dest = "sso",      help = "use cookie provider from cern_sso_api module. Default: %s" % False, metavar = "sso", action = "store_true", default=False)
+        self.parser.add_option("-f", "--format",   dest = "format",   help = "data output format for QUERY data (%s). Default: %s" % (",".join(FORMATS), DEFAULT_FORMAT), metavar = "FORMAT", default = DEFAULT_FORMAT)
         self.parser.add_option("-c", "--count",    dest = "count",    help = "instead of QUERY data return # of rows", action = "store_true", default = False)
         self.parser.add_option("-s", "--size",     dest = "size",     help = "number of rows per PAGE return for QUERY", metavar = "SIZE", type="int")
         self.parser.add_option("-g", "--page",     dest = "page",     help = "page number to return. Default 1", metavar = "PAGE", default = 1, type="int")
-        self.parser.add_option("-l", "--cols",     dest = "cols",     help = "add column metadata if possible. Default: false", action = "store_true", default = False)
-        self.parser.add_option("-b", "--inclob",   dest = "inclob",   help = "inline clobs directly into the output. Default: false (send as links)", action = "store_true", default = False)
-        self.parser.add_option("-i", "--info",     dest = "info",     help = "print server version information", action = "store_true", default = False)
-        self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time)", action = "store_true", default = False)
-        self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA", action = "store_true", default = False)
-        self.parser.add_option("-n", "--clean",    dest = "clean",    help = "clean cache before executing query (new results)", action = "store_true", default = False)
+        self.parser.add_option("-l", "--cols",     dest = "cols",     help = "add column metadata if possible. Default: False", action = "store_true", default = False)
+        self.parser.add_option("-b", "--inclob",   dest = "inclob",   help = "inline clobs directly into the output. Default: False (send as links)", action = "store_true", default = False)
+        self.parser.add_option("-i", "--info",     dest = "info",     help = "print server version information. Default: False", action = "store_true", default = False)
+        self.parser.add_option("-a", "--all",      dest = "all",      help = "force to retrieve ALL data (can take long time). Default: False", action = "store_true", default = False)
+        self.parser.add_option("-m", "--metadata", dest = "metadata", help = "do not execute query but dump METADATA. Default: False", action = "store_true", default = False)
+        self.parser.add_option("-n", "--clean",    dest = "clean",    help = "clean cache before executing query (new results). Default: False", action = "store_true", default = False)
         self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
+        self.parser.add_option("-r", "--root",     dest = "root",     help = "ROOT file name, if format set to root. Default: " + DEFAULT_ROOT_FILE, metavar = "ROOT", default=DEFAULT_ROOT_FILE)
 
     def pprint(self, data):
         self.pp.pprint(data)
@@ -499,27 +501,30 @@ class CLIClient:
                                 else:
                                     raise e
 
-                        if options.format in ['json','json2']:
+                        if options.format in ['json','json2','root']:
                             try:
-                                if options.format == 'json':
-                                    print(api.json(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob))
-                                else:
-                                    print(api.json2(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = options.cols, inline_clobs = options.inclob))
+                                method_name = options.format if options.format != 'root' else 'json'
+                                method = getattr(api, method_name, None)
+                                in_cols = options.cols if options.format != 'root' else True
+                                data = method(arg, params = params, pagesize = options.size, page = options.page, verbose = options.verbose, cols = in_cols, inline_clobs = options.inclob)
                             except RhApiRowLimitError as e:
                                 if options.all:
                                     page = 0
-                                    print('{"data": [', end = '')
+                                    data = None
                                     while (page * e.rowsLimit) < e.count:
                                         page = page + 1
-                                        res = api.json(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, inline_clobs = options.inclob)
-                                        comma = ','
-                                        if page == 1: comma = ''
-                                        for d in res['data']:
-                                            print(comma, d, end = '')
-                                            comma = ','
-                                    print("]}")
+                                        res = method(arg, params = params, pagesize = e.rowsLimit, page = page, verbose = options.verbose, cols = in_cols, inline_clobs = options.inclob)
+                                        if data is None:
+                                            data = res
+                                        else:
+                                            data['data'].extend(res['data'])
                                 else:
                                     raise e
+
+                            if options.format == 'root':
+                                self._to_root(data, options.root)
+                            else:
+                                print(data)
                         
                 return 0
 
@@ -538,6 +543,61 @@ class CLIClient:
             print("ERROR: %s\nDetails: %s" % (type(e).__name__, e))
             import traceback
             traceback.print_exc()
+
+    def _root_column(self, data, ci, ct, cn):
+
+        type_mapping = {
+            str:   'Char_t',
+            int:   'Int_t',
+            float: 'Float_t'
+        }
+
+        if ct == 'NUMBER':
+            t = int
+            for r in data['data']:
+                if r[ci] is not None and type(r[ci]) == float:
+                    t = float
+                    break
+            return type_mapping[t] + ' ' + cn
+        else:
+            l = 1
+            for r in data['data']:
+                if r[ci] is None:
+                    r[ci] = ''
+                elif len(r[ci]) > l:
+                    l = len(r[ci])
+            return type_mapping[str] + ' ' + cn + '[' + str(l) + ']'
+
+    def _to_root(self, data, filename):
+
+        import ROOT
+        from ROOT import TFile, TTree, gROOT, AddressOf
+
+        columns = [ self._root_column(data, i, c['type'], c['name']) for i,c in enumerate(data['cols']) ]
+        header = 'struct data_t { ' + ';'.join(columns) + '; };'
+
+        gROOT.ProcessLine(header)
+        row = ROOT.data_t()
+        f = TFile(filename, 'RECREATE')
+        tree = TTree('data', 'data from RHAPI')
+        tree.Branch('data', row)
+
+        for r in data['data']:
+            for i, c in enumerate(data['cols']):
+                v = r[i]
+                if v is None:
+                    if c['type'] == 'NUMBER': v = -1
+                    else: v = ''
+                try:
+                    setattr(row, c['name'], v)
+                    tree.Fill()
+                except Exception as e:
+                    print(c['name'], '=', v)
+                    print(c, v)
+                    print(e)
+
+        tree.Print()
+        tree.Write()
 
 if __name__ == '__main__':
 
