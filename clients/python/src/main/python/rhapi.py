@@ -590,11 +590,11 @@ class CLIClient:
                     else: v = ''
                 try:
                     setattr(row, c['name'], v)
-                    tree.Fill()
                 except Exception as e:
                     print(c['name'], '=', v)
                     print(c, v)
                     print(e)
+            tree.Fill()
 
         tree.Print()
         tree.Write()
