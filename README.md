@@ -63,6 +63,7 @@ Flexible:
 | /query | POST | Create query from provided entity SQL and return automatically generated {id}. Query can include parameters :name (strings) or :s__name for strings, :n__name for numbers and :d__name for dates |
 | /query/{id} | GET | Query description in JSON |
 | /query/{id} | DELETE | Remove query |
+| /query/{id}/count | GET | Get query data size |
 | /query/{id}/data | GET | Get query data. Media type is by Accept header. For example: “Accept” : “application/xml” |
 | /query/{id}/page/{pp}/{p}/data | GET | Get query page data. Media type is by Accept header. Variables: pp - data rows per page, p - page number |
 | /table/{namespace}/{table}/data | GET | Get table data. Media type is by Accept header. For example: “Accept” : “application/xml”. Creates query and redirects to it. |
