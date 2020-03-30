@@ -61,6 +61,7 @@ public abstract class ServerBaseResource extends BaseResource {
     protected ServerTable getTableMd(boolean dieIfNotFound) throws ResourceException {
         String tableNs = super.getAttr(String.class, "tableNs");
         String tableName = super.getAttr(String.class, "tableName");
+        String columnName = super.getAttr(String.class, "column");
         if (tableNs != null && tableName != null) {
             ServerTable rmd = mf.getTable(new TableId(tableNs, tableName));
             if (rmd == null && dieIfNotFound) {

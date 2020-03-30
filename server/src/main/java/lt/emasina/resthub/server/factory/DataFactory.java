@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.MdColumn;
+import lt.emasina.resthub.server.cache.CcBin;
 import lt.emasina.resthub.server.cache.CcLob;
 import lt.emasina.resthub.server.cache.CcCount;
 import lt.emasina.resthub.server.cache.CcData;
@@ -44,6 +45,7 @@ import lt.emasina.resthub.server.handler.LobHandler;
 import lt.emasina.resthub.server.handler.CountHandler;
 import lt.emasina.resthub.server.handler.DataHandler;
 import lt.emasina.resthub.server.handler.PagedHandler;
+import lt.emasina.resthub.server.handler.BinHandler;
 import lt.emasina.resthub.server.query.Query;
 
 import org.hibernate.SQLQuery;
@@ -69,7 +71,7 @@ public class DataFactory {
     public CcData getData(final Session session, final DataHandler handler) throws Exception {     
         final Query q = handler.getQuery();
         final SQLQuery query = getPagedSQLQuery(session, handler);
-        
+
         for (MdColumn c: q.getColumns()) {
             switch (c.getType()) {
                 case BLOB:
@@ -120,7 +122,7 @@ public class DataFactory {
         }            
         
     }
-    
+
     public CcLob getLob(final Session session, final LobHandler handler) throws Exception {     
         final Query q = handler.getQuery();
         final SQLQuery query = getPagedSQLQuery(session, handler);
@@ -218,7 +220,7 @@ public class DataFactory {
     
     public CcCount getCount(Session session, CountHandler handler) throws SQLException {
         final Query q = handler.getQuery();
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from (")
             .append(handler.getQuery().getSql())
@@ -227,7 +229,7 @@ public class DataFactory {
         String sql = sb.toString();
         
         final SQLQuery query = session.createSQLQuery(sql);
-        
+
         handler.applyParameters(query);
         if (log.isDebugEnabled()) {
             log.debug(query.getQueryString());
@@ -256,5 +258,59 @@ public class DataFactory {
                 throw new ServerErrorException(Status.SERVER_ERROR_GATEWAY_TIMEOUT, ex);
             }
         }
+
+    public CcBin getBin (Session session, BinHandler handler) throws  SQLException {
+
+        final Query q = handler.getQuery();
+        final String col = handler.getBinCol();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ")
+                .append(col)
+                .append(", count(")
+                .append(col)
+                .append(") from (")
+                .append(handler.getQuery().getSql())
+                .append(") ")
+                .append("group by (")
+                .append(col)
+                .append(")");
+
+        String sql = sb.toString();
+
+        final SQLQuery query = session.createSQLQuery(sql);
+
+
+        query.addScalar(col, new StringType());
+
+        handler.applyParameters(query);
+        if (log.isDebugEnabled()) {
+            log.debug(query.getQueryString());
+        }
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<CcBin> func = executor.submit(
+                new Callable<CcBin>() {
+
+                    @Override
+                    public CcBin call() throws Exception {
+                        CcBin cc = new CcBin();
+                        for (Object o: query.list()) {
+                            cc.addRow(q, o);
+                        }
+                        return cc;
+                    }
+                });
+
+        try {
+
+            return func.get(q.getTimeOut(), TimeUnit.SECONDS);
+
+        } catch (ExecutionException | InterruptedException ex) {
+            throw new ServerErrorException(Status.SERVER_ERROR_INTERNAL, ex);
+        } catch (TimeoutException ex) {
+            throw new ServerErrorException(Status.SERVER_ERROR_GATEWAY_TIMEOUT, ex);
+        }
+    }
     
 }
