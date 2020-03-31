@@ -19,23 +19,29 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-package lt.emasina.resthub.server.exporter;
+package lt.emasina.resthub.server.cache;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-import lt.emasina.resthub.server.cache.CcBin;
-import lt.emasina.resthub.server.handler.BinHandler;
-import org.hibernate.Session;
+import lt.emasina.resthub.server.query.Query;
 
-public class BinExporter extends Exporter<CcBin> {
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-	@Inject
-	public BinExporter(@Assisted BinHandler handler) {
-		super(handler);
-	}
+public class CcHisto extends CcBase<List<Object[]>> {
 
-	@Override
-	protected CcBin retrieveData(Session session) throws Exception {
-		return getDf().getBin(session, (BinHandler) getHandler());
-	}
+    private static final long serialVersionUID = 1L;
+
+    public void addRow(Query query, Object row) throws SQLException {
+        if (getValue() == null) {
+            setValue(new ArrayList<>());
+        }
+
+        if (row == null || ! row.getClass().isArray()) {
+            getValue().add(new Object[] { row });
+        } else {
+            getValue().add((Object[]) row);
+        }
+
+    }
+
 }

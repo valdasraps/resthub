@@ -24,11 +24,11 @@ package lt.emasina.resthub.server.factory;
 import lt.emasina.resthub.TableFactory;
 import lt.emasina.resthub.exception.QueryException;
 import lt.emasina.resthub.model.MdTable;
-import lt.emasina.resthub.server.exporter.BinExporter;
+import lt.emasina.resthub.server.exporter.HistoExporter;
 import lt.emasina.resthub.server.exporter.LobExporter;
 import lt.emasina.resthub.server.exporter.CountExporter;
 import lt.emasina.resthub.server.exporter.DataExporter;
-import lt.emasina.resthub.server.handler.BinHandler;
+import lt.emasina.resthub.server.handler.HistoHandler;
 import lt.emasina.resthub.server.handler.LobHandler;
 import lt.emasina.resthub.server.handler.CountHandler;
 import lt.emasina.resthub.server.handler.DataHandler;
@@ -54,12 +54,12 @@ public interface ResourceFactory {
     public DataHandler createDataHandler(Query qmd, Form form);
     public CountHandler createCountHandler(Query qmd, Form form);
     public LobHandler createLobHandler(Query qmd, Form form);
-    public BinHandler createBinHandler(Query qmd, Form form);
+    public HistoHandler createHistoHandler(Query qmd, Form form);
 
     public CountExporter createCountExporter(CountHandler handler);
     public LobExporter createLobExporter(LobHandler handler);
     public DataExporter createDataExporter(DataHandler handler);
-    public BinExporter createBinExporter(BinHandler handler);
+    public HistoExporter createHistoExporter(HistoHandler handler);
 
     public CheckExpressionParser createExpressionParser(SubSelectDef parent);
     public CheckSelectParser createSelectParser(SubSelectDef parent);

@@ -18,13 +18,22 @@ public class DebugServer {
     
     // Setup these constants before running!
     
-    private static final String URL = "jdbc:oracle:thin:@cmsr_lb";
-    private static final String USER = "cms_dqm_run_registry_off_r";
-    private static final String PASSWD = "";
-    
-    private static final String NAMESPACE = "rr_global";
-    private static final String NAME = "runs";
-    private static final String SQL = "select * from RR3_RUS_ROW_GLOBAL where RR3_VER_PKG.GOTO_TAG_R('LATEST') = 1";
+//    private static final String URL = "jdbc:oracle:thin:@cmsr_lb";
+//    private static final String USER = "cms_dqm_run_registry_off_r";
+//    private static final String PASSWD = "";
+//    
+//    private static final String NAMESPACE = "rr_global";
+//    private static final String NAME = "runs";
+//    private static final String SQL = "select * from RR3_RUS_ROW_GLOBAL where RR3_VER_PKG.GOTO_TAG_R('LATEST') = 1";
+  
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+    private static final String USER = "RESTHUB_TEST";
+    private static final String PASSWD = "testing";
+
+
+    private static final String NAMESPACE = "RESTHUB_TEST";
+    private static final String NAME = "TEXTS";
+    private static final String SQL = "select * from TEXTS";
     
     // Thats it!
     

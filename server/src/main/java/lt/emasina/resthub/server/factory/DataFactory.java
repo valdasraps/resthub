@@ -2,7 +2,7 @@
  * #%L
  * server
  * %%
- * Copyright (C) 2012 - 2015 valdasraps
+ * Copyright (C) 2012 - 2020 valdasraps
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.MdColumn;
-import lt.emasina.resthub.server.cache.CcBin;
+import lt.emasina.resthub.server.cache.CcHisto;
 import lt.emasina.resthub.server.cache.CcLob;
 import lt.emasina.resthub.server.cache.CcCount;
 import lt.emasina.resthub.server.cache.CcData;
@@ -45,16 +45,12 @@ import lt.emasina.resthub.server.handler.LobHandler;
 import lt.emasina.resthub.server.handler.CountHandler;
 import lt.emasina.resthub.server.handler.DataHandler;
 import lt.emasina.resthub.server.handler.PagedHandler;
-import lt.emasina.resthub.server.handler.BinHandler;
+import lt.emasina.resthub.server.handler.HistoHandler;
 import lt.emasina.resthub.server.query.Query;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
-import org.hibernate.type.CalendarType;
-import org.hibernate.type.StringType;
-import org.hibernate.type.TextType;
-import org.hibernate.type.WrapperBinaryType;
 import org.restlet.data.Status;
 
 /**
@@ -73,23 +69,7 @@ public class DataFactory {
         final SQLQuery query = getPagedSQLQuery(session, handler);
 
         for (MdColumn c: q.getColumns()) {
-            switch (c.getType()) {
-                case BLOB:
-                    query.addScalar(c.getName(), new WrapperBinaryType());
-                    break;
-                case CLOB:
-                    query.addScalar(c.getName(), new TextType());
-                    break;
-                case DATE:
-                    query.addScalar(c.getName(), new CalendarType());
-                    break;
-                case NUMBER:
-                    query.addScalar(c.getName(), new BigDecimalType());
-                    break;
-                case STRING:
-                    query.addScalar(c.getName(), new StringType());
-                    break;
-            }
+            query.addScalar(c.getName(), c.getType().getHibernateType());
         }
 
         if (log.isDebugEnabled()) {
@@ -130,10 +110,8 @@ public class DataFactory {
         final MdColumn c = handler.getMdColumn();
         switch (c.getType()) {
             case BLOB:
-                query.addScalar(c.getName(), new WrapperBinaryType());
-                break;
             case CLOB:
-                query.addScalar(c.getName(), new TextType());
+                query.addScalar(c.getName(), c.getType().getHibernateType());
                 break;
             default:
                 throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, 
@@ -259,29 +237,28 @@ public class DataFactory {
             }
         }
 
-    public CcBin getBin (Session session, BinHandler handler) throws  SQLException {
+    public CcHisto getHisto(Session session, HistoHandler handler) throws  SQLException {
 
         final Query q = handler.getQuery();
-        final String col = handler.getBinCol();
+        final String column = handler.getColumn();
 
         StringBuilder sb = new StringBuilder();
         sb.append("select ")
-                .append(col)
+                .append(column)
                 .append(", count(")
-                .append(col)
-                .append(") from (")
-                .append(handler.getQuery().getSql())
+                .append(column)
+                .append(") as count from (")
+                .append(q.getSql())
                 .append(") ")
                 .append("group by (")
-                .append(col)
+                .append(column)
                 .append(")");
 
         String sql = sb.toString();
-
         final SQLQuery query = session.createSQLQuery(sql);
 
-
-        query.addScalar(col, new StringType());
+        query.addScalar(column, q.getColumn(column).getType().getHibernateType());
+        query.addScalar("count", new BigDecimalType());
 
         handler.applyParameters(query);
         if (log.isDebugEnabled()) {
@@ -289,12 +266,11 @@ public class DataFactory {
         }
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<CcBin> func = executor.submit(
-                new Callable<CcBin>() {
+        Future<CcHisto> func = executor.submit(new Callable<CcHisto>() {
 
                     @Override
-                    public CcBin call() throws Exception {
-                        CcBin cc = new CcBin();
+                    public CcHisto call() throws Exception {
+                        CcHisto cc = new CcHisto();
                         for (Object o: query.list()) {
                             cc.addRow(q, o);
                         }

@@ -244,4 +244,13 @@ public class Query {
         return pars;
     }
 
+    public MdColumn getColumn(String name) {
+        for (MdColumn col: columns) {
+            if (col.getName().equalsIgnoreCase(name)) {
+                return col;
+            }
+        }
+        return null;
+    }
+    
 }

@@ -2,7 +2,7 @@
  * #%L
  * server
  * %%
- * Copyright (C) 2012 - 2015 valdasraps
+ * Copyright (C) 2012 - 2020 valdasraps
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,29 +19,24 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-package lt.emasina.resthub.server.cache;
+package lt.emasina.resthub.server.exporter;
 
-import lt.emasina.resthub.server.query.Query;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import lt.emasina.resthub.server.cache.CcHisto;
+import lt.emasina.resthub.server.handler.HistoHandler;
+import org.hibernate.Session;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+public class HistoExporter extends Exporter<CcHisto> {
 
-public class CcBin extends CcBase<List<Object[]>> {
+    @Inject
+    public HistoExporter(@Assisted HistoHandler handler) {
+        super(handler);
+    }
 
-    private static final long serialVersionUID = 1L;
-
-    public void addRow(Query query, Object row) throws SQLException {
-        if (getValue() == null) {
-            setValue(new ArrayList<Object[]>());
-        }
-
-        if (row == null || ! row.getClass().isArray()) {
-            getValue().add(new Object[] { row });
-        } else {
-            getValue().add((Object[]) row);
-        }
-
+    @Override
+    protected CcHisto retrieveData(Session session) throws Exception {
+        return getDf().getHisto(session, (HistoHandler) getHandler());
     }
 
 }

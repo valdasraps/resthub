@@ -2,7 +2,7 @@
  * #%L
  * server
  * %%
- * Copyright (C) 2012 - 2015 valdasraps
+ * Copyright (C) 2012 - 2020 valdasraps
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,7 +34,7 @@ import lt.emasina.resthub.server.app.Queries;
 import lt.emasina.resthub.server.app.Query;
 import lt.emasina.resthub.server.app.Count;
 import lt.emasina.resthub.server.app.Data;
-import lt.emasina.resthub.server.app.Bin;
+import lt.emasina.resthub.server.app.Histo;
 import lt.emasina.resthub.server.app.Info;
 import lt.emasina.resthub.server.app.Lob;
 import lt.emasina.resthub.server.app.Table;
@@ -156,7 +156,7 @@ public class ServerApp extends BaseApp {
         router.attach("/query/{queryId}/count", Count.class);
 
         // GET
-        router.attach("/query/{queryId}/bin/{column}", Bin.class);
+        router.attach("/query/{queryId}/histo/{column}", Histo.class);
 
         // GET
         router.attach("/query/{queryId}/data", Data.class);
