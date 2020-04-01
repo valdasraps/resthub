@@ -23,6 +23,7 @@ package lt.emasina.resthub.server.handler;
 
 import com.google.inject.assistedinject.Assisted;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lt.emasina.resthub.server.cache.CcHisto;
@@ -33,11 +34,22 @@ import org.restlet.resource.ResourceException;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
+import lt.emasina.resthub.model.MdColumn;
+import org.hibernate.type.Type;
 
-@Getter @Setter
+@Getter
 public class HistoHandler extends Handler<CcHisto, HistoExporter> {
 
-    private String column;
+    private static final int DEFAULT_BINS = 10;
+            
+    @Setter
+    private MdColumn column;
+    
+    @Setter
+    private int bins = DEFAULT_BINS;
+    
+    private final Map<String, Type> columns = new LinkedHashMap<>();
 
     @Inject
     public HistoHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {
@@ -52,7 +64,8 @@ public class HistoHandler extends Handler<CcHisto, HistoExporter> {
     @Override
     protected List getIdParts() {
         List parts = new ArrayList();
-        parts.add(column);
+        parts.add(column.getName());
+        parts.add(bins);
         return parts;
     }
     

@@ -23,6 +23,7 @@ package lt.emasina.resthub.server.factory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +52,7 @@ import lt.emasina.resthub.server.query.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
+import org.hibernate.type.Type;
 import org.restlet.data.Status;
 
 /**
@@ -240,26 +242,105 @@ public class DataFactory {
     public CcHisto getHisto(Session session, HistoHandler handler) throws  SQLException {
 
         final Query q = handler.getQuery();
-        final String column = handler.getColumn();
-
+        final MdColumn column = handler.getColumn();
+        final Map<String, Type> columns = handler.getColumns();
+        
         StringBuilder sb = new StringBuilder();
-        sb.append("select ")
-                .append(column)
-                .append(", count(")
-                .append(column)
-                .append(") as count from (")
-                .append(q.getSql())
-                .append(") ")
-                .append("group by (")
-                .append(column)
-                .append(")");
+        switch (column.getType()) {
+            case BLOB:
+            case CLOB:
+                throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, 
+                            "Column %d can not be LOB (%s)!", 
+                              column.getName(), column.getType().name());
+            case STRING:
+                
+                sb.append("select ")
+                    .append(column.getName())
+                    .append(", count(")
+                    .append(column.getName())
+                    .append(") as count from (")
+                    .append(q.getSql())
+                    .append(") ")
+                    .append("group by (")
+                    .append(column.getName())
+                    .append(")");
+                
+                if (columns.isEmpty()) {
+                    columns.put(column.getName(), column.getType().getHibernateType());
+                    columns.put("count", new BigDecimalType());
+                }
+                
+                break;
 
-        String sql = sb.toString();
-        final SQLQuery query = session.createSQLQuery(sql);
-
-        query.addScalar(column, q.getColumn(column).getType().getHibernateType());
-        query.addScalar("count", new BigDecimalType());
-
+            case DATE:
+            case NUMBER:
+                
+                sb.append("with r as ")
+                        .append("(select ")
+                        .append("min(")
+                            .append(column.getName())
+                        .append(") as min_value, ")
+                        .append("max(")
+                        .append(column.getName())
+                        .append(") as max_value, ")
+                        .append("(max(")
+                        .append(column.getName())
+                            .append(") - min(")
+                        .append(column.getName())
+                        .append(")) / ")
+                        .append(handler.getBins())
+                        .append(" as step_value ")
+                    .append("from (")
+                        .append(q.getSql())
+                    .append("))")
+                .append("select ")
+                    .append("bin_number as bin, ")
+                    .append("min_value + (bin_number - 1) * step_value + step_value / 2 as ")
+                        .append(column.getName())
+                    .append(", ")
+                    .append("min_value + (bin_number - 1) * step_value as value_from, ")
+                    .append("min_value + (bin_number - 0) * step_value as value_to, ")
+                    .append("nvl(bin_count,0) as count ")
+                .append("from ")
+                    .append("r, (select rownum as bin_number from dual connect by rownum <= ")
+                        .append(handler.getBins())
+                    .append(") ")
+                    .append("left join ")
+                    .append("(select ")
+                        .append("bin_item, ")
+                        .append("count(bin_item) bin_count ")
+                    .append("from ( ")
+                        .append("select ")
+                            .append("WIDTH_BUCKET(")
+                        .append(column.getName())
+                        .append(", min_value, max_value, ")
+                        .append(handler.getBins())
+                        .append(") bin_item ")
+                        .append("from (")
+                            .append(q.getSql())
+                        .append("), r ")
+                        .append(") ")
+                    .append("group by ") 
+                        .append("bin_item) ")
+                        .append("on bin_number = bin_item ")
+                .append("order by ")
+                    .append("bin_number asc ");
+                
+                if (columns.isEmpty()) {
+                    columns.put("bin", new BigDecimalType());
+                    columns.put(column.getName(), column.getType().getHibernateType());
+                    columns.put("value_from", column.getType().getHibernateType());
+                    columns.put("value_to", column.getType().getHibernateType());
+                    columns.put("count", new BigDecimalType());
+                }
+                
+        }
+        
+        final SQLQuery query = session.createSQLQuery(sb.toString());
+        for (Map.Entry<String, Type> e: columns.entrySet()) {
+            query.addScalar(e.getKey(), e.getValue());
+        }
+        
         handler.applyParameters(query);
         if (log.isDebugEnabled()) {
             log.debug(query.getQueryString());

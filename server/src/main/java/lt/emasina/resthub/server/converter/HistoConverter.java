@@ -22,7 +22,6 @@
 package lt.emasina.resthub.server.converter;
 
 import java.util.List;
-import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.server.cache.CcHisto;
 import lt.emasina.resthub.server.handler.HistoHandler;
 import org.json.JSONArray;
@@ -41,8 +40,9 @@ public class HistoConverter {
         JSONObject root = new JSONObject();
         
         JSONArray cols = new JSONArray();
-        cols.put(handler.getColumn());
-        cols.put("count");
+        for (String colname: handler.getColumns().keySet()) {
+            cols.put(colname);
+        }
         root.put("cols", cols);
 
         final JSONArray bins = new JSONArray();

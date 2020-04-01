@@ -29,6 +29,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Options;
 import org.restlet.resource.ResourceException;
 import java.util.*;
+import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.server.cache.CacheStats;
 import lt.emasina.resthub.server.converter.HistoConverter;
 import lt.emasina.resthub.server.exception.ClientErrorException;
@@ -46,7 +47,23 @@ public class Histo extends PagedData {
         super.doInit();
         Query q = getQueryMd(true);
         handler = rf.createHistoHandler(q, getQuery());
-        handler.setColumn(super.getAttr(String.class, "column"));
+        
+        MdColumn column = q.getColumn(super.getAttr(String.class, "column"));
+        if (column == null) {
+            throw new ClientErrorException(Status.CLIENT_ERROR_NOT_FOUND, "Column not found?");
+        } else {
+            handler.setColumn(column);
+        }
+        
+        Integer bins = super.getAttr(Integer.class, "bins");
+        if (bins != null) {
+            if (bins <= 0) {
+                throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, "Bad number of bins, must be > 0");
+            } else {
+                handler.setBins(bins);
+            }
+        }
+        
     }
 
     @Options
@@ -59,10 +76,6 @@ public class Histo extends PagedData {
     @Get
     public void histo() throws ResourceException {
         CacheStats stats = handler.getCacheStats();
-
-        if (handler.getQuery().getColumn(handler.getColumn()) == null) {
-            throw new ClientErrorException(Status.CLIENT_ERROR_NOT_FOUND, "Column not found?");
-        }
         
         // Process "If-Modified-Since"
         if (respondNotModified(stats)) {
