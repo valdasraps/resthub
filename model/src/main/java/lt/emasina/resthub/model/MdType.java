@@ -22,18 +22,29 @@
 package lt.emasina.resthub.model;
 
 import java.sql.Types;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.type.BigDecimalType;
+import org.hibernate.type.CalendarType;
+import org.hibernate.type.StringType;
+import org.hibernate.type.TextType;
+import org.hibernate.type.WrapperBinaryType;
 
 /**
  * MdType
  * @author valdo
  */
+@RequiredArgsConstructor
+@Getter
 public enum MdType {
-
-    STRING,
-    NUMBER,
-    DATE,
-    CLOB,
-    BLOB;
+    
+    STRING(new StringType()),
+    NUMBER(new BigDecimalType()),
+    DATE(new CalendarType()),
+    CLOB(new TextType()),
+    BLOB(new WrapperBinaryType());
+    
+    private final org.hibernate.type.Type hibernateType;
     
     public static MdType getMdType(int t) {
         switch (t) {

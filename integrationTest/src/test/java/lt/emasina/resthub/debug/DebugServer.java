@@ -17,14 +17,34 @@ import org.restlet.data.Protocol;
 public class DebugServer {
 
     // Setup these constants before running!
-    private static final String URL = "jdbc:oracle:thin:@oracle-mif:1521/xe";
+    /*
+    Prisijungimai pries BIN funkcinoaluma
 
+    private static final String URL = "jdbc:oracle:thin:@oracle-mif:1521/xe";
     private static final String USER = "RESTHUB_TEST";
     private static final String PASSWD = "tesT2018";
+
+     */
+
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+    private static final String USER = "RESTHUB_TEST";
+    private static final String PASSWD = "testing";
+
+
+    private static final String NAMESPACE = "RESTHUB_TEST";
+    private static final String NAME = "TEXTS";
+    private static final String SQL = "select * from TEXTS";
+
+/*
+Kodas testavimui pries bin funkcionaluma
+
 
     private static final String NAMESPACE = "RESTHUB_TEST";
     private static final String NAME = "CUSTOMER";
     private static final String SQL = "select count(1) as c from CUSTOMER";
+
+ */
+
 
     //private static final String URL = "jdbc:oracle:thin:@cmsr_lb";
     //private static final String USER = "cms_dqm_run_registry_off_r";

@@ -19,36 +19,24 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-package lt.emasina.resthub.server.handler;
+package lt.emasina.resthub.server.exporter;
 
-import javax.inject.Inject;
-
-import lt.emasina.resthub.server.cache.CcCount;
-import lt.emasina.resthub.server.exporter.CountExporter;
-import lt.emasina.resthub.server.query.Query;
-
-import org.restlet.data.Form;
-import org.restlet.resource.ResourceException;
-
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import java.util.Collections;
-import java.util.List;
+import lt.emasina.resthub.server.cache.CcHisto;
+import lt.emasina.resthub.server.handler.HistoHandler;
+import org.hibernate.Session;
 
-public class CountHandler extends Handler<CcCount, CountExporter> {
+public class HistoExporter extends Exporter<CcHisto> {
 
     @Inject
-    public CountHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {
-        super(query, form);
+    public HistoExporter(@Assisted HistoHandler handler) {
+        super(handler);
     }
 
     @Override
-    public CountExporter createExporter() {
-        return rf.createCountExporter(this);
-    }
-
-    @Override
-    protected List getIdParts() {
-        return Collections.singletonList("count");
+    protected CcHisto retrieveData(Session session) throws Exception {
+        return getDf().getHisto(session, (HistoHandler) getHandler());
     }
 
 }

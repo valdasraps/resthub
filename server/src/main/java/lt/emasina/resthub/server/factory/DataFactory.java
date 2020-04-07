@@ -2,7 +2,7 @@
  * #%L
  * server
  * %%
- * Copyright (C) 2012 - 2015 valdasraps
+ * Copyright (C) 2012 - 2020 valdasraps
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,7 @@ package lt.emasina.resthub.server.factory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.MdColumn;
+import lt.emasina.resthub.server.cache.CcHisto;
 import lt.emasina.resthub.server.cache.CcLob;
 import lt.emasina.resthub.server.cache.CcCount;
 import lt.emasina.resthub.server.cache.CcData;
@@ -44,15 +46,13 @@ import lt.emasina.resthub.server.handler.LobHandler;
 import lt.emasina.resthub.server.handler.CountHandler;
 import lt.emasina.resthub.server.handler.DataHandler;
 import lt.emasina.resthub.server.handler.PagedHandler;
+import lt.emasina.resthub.server.handler.HistoHandler;
 import lt.emasina.resthub.server.query.Query;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
-import org.hibernate.type.CalendarType;
-import org.hibernate.type.StringType;
-import org.hibernate.type.TextType;
-import org.hibernate.type.WrapperBinaryType;
+import org.hibernate.type.Type;
 import org.restlet.data.Status;
 
 /**
@@ -69,25 +69,9 @@ public class DataFactory {
     public CcData getData(final Session session, final DataHandler handler) throws Exception {     
         final Query q = handler.getQuery();
         final SQLQuery query = getPagedSQLQuery(session, handler);
-        
+
         for (MdColumn c: q.getColumns()) {
-            switch (c.getType()) {
-                case BLOB:
-                    query.addScalar(c.getName(), new WrapperBinaryType());
-                    break;
-                case CLOB:
-                    query.addScalar(c.getName(), new TextType());
-                    break;
-                case DATE:
-                    query.addScalar(c.getName(), new CalendarType());
-                    break;
-                case NUMBER:
-                    query.addScalar(c.getName(), new BigDecimalType());
-                    break;
-                case STRING:
-                    query.addScalar(c.getName(), new StringType());
-                    break;
-            }
+            query.addScalar(c.getName(), c.getType().getHibernateType());
         }
 
         if (log.isDebugEnabled()) {
@@ -120,7 +104,7 @@ public class DataFactory {
         }            
         
     }
-    
+
     public CcLob getLob(final Session session, final LobHandler handler) throws Exception {     
         final Query q = handler.getQuery();
         final SQLQuery query = getPagedSQLQuery(session, handler);
@@ -128,10 +112,8 @@ public class DataFactory {
         final MdColumn c = handler.getMdColumn();
         switch (c.getType()) {
             case BLOB:
-                query.addScalar(c.getName(), new WrapperBinaryType());
-                break;
             case CLOB:
-                query.addScalar(c.getName(), new TextType());
+                query.addScalar(c.getName(), c.getType().getHibernateType());
                 break;
             default:
                 throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, 
@@ -218,7 +200,7 @@ public class DataFactory {
     
     public CcCount getCount(Session session, CountHandler handler) throws SQLException {
         final Query q = handler.getQuery();
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from (")
             .append(handler.getQuery().getSql())
@@ -227,7 +209,7 @@ public class DataFactory {
         String sql = sb.toString();
         
         final SQLQuery query = session.createSQLQuery(sql);
-        
+
         handler.applyParameters(query);
         if (log.isDebugEnabled()) {
             log.debug(query.getQueryString());
@@ -256,5 +238,140 @@ public class DataFactory {
                 throw new ServerErrorException(Status.SERVER_ERROR_GATEWAY_TIMEOUT, ex);
             }
         }
+
+    public CcHisto getHisto(Session session, HistoHandler handler) throws  SQLException {
+
+        final Query q = handler.getQuery();
+        final MdColumn column = handler.getColumn();
+        final Map<String, Type> columns = handler.getColumns();
+        
+        StringBuilder sb = new StringBuilder();
+        switch (column.getType()) {
+            case BLOB:
+            case CLOB:
+                throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, 
+                            "Column %d can not be LOB (%s)!", 
+                              column.getName(), column.getType().name());
+            case STRING:
+                
+                sb.append("select ")
+                    .append(column.getName())
+                    .append(", count(")
+                    .append(column.getName())
+                    .append(") as count from (")
+                    .append(q.getSql())
+                    .append(") ")
+                    .append("group by (")
+                    .append(column.getName())
+                    .append(")");
+                
+                if (columns.isEmpty()) {
+                    columns.put(column.getName(), column.getType().getHibernateType());
+                    columns.put("count", new BigDecimalType());
+                }
+                
+                break;
+
+            case DATE:
+            case NUMBER:
+                
+                sb.append("with r as ")
+                        .append("(select ")
+                        .append("min(")
+                            .append(column.getName())
+                        .append(") as min_value, ")
+                        .append("max(")
+                        .append(column.getName())
+                        .append(") as max_value, ")
+                        .append("(max(")
+                        .append(column.getName())
+                            .append(") - min(")
+                        .append(column.getName())
+                        .append(")) / ")
+                        .append(handler.getBins())
+                        .append(" as step_value ")
+                    .append("from (")
+                        .append(q.getSql())
+                    .append("))")
+                .append("select ")
+                    .append("bin_number as bin, ")
+                    .append("min_value + (bin_number - 1) * step_value + step_value / 2 as ")
+                        .append(column.getName())
+                    .append(", ")
+                    .append("min_value + (bin_number - 1) * step_value as value_from, ")
+                    .append("min_value + (bin_number - 0) * step_value as value_to, ")
+                    .append("nvl(bin_count,0) as count ")
+                .append("from ")
+                    .append("r, (select rownum as bin_number from dual connect by rownum <= ")
+                        .append(handler.getBins())
+                    .append(") ")
+                    .append("left join ")
+                    .append("(select ")
+                        .append("bin_item, ")
+                        .append("count(bin_item) bin_count ")
+                    .append("from ( ")
+                        .append("select nvl(nullif(")
+                            .append("WIDTH_BUCKET(")
+                        .append(column.getName())
+                        .append(", min_value, max_value, ")
+                        .append(handler.getBins())
+                        .append("),")
+                        .append(handler.getBins())
+                        .append(" + 1), ")
+                        .append(handler.getBins())
+                        .append(") bin_item ")
+                        .append("from (")
+                            .append(q.getSql())
+                        .append("), r ")
+                        .append(") ")
+                    .append("group by ")
+                        .append("bin_item) ")
+                        .append("on bin_number = bin_item ")
+                .append("order by ")
+                    .append("bin_number asc ");
+                
+                if (columns.isEmpty()) {
+                    columns.put("bin", new BigDecimalType());
+                    columns.put(column.getName(), column.getType().getHibernateType());
+                    columns.put("value_from", column.getType().getHibernateType());
+                    columns.put("value_to", column.getType().getHibernateType());
+                    columns.put("count", new BigDecimalType());
+                }
+                
+        }
+
+        final SQLQuery query = session.createSQLQuery(sb.toString());
+        for (Map.Entry<String, Type> e: columns.entrySet()) {
+            query.addScalar(e.getKey(), e.getValue());
+        }
+        
+        handler.applyParameters(query);
+        if (log.isDebugEnabled()) {
+            log.debug(query.getQueryString());
+        }
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<CcHisto> func = executor.submit(new Callable<CcHisto>() {
+
+                    @Override
+                    public CcHisto call() throws Exception {
+                        CcHisto cc = new CcHisto();
+                        for (Object o: query.list()) {
+                            cc.addRow(q, o);
+                        }
+                        return cc;
+                    }
+                });
+
+        try {
+
+            return func.get(q.getTimeOut(), TimeUnit.SECONDS);
+
+        } catch (ExecutionException | InterruptedException ex) {
+            throw new ServerErrorException(Status.SERVER_ERROR_INTERNAL, ex);
+        } catch (TimeoutException ex) {
+            throw new ServerErrorException(Status.SERVER_ERROR_GATEWAY_TIMEOUT, ex);
+        }
+    }
     
 }

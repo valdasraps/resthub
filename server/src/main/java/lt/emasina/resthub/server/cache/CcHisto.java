@@ -2,7 +2,7 @@
  * #%L
  * server
  * %%
- * Copyright (C) 2012 - 2020 valdasraps
+ * Copyright (C) 2012 - 2015 valdasraps
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,36 +19,29 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-package lt.emasina.resthub.server.handler;
+package lt.emasina.resthub.server.cache;
 
-import javax.inject.Inject;
-
-import lt.emasina.resthub.server.cache.CcCount;
-import lt.emasina.resthub.server.exporter.CountExporter;
 import lt.emasina.resthub.server.query.Query;
 
-import org.restlet.data.Form;
-import org.restlet.resource.ResourceException;
-
-import com.google.inject.assistedinject.Assisted;
-import java.util.Collections;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CountHandler extends Handler<CcCount, CountExporter> {
+public class CcHisto extends CcBase<List<Object[]>> {
 
-    @Inject
-    public CountHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {
-        super(query, form);
-    }
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public CountExporter createExporter() {
-        return rf.createCountExporter(this);
-    }
+    public void addRow(Query query, Object row) throws SQLException {
+        if (getValue() == null) {
+            setValue(new ArrayList<>());
+        }
 
-    @Override
-    protected List getIdParts() {
-        return Collections.singletonList("count");
+        if (row == null || ! row.getClass().isArray()) {
+            getValue().add(new Object[] { row });
+        } else {
+            getValue().add((Object[]) row);
+        }
+
     }
 
 }

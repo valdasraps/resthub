@@ -21,34 +21,52 @@
  */
 package lt.emasina.resthub.server.handler;
 
-import javax.inject.Inject;
-
-import lt.emasina.resthub.server.cache.CcCount;
-import lt.emasina.resthub.server.exporter.CountExporter;
+import com.google.inject.assistedinject.Assisted;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import lombok.Getter;
+import lombok.Setter;
+import lt.emasina.resthub.server.cache.CcHisto;
+import lt.emasina.resthub.server.exporter.HistoExporter;
 import lt.emasina.resthub.server.query.Query;
-
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 
-import com.google.inject.assistedinject.Assisted;
-import java.util.Collections;
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
+import lt.emasina.resthub.model.MdColumn;
+import org.hibernate.type.Type;
 
-public class CountHandler extends Handler<CcCount, CountExporter> {
+@Getter
+public class HistoHandler extends Handler<CcHisto, HistoExporter> {
+
+    private static final int DEFAULT_BINS = 10;
+            
+    @Setter
+    private MdColumn column;
+    
+    @Setter
+    private int bins = DEFAULT_BINS;
+    
+    private final Map<String, Type> columns = new LinkedHashMap<>();
 
     @Inject
-    public CountHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {
+    public HistoHandler(@Assisted Query query, @Assisted Form form) throws ResourceException {
         super(query, form);
     }
 
     @Override
-    public CountExporter createExporter() {
-        return rf.createCountExporter(this);
+    public HistoExporter createExporter() {
+        return rf.createHistoExporter(this);
     }
 
     @Override
     protected List getIdParts() {
-        return Collections.singletonList("count");
+        List parts = new ArrayList();
+        parts.add(column.getName());
+        parts.add(bins);
+        return parts;
     }
-
+    
 }
