@@ -310,17 +310,21 @@ public class DataFactory {
                         .append("bin_item, ")
                         .append("count(bin_item) bin_count ")
                     .append("from ( ")
-                        .append("select ")
+                        .append("select nvl(nullif(")
                             .append("WIDTH_BUCKET(")
                         .append(column.getName())
                         .append(", min_value, max_value, ")
+                        .append(handler.getBins())
+                        .append("),")
+                        .append(handler.getBins())
+                        .append(" + 1), ")
                         .append(handler.getBins())
                         .append(") bin_item ")
                         .append("from (")
                             .append(q.getSql())
                         .append("), r ")
                         .append(") ")
-                    .append("group by ") 
+                    .append("group by ")
                         .append("bin_item) ")
                         .append("on bin_number = bin_item ")
                 .append("order by ")
@@ -335,7 +339,7 @@ public class DataFactory {
                 }
                 
         }
-        
+
         final SQLQuery query = session.createSQLQuery(sb.toString());
         for (Map.Entry<String, Type> e: columns.entrySet()) {
             query.addScalar(e.getKey(), e.getValue());
