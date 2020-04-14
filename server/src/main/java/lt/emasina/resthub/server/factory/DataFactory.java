@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.inject.Singleton;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.log4j.Log4j;
 import lt.emasina.resthub.model.MdColumn;
 import lt.emasina.resthub.server.cache.CcHisto;
@@ -49,6 +50,7 @@ import lt.emasina.resthub.server.handler.PagedHandler;
 import lt.emasina.resthub.server.handler.HistoHandler;
 import lt.emasina.resthub.server.query.Query;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
@@ -244,92 +246,53 @@ public class DataFactory {
         final Query q = handler.getQuery();
         final MdColumn column = handler.getColumn();
         final Map<String, Type> columns = handler.getColumns();
-        
+
         StringBuilder sb = new StringBuilder();
+        StrSubstitutor subst;
         switch (column.getType()) {
             case BLOB:
             case CLOB:
-                throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST, 
-                            "Column %d can not be LOB (%s)!", 
+                throw new ClientErrorException(Status.CLIENT_ERROR_BAD_REQUEST,
+                            "Column %d can not be LOB (%s)!",
                               column.getName(), column.getType().name());
             case STRING:
-                
-                sb.append("select ")
-                    .append(column.getName())
-                    .append(", count(")
-                    .append(column.getName())
-                    .append(") as count from (")
-                    .append(q.getSql())
-                    .append(") ")
-                    .append("group by (")
-                    .append(column.getName())
-                    .append(")");
-                
+
+                subst = new StrSubstitutor(ImmutableMap.of(
+                    "sql", q.getSql(),
+                    "col", column.getName()));
+                sb.append(subst.replace("select ${col}, count(${col}) as count from (${sql}) group by (${col})"));
+
                 if (columns.isEmpty()) {
                     columns.put(column.getName(), column.getType().getHibernateType());
                     columns.put("count", new BigDecimalType());
                 }
-                
+
                 break;
 
             case DATE:
             case NUMBER:
-                
-                sb.append("with r as ")
-                        .append("(select ")
-                        .append("min(")
-                            .append(column.getName())
-                        .append(") as min_value, ")
-                        .append("max(")
-                        .append(column.getName())
-                        .append(") as max_value, ")
-                        .append("(max(")
-                        .append(column.getName())
-                            .append(") - min(")
-                        .append(column.getName())
-                        .append(")) / ")
-                        .append(handler.getBins())
-                        .append(" as step_value ")
-                    .append("from (")
-                        .append(q.getSql())
-                    .append("))")
-                .append("select ")
-                    .append("bin_number as bin, ")
-                    .append("min_value + (bin_number - 1) * step_value + step_value / 2 as ")
-                        .append(column.getName())
-                    .append(", ")
-                    .append("min_value + (bin_number - 1) * step_value as value_from, ")
-                    .append("min_value + (bin_number - 0) * step_value as value_to, ")
-                    .append("nvl(bin_count,0) as count ")
-                .append("from ")
-                    .append("r, (select rownum as bin_number from dual connect by rownum <= ")
-                        .append(handler.getBins())
-                    .append(") ")
-                    .append("left join ")
-                    .append("(select ")
-                        .append("bin_item, ")
-                        .append("count(bin_item) bin_count ")
-                    .append("from ( ")
-                        .append("select nvl(nullif(")
-                            .append("WIDTH_BUCKET(")
-                        .append(column.getName())
-                        .append(", min_value, max_value, ")
-                        .append(handler.getBins())
-                        .append("),")
-                        .append(handler.getBins())
-                        .append(" + 1), ")
-                        .append(handler.getBins())
-                        .append(") bin_item ")
-                        .append("from (")
-                            .append(q.getSql())
-                        .append("), r ")
-                        .append(") ")
-                    .append("group by ")
-                        .append("bin_item) ")
-                        .append("on bin_number = bin_item ")
-                .append("order by ")
-                    .append("bin_number asc ");
-                
+
+                subst = new StrSubstitutor(ImmutableMap.of(
+                        "sql", q.getSql(),
+                        "col", column.getName(),
+                        "min", handler.getMinValue(),
+                        "max", handler.getMaxValue(),
+                        "bins", handler.getBins()));
+
+                if(handler.getMinValue() == 0 && handler.getMaxValue() == 0){
+                    sb.append(subst.replace("with r as (select min(${col}) as min_value, max(${col}) as max_value, (max(${col}) - min(${col})) / ${bins} as step_value from (${sql}))"));
+
+                } else {
+                    sb.append(subst.replace("with r as (select ${min} as min_value, ${max} as max_value, (max(${max}) - min(${min})) / ${bins} as step_value from dual)"));
+
+                }
+
+                sb.append(subst.replace("select bin_number as bin, DECODE(bin_number, 0, null, ${bins} + 1, null, min_value + (bin_number - 1) * step_value + step_value / 2) as NUM," +
+                                               "DECODE(bin_number, 0, null, min_value + (bin_number - 1) * step_value) as value_from," +
+                                               "DECODE(bin_number, ${bins} + 1, null, min_value + (bin_number - 0) * step_value) as value_to, "));
+                sb.append(subst.replace("nvl(bin_count,0) as count from r, (select rownum - 1 as bin_number from dual connect by rownum <= ${bins} + 2) left join"));
+                sb.append(subst.replace("(select bin_item, count(bin_item) bin_count from (select WIDTH_BUCKET(${col}, min_value, max_value, ${bins}) bin_item from (${sql}), r) group by bin_item) on bin_number = bin_item order by bin_number asc"));
+
                 if (columns.isEmpty()) {
                     columns.put("bin", new BigDecimalType());
                     columns.put(column.getName(), column.getType().getHibernateType());
@@ -337,7 +300,7 @@ public class DataFactory {
                     columns.put("value_to", column.getType().getHibernateType());
                     columns.put("count", new BigDecimalType());
                 }
-                
+
         }
 
         final SQLQuery query = session.createSQLQuery(sb.toString());

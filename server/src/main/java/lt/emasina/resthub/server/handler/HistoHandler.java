@@ -48,6 +48,14 @@ public class HistoHandler extends Handler<CcHisto, HistoExporter> {
     
     @Setter
     private int bins = DEFAULT_BINS;
+
+    @Setter
+    @Getter
+    private double minValue;
+
+    @Setter
+    @Getter
+    private double maxValue;
     
     private final Map<String, Type> columns = new LinkedHashMap<>();
 
@@ -66,6 +74,8 @@ public class HistoHandler extends Handler<CcHisto, HistoExporter> {
         List parts = new ArrayList();
         parts.add(column.getName());
         parts.add(bins);
+        parts.add(minValue);
+        parts.add(maxValue);
         return parts;
     }
     

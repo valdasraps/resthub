@@ -54,7 +54,7 @@ public class Histo extends PagedData {
         } else {
             handler.setColumn(column);
         }
-        
+
         Integer bins = super.getAttr(Integer.class, "bins");
         if (bins != null) {
             if (bins <= 0) {
@@ -63,7 +63,13 @@ public class Histo extends PagedData {
                 handler.setBins(bins);
             }
         }
-        
+
+        Double minValue = super.getAttr(Double.class, "min");
+        Double maxValue = super.getAttr(Double.class, "max");
+        if (minValue != null && maxValue != null && maxValue > minValue) {
+            handler.setMinValue(minValue);
+            handler.setMaxValue(maxValue);
+        }
     }
 
     @Options
