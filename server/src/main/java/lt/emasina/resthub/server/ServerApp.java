@@ -158,6 +158,7 @@ public class ServerApp extends BaseApp {
         // GET
         router.attach("/query/{queryId}/histo/{column}", Histo.class);
         router.attach("/query/{queryId}/histo/{column}/{bins}", Histo.class);
+        router.attach("/query/{queryId}/histo/{column}/{min},{max}/{bins}", Histo.class);
 
         // GET
         router.attach("/query/{queryId}/data", Data.class);
