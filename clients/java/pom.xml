@@ -5,7 +5,7 @@
     <parent>
         <groupId>lt.emasina.resthub</groupId>
         <artifactId>clients</artifactId>
-        <version>0.6.21</version>
+        <version>0.6.22</version>
     </parent>
     <artifactId>java</artifactId>
     <name>java</name>

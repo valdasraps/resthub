@@ -287,7 +287,7 @@ public class DataFactory {
 
                 }
 
-                sb.append(subst.replace("select bin_number as bin, DECODE(bin_number, 0, null, ${bins} + 1, null, min_value + (bin_number - 1) * step_value + step_value / 2) as NUM," +
+                sb.append(subst.replace("select bin_number as bin, DECODE(bin_number, 0, null, ${bins} + 1, null, min_value + (bin_number - 1) * step_value + step_value / 2) as ${col}," +
                                                "DECODE(bin_number, 0, null, min_value + (bin_number - 1) * step_value) as value_from," +
                                                "DECODE(bin_number, ${bins} + 1, null, min_value + (bin_number - 0) * step_value) as value_to, "));
                 sb.append(subst.replace("nvl(bin_count,0) as count from r, (select rownum - 1 as bin_number from dual connect by rownum <= ${bins} + 2) left join"));
