@@ -22,8 +22,10 @@
 package lt.emasina.resthub.server.converter;
 
 import java.util.List;
+import java.util.Map;
 import lt.emasina.resthub.server.cache.CcHisto;
 import lt.emasina.resthub.server.handler.HistoHandler;
+import org.hibernate.type.Type;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.restlet.data.Reference;
@@ -40,7 +42,10 @@ public class HistoConverter {
         JSONObject root = new JSONObject();
         
         JSONArray cols = new JSONArray();
-        for (String colname: handler.getColumns().keySet()) {
+        Map<String, Type> allCols = handler.getColumns();
+        allCols.remove("mean");
+        allCols.remove("rms");
+        for (String colname: allCols.keySet()) {
             cols.put(colname);
         }
         root.put("cols", cols);
@@ -50,12 +55,32 @@ public class HistoConverter {
         
         if (values != null) {
             for (int rowNumber = 0; rowNumber < values.size(); rowNumber++) {
-                bins.put(new JSONArray(values.get(rowNumber)));
+                JSONArray val = new JSONArray(values.get(rowNumber));
+                if (val.length() > 5) {
+                    val.remove(val.length()-1);
+                    val.remove(val.length()-1);
+                }
+                bins.put(val);
             }
         }
         
         root.put("bins", bins);
-        
+
+        JSONObject mean = new JSONObject();
+        JSONObject rms = new JSONObject();
+
+        if (values.size() > 5) {
+            final JSONArray stats = new JSONArray();
+            JSONArray val = new JSONArray(values.get(0));
+
+            rms.put("rms", val.get(5));
+            mean.put("mean", val.get(6));
+
+            stats.put(rms);
+            stats.put(mean);
+            root.put("stats", stats);
+        }
+
         return new JsonRepresentation(root);
     }
     

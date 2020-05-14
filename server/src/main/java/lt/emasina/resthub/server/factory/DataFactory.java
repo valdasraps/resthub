@@ -279,28 +279,34 @@ public class DataFactory {
                         "max", handler.getMaxValue(),
                         "bins", handler.getBins()));
 
+                sb.append(subst.replace("with q___ (x___) as ( select ${col} from (${sql})),"));
+
                 if(handler.getMinValue() == 0 && handler.getMaxValue() == 0){
-                    sb.append(subst.replace("with r as (select min(${col}) as min_value, max(${col}) as max_value, (max(${col}) - min(${col})) / ${bins} as step_value from (${sql}))"));
+                    sb.append(subst.replace("r___ as (select min(x___) as min___, max(x___) as max___, " +
+                            "(max(x___) - min(x___)) / ${bins} as step___,"));
 
                 } else {
-                    sb.append(subst.replace("with r as (select ${min} as min_value, ${max} as max_value, (max(${max}) - min(${min})) / ${bins} as step_value from dual)"));
+                    sb.append(subst.replace(" r___ as (select ${min} as min___, ${max} as max___, (max(${max}) - min(${min})) / ${bins} as step___,"));
 
                 }
 
-                sb.append(subst.replace("select bin_number as bin, DECODE(bin_number, 0, null, ${bins} + 1, null, min_value + (bin_number - 1) * step_value + step_value / 2) as ${col}," +
-                                               "DECODE(bin_number, 0, null, min_value + (bin_number - 1) * step_value) as value_from," +
-                                               "DECODE(bin_number, ${bins} + 1, null, min_value + (bin_number - 0) * step_value) as value_to, "));
-                sb.append(subst.replace("nvl(bin_count,0) as count from r, (select rownum - 1 as bin_number from dual connect by rownum <= ${bins} + 2) left join"));
-                sb.append(subst.replace("(select bin_item, count(bin_item) bin_count from (select WIDTH_BUCKET(${col}, min_value, max_value, ${bins}) bin_item from (${sql}), r) group by bin_item) on bin_number = bin_item order by bin_number asc"));
+                sb.append(subst.replace(" min(mean___) as mean___, SQRT(sum(POWER(x___ - mean___, 2)) / min(c___)) as rms___ from q___, (select avg(x___) as mean___, count (*) as c___ from q___))"));
+                sb.append(subst.replace("select bnum___ as bin, mean___ as mean, rms___ as rms, DECODE(bnum___, 0, null, ${bins} + 1, null, min___ + (bnum___ - 1) * step___ + step___ / 2) as mean_value," +
+                                               "DECODE(bnum___, 0, null, min___ + (bnum___ - 1) * step___) as value_from," +
+                                               "DECODE(bnum___, ${bins} + 1, null, min___ + (bnum___ - 0) * step___) as value_to, "));
+                sb.append(subst.replace("nvl(bin_count___,0) as count from r___, (select rownum - 1 as bnum___ from dual connect by rownum <= ${bins} + 2) left join"));
+                sb.append(subst.replace("(select bitem___, count(bitem___) bin_count___ from (select WIDTH_BUCKET(x___, min___, max___, ${bins}) bitem___ from q___, r___) group by bitem___) on bnum___ = bitem___ order by bnum___ asc"));
+
 
                 if (columns.isEmpty()) {
                     columns.put("bin", new BigDecimalType());
-                    columns.put(column.getName(), column.getType().getHibernateType());
+                    columns.put("mean_value", column.getType().getHibernateType());
                     columns.put("value_from", column.getType().getHibernateType());
                     columns.put("value_to", column.getType().getHibernateType());
                     columns.put("count", new BigDecimalType());
+                    columns.put("rms", new BigDecimalType());
+                    columns.put("mean", new BigDecimalType());
                 }
-
         }
 
         final SQLQuery query = session.createSQLQuery(sb.toString());
