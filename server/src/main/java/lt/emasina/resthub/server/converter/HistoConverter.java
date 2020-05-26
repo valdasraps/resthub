@@ -43,8 +43,8 @@ public class HistoConverter {
         
         JSONArray cols = new JSONArray();
         Map<String, Type> allCols = handler.getColumns();
-        allCols.remove("mean");
-        allCols.remove("rms");
+        allCols.remove("range_rms");
+        allCols.remove("range_mean");
         for (String colname: allCols.keySet()) {
             cols.put(colname);
         }

@@ -51,11 +51,11 @@ public class HistoHandler extends Handler<CcHisto, HistoExporter> {
 
     @Setter
     @Getter
-    private double minValue;
+    private Double minValue;
 
     @Setter
     @Getter
-    private double maxValue;
+    private Double maxValue;
     
     private final Map<String, Type> columns = new LinkedHashMap<>();
 
