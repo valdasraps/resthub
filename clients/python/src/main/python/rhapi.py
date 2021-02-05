@@ -366,6 +366,14 @@ class RhApi:
         """
         return int(self.get(["query", qid, "count"], params = params, verbose = verbose))
 
+    def histo(self, qid, column, bins = None, params = None, verbose = False):
+        """
+        Get histogram bins for query column.
+        """
+        path = ["query", qid, "histo", column]
+        if bins: path += [ bins ]
+        return self.get(path, params = params, verbose = verbose)
+
     def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False, cols = False, inline_clobs = False):
         """
         Get data rows
@@ -468,6 +476,7 @@ class CLIClient:
         self.parser.add_option("-n", "--clean",    dest = "clean",    help = "clean cache before executing query (new results). Default: False", action = "store_true", default = False)
         self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
         self.parser.add_option("-r", "--root",     dest = "root",     help = "ROOT file name, if format set to root. Default: " + DEFAULT_ROOT_FILE, metavar = "ROOT", default=DEFAULT_ROOT_FILE)
+        self.parser.add_option("-t", "--histo",    dest = "histo",    help = "histogram of BINS bins for COLUMN in form COLUMN(:BINS).", metavar = "COLUMN:BINS", default=None)
 
     def pprint(self, data):
         self.pp.pprint(data)
@@ -610,6 +619,28 @@ class CLIClient:
                     
                     print(api.count(api.qid(arg), params = params, verbose = options.verbose))
                     
+                elif options.histo:
+
+                    if options.format not in ['json','json2','csv']:
+                        self.parser.error('Histogram bins are possible in formats: json, json2, csv')
+                    
+                    col = options.histo
+                    bins = None
+
+                    m = re.match("^([^:]+):([0-9]+)$", col)
+                    if m:
+                        col = m.group(1)
+                        bins = int(m.group(2))
+
+                    histo = api.histo(api.qid(arg), column = col, bins = bins, params = params, verbose = options.verbose)
+
+                    if options.format in ['json','json2']:
+                        print(histo)
+                    else:
+                        print('\t'.join(histo['cols']))
+                        for b in histo['bins']:
+                            print('\t'.join([str(n) for n in b]))
+                   
                 elif options.metadata:
                     
                     qid = api.qid(arg)
