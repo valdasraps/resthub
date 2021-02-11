@@ -366,12 +366,19 @@ class RhApi:
         """
         return int(self.get(["query", qid, "count"], params = params, verbose = verbose))
 
-    def histo(self, qid, column, bins = None, params = None, verbose = False):
+    def histo(self, qid, column, bins = None, bounds = None, params = None, verbose = False):
         """
         Get histogram bins for query column.
         """
+        
         path = ["query", qid, "histo", column]
+
+        assert bounds is None or (isinstance(bounds, (list, tuple)) and len(bounds) == 2 and all(isinstance(b, (int,float)) for b in bounds) and bounds[0] < bounds[1])
+        if bounds: path += [ ",".join([str(i) for i in bounds]) ]
+        
+        assert bins is None or isinstance(bins, (int))
         if bins: path += [ bins ]
+        
         return self.get(path, params = params, verbose = verbose)
 
     def data(self, qid, params = None, form = 'text/csv', pagesize = None, page = None, verbose = False, cols = False, inline_clobs = False):
@@ -476,7 +483,7 @@ class CLIClient:
         self.parser.add_option("-n", "--clean",    dest = "clean",    help = "clean cache before executing query (new results). Default: False", action = "store_true", default = False)
         self.parser.add_option("-p",               dest = "param",    help = "parameter for QUERY in form -pNAME=VALUE", metavar = "PARAM", action="append")
         self.parser.add_option("-r", "--root",     dest = "root",     help = "ROOT file name, if format set to root. Default: " + DEFAULT_ROOT_FILE, metavar = "ROOT", default=DEFAULT_ROOT_FILE)
-        self.parser.add_option("-t", "--histo",    dest = "histo",    help = "histogram of BINS bins for COLUMN in form COLUMN(:BINS).", metavar = "COLUMN:BINS", default=None)
+        self.parser.add_option("-t", "--histo",    dest = "histo",    help = "histogram of BINS bins for COLUMN in LBOUND to RBOUND bounds. Possible combinations: COLUMN, COLUMN:BINS, COLUMN:BINS:LBOUND:RBOUND.", metavar = "COLUMN:BINS:LBOUND:RBOUND", default=None)
 
     def pprint(self, data):
         self.pp.pprint(data)
@@ -625,14 +632,18 @@ class CLIClient:
                         self.parser.error('Histogram bins are possible in formats: json, json2, csv')
                     
                     col = options.histo
+                    bounds = None
                     bins = None
 
-                    m = re.match("^([^:]+):([0-9]+)$", col)
+                    m = re.match("^([^:]+):?([0-9]+)?:?(-?[0-9\.]+)?:?(-?[0-9\.]+)?$", col)
                     if m:
                         col = m.group(1)
-                        bins = int(m.group(2))
+                        if m.group(2): bins = int(m.group(2))
+                        if m.group(3) and m.group(4): bounds = ( float(m.group(3)), float(m.group(4)) )
+                    else:
+                        self.parser.error('Histogram pattern not recognized: ' + options.histo)
 
-                    histo = api.histo(api.qid(arg), column = col, bins = bins, params = params, verbose = options.verbose)
+                    histo = api.histo(api.qid(arg), column = col, bins = bins, bounds = bounds, params = params, verbose = options.verbose)
 
                     if options.format in ['json','json2']:
                         print(histo)
