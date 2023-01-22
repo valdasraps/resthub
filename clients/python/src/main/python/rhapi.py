@@ -56,6 +56,9 @@ class CernSSO:
 
     def html_root(self, r):
         c = r.content.decode('utf-8')
+        #dump = open('data.txt','w')
+        #dump.write(c)
+        #dump.close()
         c = re.sub('<meta [^>]*>', '', c, flags=re.IGNORECASE)
         c = re.sub('<hr>', '', c, flags=re.IGNORECASE)
         c = re.sub("=\\'([^']*)\\'", '="\g<1>"', c, flags=re.IGNORECASE)
@@ -66,10 +69,12 @@ class CernSSO:
 
     def read_form(self, r):
         root = self.html_root(r)
-        form = root.find(".//{http://www.w3.org/1999/xhtml}form")
+        #form = root.find(".//{http://www.w3.org/1999/xhtml}form")
+        form = root.find(".//form")
         action = form.get('action')
         form_data = dict(
-            ((e.get('name'), e.get('value')) for e in form.findall(".//{http://www.w3.org/1999/xhtml}input")))
+            #((e.get('name'), e.get('value')) for e in form.findall(".//{http://www.w3.org/1999/xhtml}input")))
+            ((e.get('name'), e.get('value')) for e in form.findall(".//input")))
         return action, form_data
 
     def is_email(self, s):
